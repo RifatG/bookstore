@@ -5,6 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,15 +20,48 @@ public class BookService {
     }
 
     public List<Book> getBooksData() {
-        List<Book> books = jdbcTemplate.query("SELECT * FROM books",(ResultSet rs, int rowNum) -> {
-            Book book = new Book();
-            book.setId(rs.getInt("id"));
-            book.setAuthor(rs.getString("author"));
-            book.setTitle(rs.getString("title"));
-            book.setPriceOld(rs.getString("priceOld"));
-            book.setPrice(rs.getString("price"));
-            return book;
-        });
+        List<Book> books = jdbcTemplate.query("SELECT * FROM books",(ResultSet rs, int rowNum) ->
+                createBookFromResultOfQuery(rs));
         return new ArrayList<>(books);
+    }
+
+    public List<Book> getPostponedBooksData() {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM postponed_books INNER JOIN books ON book_id = books.id",(ResultSet rs, int rowNum) ->
+                createBookFromResultOfQuery(rs));
+        return new ArrayList<>(books);
+    }
+
+    public List<Book> getReservedBooksData() {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM reserved_books INNER JOIN books ON book_id = books.id",(ResultSet rs, int rowNum) ->
+                createBookFromResultOfQuery(rs));
+        return new ArrayList<>(books);
+    }
+
+    public List<Book> getPopularBooks() {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM popular_books INNER JOIN books ON book_id = books.id",(ResultSet rs, int rowNum) ->
+                createBookFromResultOfQuery(rs));
+        return new ArrayList<>(books);
+    }
+
+    public List<Book> getRecentBooks() {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM recent_books INNER JOIN books ON book_id = books.id",(ResultSet rs, int rowNum) ->
+                createBookFromResultOfQuery(rs));
+        return new ArrayList<>(books);
+    }
+
+    public List<Book> getRecommendedBooks() {
+        List<Book> books = jdbcTemplate.query("SELECT * FROM recommended_books INNER JOIN books ON book_id = books.id",(ResultSet rs, int rowNum) ->
+                createBookFromResultOfQuery(rs));
+        return new ArrayList<>(books);
+    }
+
+    private Book createBookFromResultOfQuery(ResultSet rs) throws SQLException {
+        Book book = new Book();
+        book.setId(rs.getInt("id"));
+        book.setAuthor(rs.getString("author"));
+        book.setTitle(rs.getString("title"));
+        book.setPriceOld(rs.getString("priceOld"));
+        book.setPrice(rs.getString("price"));
+        return book;
     }
 }

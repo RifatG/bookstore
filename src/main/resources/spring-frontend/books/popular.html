@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=45035206">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=45035206"></script>
+    <script defer src="/assets/js/locale.js"></script>
 </head>
 <body class="Site">
 <header class="Header"
@@ -23,7 +24,7 @@
     <div class="wrap">
         <main class="Middle-main">
             <ul class="breadcrumbs"
-                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category='Популярное')}"></ul>
+                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=#{topbar.popular})}"></ul>
             <div class="Section">
                 <div class="Section-header">
                     <h1 class="Section-title">Популярное

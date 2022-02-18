@@ -15,3 +15,38 @@ create table authors
     first_name VARCHAR(50),
     last_name  VARCHAR(50)
 );
+
+create table postponed_books
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    book_id    INT,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+create table reserved_books
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    book_id    INT,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+create table popular_books
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    book_id    INT,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+create table recent_books
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    book_id    INT,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);
+
+create table recommended_books
+(
+    id         INT AUTO_INCREMENT PRIMARY KEY,
+    book_id    INT,
+    FOREIGN KEY (book_id) REFERENCES books(id)
+);

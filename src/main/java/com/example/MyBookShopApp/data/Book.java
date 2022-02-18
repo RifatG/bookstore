@@ -1,5 +1,8 @@
 package com.example.MyBookShopApp.data;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Book {
 
     private Integer id;
@@ -57,5 +60,17 @@ public class Book {
 
     public void setPrice(String price) {
         this.price = price;
+    }
+
+    public Integer getDiscount() {
+        if (this.priceOld != null) {
+            Pattern pattern = Pattern.compile("([0-9]+[.]*[0-9]*)");
+            Matcher priceMatcher = pattern.matcher(this.price);
+            Matcher priceOldMatcher = pattern.matcher(this.priceOld);
+            if(priceMatcher.find() && priceOldMatcher.find()) {
+                return (int) ((Double.parseDouble(priceMatcher.group())/Double.parseDouble(priceOldMatcher.group())) * 100 - 100);
+            }
+        }
+        return 0;
     }
 }

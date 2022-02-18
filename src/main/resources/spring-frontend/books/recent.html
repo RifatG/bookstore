@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=09585989">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=09585989"></script>
+    <script defer src="/assets/js/locale.js"></script>
 </head>
 <body class="Site">
 <header class="Header"
@@ -23,14 +24,14 @@
     <div class="wrap">
         <main class="Middle-main">
             <ul class="breadcrumbs"
-                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category='Новинки')}"></ul>
+                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=#{topbar.news})}"></ul>
             <div class="Section">
                 <div class="Section-header">
-                    <h1 class="Section-title">Новинки
+                    <h1 class="Section-title" th:text="#{topbar.news}">Новинки
                     </h1>
                     <form class="form form_inline Section-header-form" action="#" method="post">
                         <div class="form-group">
-                            <label class="form-label">с
+                            <label class="form-label" th:text="#{date.since}">с
                             </label>
                             <input class="form-input form-input_date form-input_date_uninit" id="fromdaterecent"
                                    name="fromdaterecent" type="text" placeholder="Дата" data-refreshoffset="20"
@@ -38,7 +39,7 @@
                                    autocomplete="off"/>
                         </div>
                         <div class="form-group">
-                            <label class="form-label">по
+                            <label class="form-label" th:text="#{date.till}">по
                             </label>
                             <input class="form-input form-input_date form-input_date_uninit" id="enddaterecent"
                                    name="enddaterecent" type="text" placeholder="Дата" data-refreshoffset="20"
