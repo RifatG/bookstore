@@ -15,27 +15,28 @@
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=33498857">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=33498857"></script>
+    <script defer src="/assets/js/locale.js"></script>
 </head>
 <body class="Site">
 <header class="Header" th:replace="~{fragments/common_header_fragment :: head(status='unauthorized')}"></header>
 <div class="Middle Middle_search">
     <div class="wrap">
         <main class="Middle-main">
-            <h1 class="Middle-title">Поиск
+            <h1 class="Middle-title" th:text="#{searchbar.button}">Поиск
             </h1>
             <div class="Section">
                 <div class="search">
                     <form class="form form_search" action="#" method="post" data-searchlimit="20">
                         <input class="search-input" id="querypage" name="querypage" type="text"
-                               placeholder="Search over 30 million book titles" value="Техника"/>
-                        <button class="search-button" type="submit" name="searchpage" id="searchpage">Поиск
+                               th:placeholder="#{searchbar.placeholder}" value="Техника"/>
+                        <button class="search-button" type="submit" name="searchpage" id="searchpage" th:text="#{searchbar.button}">Поиск
                         </button>
                     </form>
                 </div>
             </div>
             <div class="Section Section_close">
                 <header class="Section-header">
-                    <h2 class="Section-title Middle-searchHeader">Найдено 40 книг
+                    <h2 class="Section-title Middle-searchHeader" th:text="#{searchbar.searched}">Найдено 40 книг
                     </h2>
                 </header>
                 <div class="Cards Cards_refresh"
