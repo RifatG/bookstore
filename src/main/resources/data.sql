@@ -1,4 +1,4 @@
-insert into books (author, title, priceOld, price) values ('Drucie Goodbourn', 'exploit real-time e-commerce', '$203.23', '$43.37');
+insert into books (author, title, price) values ('Drucie Goodbourn', 'exploit real-time e-commerce', '$43.37');
 insert into books (author, title, priceOld, price) values ('Marcia Aggiss', 'utilize real-time interfaces', '$260.31', '$35.96');
 insert into books (author, title, priceOld, price) values ('Giovanni Bigg', 'extend strategic e-services', '$272.00', '$151.04');
 insert into books (author, title, priceOld, price) values ('Duffie Eynon', 'iterate integrated solutions', '$271.58', '$141.40');
@@ -7,7 +7,7 @@ insert into books (author, title, priceOld, price) values ('Gert Kira', 'archite
 insert into books (author, title, priceOld, price) values ('Clerc Djakovic', 'disintermediate extensible architectures', '$295.38', '$181.27');
 insert into books (author, title, priceOld, price) values ('Stacee Elsy', 'extend leading-edge methodologies', '$283.08', '$97.96');
 insert into books (author, title, priceOld, price) values ('Dorotea Bonhill', 'integrate one-to-one systems', '$258.51', '$52.25');
-insert into books (author, title, priceOld, price) values ('Minni Bunney', 'revolutionize 24/7 infrastructures', '$260.79', '$33.69');
+insert into books (author, title, priceOld, price) values ('Minni Bunney', 'revolutionize 24/7 infrastructures', '$68', '$33.69');
 insert into books (author, title, priceOld, price) values ('Berty Gandley', 'enhance innovative e-services', '$256.54', '$160.98');
 insert into books (author, title, priceOld, price) values ('Raynard Tesdale', 'maximize 24/365 e-tailers', '$262.07', '$34.06');
 insert into books (author, title, priceOld, price) values ('Joanna Hutfield', 'scale integrated architectures', '$257.66', '$32.97');
@@ -23,3 +23,58 @@ insert into books (author, title, priceOld, price) values ('Lindsay Coutthart', 
 insert into books (author, title, priceOld, price) values ('Helyn Schneidar', 'utilize magnetic supply-chains', '$279.70', '$77.86');
 insert into books (author, title, priceOld, price) values ('Bette-ann Askem', 'e-enable dot-com supply-chains', '$297.83', '$110.15');
 insert into books (author, title, priceOld, price) values ('Dom Robuchon', 'facilitate efficient eyeballs', '$232.30', '$131.48');
+
+insert into postponed_books (book_id) values (1);
+insert into postponed_books (book_id) values (10);
+insert into postponed_books (book_id) values (13);
+
+insert into reserved_books (book_id) values (1);
+insert into reserved_books (book_id) values (5);
+insert into reserved_books (book_id) values (12);
+insert into reserved_books (book_id) values (15);
+
+insert into recent_books (book_id) values (1);
+insert into recent_books (book_id) values (2);
+insert into recent_books (book_id) values (3);
+insert into recent_books (book_id) values (4);
+insert into recent_books (book_id) values (5);
+insert into recent_books (book_id) values (6);
+insert into recent_books (book_id) values (7);
+insert into recent_books (book_id) values (8);
+insert into recent_books (book_id) values (9);
+insert into recent_books (book_id) values (10);
+insert into recent_books (book_id) values (11);
+insert into recent_books (book_id) values (12);
+insert into recent_books (book_id) values (13);
+insert into recent_books (book_id) values (14);
+insert into recent_books (book_id) values (15);
+insert into recent_books (book_id) values (16);
+insert into recent_books (book_id) values (17);
+insert into recent_books (book_id) values (18);
+insert into recent_books (book_id) values (19);
+insert into recent_books (book_id) values (20);
+insert into recent_books (book_id) values (21);
+
+insert into popular_books (book_id) values (2);
+insert into popular_books (book_id) values (4);
+insert into popular_books (book_id) values (6);
+insert into popular_books (book_id) values (8);
+insert into popular_books (book_id) values (10);
+insert into popular_books (book_id) values (12);
+insert into popular_books (book_id) values (14);
+insert into popular_books (book_id) values (16);
+insert into popular_books (book_id) values (18);
+insert into popular_books (book_id) values (20);
+insert into popular_books (book_id) values (22);
+
+insert into recommended_books (book_id) values (1);
+insert into recommended_books (book_id) values (4);
+insert into recommended_books (book_id) values (5);
+insert into recommended_books (book_id) values (8);
+insert into recommended_books (book_id) values (11);
+insert into recommended_books (book_id) values (12);
+insert into recommended_books (book_id) values (14);
+insert into recommended_books (book_id) values (15);
+insert into recommended_books (book_id) values (18);
+insert into recommended_books (book_id) values (20);
+insert into recommended_books (book_id) values (21);
