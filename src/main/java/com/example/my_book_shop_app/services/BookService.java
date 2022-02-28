@@ -62,8 +62,8 @@ public class BookService {
         book.setId(rs.getInt("id"));
         book.setAuthor(getAuthorByBookId(rs.getInt("author_id")));
         book.setTitle(rs.getString("title"));
-        book.setPriceOld(rs.getString("price_old"));
-        book.setPrice(rs.getString("price"));
+        book.setPriceOld(rs.getInt("price_old"));
+        book.setPrice(rs.getInt("price"));
         return book;
     }
 

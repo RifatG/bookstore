@@ -1,8 +1,6 @@
 package com.example.my_book_shop_app.data;
 
 import javax.persistence.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Entity
 @Table(name = "books")
@@ -16,8 +14,8 @@ public class Book {
     private String author;
 
     private String title;
-    private String priceOld;
-    private String price;
+    private Integer priceOld;
+    private Integer price;
 
     @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
@@ -59,31 +57,26 @@ public class Book {
         this.title = title;
     }
 
-    public String getPriceOld() {
+    public Integer getPriceOld() {
         return priceOld;
     }
 
-    public void setPriceOld(String priceOld) {
+    public void setPriceOld(Integer priceOld) {
         this.priceOld = priceOld;
     }
 
-    public String getPrice() {
+    public Integer getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Integer price) {
         this.price = price;
     }
 
     @Transient
     public Integer getDiscount() {
         if (this.priceOld != null) {
-            Pattern pattern = Pattern.compile("([0-9]+[.]*[0-9]*)");
-            Matcher priceMatcher = pattern.matcher(this.price);
-            Matcher priceOldMatcher = pattern.matcher(this.priceOld);
-            if(priceMatcher.find() && priceOldMatcher.find()) {
-                return (int) ((Double.parseDouble(priceMatcher.group())/Double.parseDouble(priceOldMatcher.group())) * 100 - 100);
-            }
+            return (int) (((double) price / (double) priceOld) * 100 - 100);
         }
         return 0;
     }
