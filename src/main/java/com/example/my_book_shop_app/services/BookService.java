@@ -1,5 +1,6 @@
 package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.data.Author;
 import com.example.my_book_shop_app.data.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -59,10 +60,23 @@ public class BookService {
     private Book createBookFromResultOfQuery(ResultSet rs) throws SQLException {
         Book book = new Book();
         book.setId(rs.getInt("id"));
-        book.setAuthor(rs.getString("author"));
+        book.setAuthor(getAuthorByBookId(rs.getInt("author_id")));
         book.setTitle(rs.getString("title"));
-        book.setPriceOld(rs.getString("priceOld"));
+        book.setPriceOld(rs.getString("price_old"));
         book.setPrice(rs.getString("price"));
         return book;
+    }
+
+    private String getAuthorByBookId(int authorId) {
+        List<Author> authors = jdbcTemplate.query("SELECT * FROM authors WHERE authors.id=" + authorId, (ResultSet rs,
+        int rowNum) -> {
+            Author author = new Author();
+            author.setId(rs.getInt("id"));
+            author.setFirstName(rs.getString("first_name"));
+            author.setFirstName(rs.getString("first_name"));
+            author.setLastName(rs.getString("last_name"));
+            return author;
+        });
+        return authors.get(0).toString();
     }
 }

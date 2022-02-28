@@ -6,10 +6,21 @@ import javax.persistence.*;
 public abstract class FilteredBook {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "book_id")
     private int id;
 
-    private int bookId;
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "book_id")
+    private Book book;
+
+    public Book getBook() {
+        return book;
+    }
+
+    public void setBook(Book book) {
+        this.book = book;
+    }
 
     public int getId() {
         return id;
@@ -19,11 +30,4 @@ public abstract class FilteredBook {
         this.id = id;
     }
 
-    public int getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
-    }
 }

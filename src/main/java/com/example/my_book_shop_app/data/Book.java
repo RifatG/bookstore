@@ -19,6 +19,21 @@ public class Book {
     private String priceOld;
     private String price;
 
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private PopularBook popularBook;
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private PostponedBook postponedBook;
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private RecentBook recentBook;
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private RecommendedBook recommendedBook;
+    @OneToOne(mappedBy = "book", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private ReservedBook reservedBook;
 
     public Integer getId() {
         return id;
