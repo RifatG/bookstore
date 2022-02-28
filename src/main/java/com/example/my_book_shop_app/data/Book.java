@@ -1,26 +1,24 @@
-package com.example.MyBookShopApp.data;
+package com.example.my_book_shop_app.data;
 
+import javax.persistence.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Entity
+@Table(name = "books")
 public class Book {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
+    @Transient
     private String author;
+
     private String title;
     private String priceOld;
     private String price;
 
-    @Override
-    public String toString() {
-        return "Book{" +
-                "id=" + id +
-                ", author='" + author + '\'' +
-                ", title='" + title + '\'' +
-                ", priceOld='" + priceOld + '\'' +
-                ", price='" + price + '\'' +
-                '}';
-    }
 
     public Integer getId() {
         return id;
@@ -62,6 +60,7 @@ public class Book {
         this.price = price;
     }
 
+    @Transient
     public Integer getDiscount() {
         if (this.priceOld != null) {
             Pattern pattern = Pattern.compile("([0-9]+[.]*[0-9]*)");

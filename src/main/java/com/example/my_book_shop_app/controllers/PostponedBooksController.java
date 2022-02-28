@@ -1,8 +1,7 @@
-package com.example.MyBookShopApp.controllers;
+package com.example.my_book_shop_app.controllers;
 
-import com.example.MyBookShopApp.data.Book;
-import com.example.MyBookShopApp.data.BookService;
-import com.sun.tracing.dtrace.Attributes;
+import com.example.my_book_shop_app.data.Book;
+import com.example.my_book_shop_app.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;

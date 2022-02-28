@@ -1,4 +1,4 @@
-package com.example.MyBookShopApp.config;
+package com.example.my_book_shop_app.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,5 +1,6 @@
-package com.example.MyBookShopApp.data;
+package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.data.Author;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 @Service
 public class AuthorService {
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public AuthorService(JdbcTemplate jdbcTemplate) {
@@ -27,7 +28,6 @@ public class AuthorService {
             author.setLastName(rs.getString("last_name"));
             return author;
         });
-
-        return authors.stream().collect(Collectors.groupingBy((Author a) -> {return a.getLastName().substring(0,1);}));
+        return authors.stream().collect(Collectors.groupingBy((Author a) -> a.getLastName().substring(0,1)));
     }
 }
