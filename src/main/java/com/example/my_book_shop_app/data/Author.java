@@ -19,8 +19,7 @@ public class Author {
         return firstName + ' ' +lastName;
     }
 
-    @OneToMany
-    @JoinColumn(name = "author_id",referencedColumnName = "id")
+    @OneToMany(mappedBy = "author")
     private List<Book> bookList = new ArrayList<>();
 
     public List<Book> getBookList() {
