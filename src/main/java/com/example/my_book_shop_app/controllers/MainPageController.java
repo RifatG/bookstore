@@ -1,7 +1,7 @@
 package com.example.my_book_shop_app.controllers;
 
-import com.example.my_book_shop_app.data.Book;
 import com.example.my_book_shop_app.services.BookService;
+import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,17 +21,17 @@ public class MainPageController {
 
     @ModelAttribute("recommendedBooks")
     public List<Book> recommendedBooks(){
-        return bookService.getRecommendedBooks();
+        return bookService.getRecommendedBooksData();
     }
 
     @ModelAttribute("popularBooks")
     public List<Book> popularBooks() {
-        return bookService.getPopularBooks();
+        return bookService.getPopularBooksData();
     }
 
     @ModelAttribute("recentBooks")
     public List<Book> recentBooks() {
-        return bookService.getRecentBooks();
+        return bookService.getRecentBooksData();
     }
 
     @GetMapping("/")
