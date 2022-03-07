@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=16590401">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=16590401"></script>
+    <script defer src="/assets/js/locale.js"></script>
 </head>
 <body class="Site">
 <header class="Header"
@@ -22,7 +23,7 @@
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">
-            <h1 class="Middle-title">Документы
+            <h1 class="Middle-title" th:text="#{footer.documents}">Документы
             </h1>
             <div class="Section">
                 <div class="Documents">
@@ -63,6 +64,5 @@
     </div>
 </div>
 <footer class="Footer" th:replace="~{fragments/common_footer_fragment :: footer}"></footer>
-<script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
 </body>
 </html>
