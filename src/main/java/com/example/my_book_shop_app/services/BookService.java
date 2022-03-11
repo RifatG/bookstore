@@ -32,7 +32,7 @@ public class BookService {
     }
 
     public List<Book> getPopularBooksData() {
-        return bookRepository.findAllByIsBestseller(true);
+        return bookRepository.findAllByIsBestseller((byte) 1);
     }
 
     public List<Book> getRecentBooksData() {
@@ -42,5 +42,33 @@ public class BookService {
 
     public List<Book> getRecommendedBooksData() {
         return bookRepository.findAll();
+    }
+
+    public List<Book> getBooksByAuthor(String authorName) {
+        return bookRepository.findBooksByAuthorNameContaining(authorName);
+    }
+
+    public List<Book> getBooksByTitle(String bookTitle) {
+        return bookRepository.findBooksByTitleContaining(bookTitle);
+    }
+
+    public List<Book> getBooksWithPriceBetween(int min, int max) {
+        return bookRepository.findBooksByPriceBetween(min, max);
+    }
+
+    public List<Book> getBooksWithPrice(int price) {
+        return bookRepository.findBooksByPriceIs(price);
+    }
+
+    public List<Book> getBookWithMaxDiscount() {
+        return bookRepository.getBookWithMaxDiscount();
+    }
+
+    public List<Book> getBookWithMaxPrice() {
+        return bookRepository.getBookWithMaxPrice();
+    }
+
+    public List<Book> getBestsellers() {
+        return bookRepository.getBestsellers();
     }
 }
