@@ -1,6 +1,8 @@
 package com.example.my_book_shop_app.repositories;
 
 import com.example.my_book_shop_app.struct.book.Book;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -29,4 +31,6 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("from Book where isBestseller = 1")
     List<Book> getBestsellers();
+
+    Page<Book> findBooksByTitleContaining(String bookTitle, Pageable nextPage);
 }

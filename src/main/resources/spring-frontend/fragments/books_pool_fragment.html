@@ -3,12 +3,12 @@
 <div class="Cards Cards_refresh" th:fragment="pool">
 
     <div class="Card" th:each="book : ${booksData}">
-        <div class="Card-picture"><a href="#"><img src="/assets/img/content/main/card.jpg" alt="card.jpg"/></a>
+        <div class="Card-picture"><a href="#"><img th:src="${book.image}" alt="card.jpg"/></a>
         </div>
         <div class="Card-content">
             <strong class="Card-title"><a href="#" th:text="${book.title}">Title</a>
             </strong>
-            <div class="Card-description" th:text="${book.author}"> Author
+            <div class="Card-description" th:text="${book.description}"> Author
             </div>
             <div class="Card-cost">
                 <span class="Card-priceOld" th:if="${book.priceOld != null}" th:text="${book.priceOld}">₽300.00</span>
@@ -16,8 +16,9 @@
             </div>
         </div>
     </div>
-    <div class="Cards-footer Cards-footer_center"><a class="btn btn_primary" href="#" th:attr="data-refreshshow = ${category}" data-refreshshow="recent"
-                                                     data-refreshoffset="20" data-refreshlimit="20" th:text="#{footer.more}">Показать еще</a>
+    <div class="Cards-footer Cards-footer_center"><a class="btn btn_primary" href="#" th:attr="data-refreshshow = ${category}, data-refreshquery = ${searchWordDto.example}" data-refreshshow="recent"
+                                                     data-refreshoffset="0" data-refreshlimit="5"
+                                                     th:text="#{footer.more}">Показать еще</a>
     </div>
 </div>
 </html>

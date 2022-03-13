@@ -3,6 +3,9 @@ package com.example.my_book_shop_app.services;
 import com.example.my_book_shop_app.repositories.BookRepository;
 import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -20,9 +23,6 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<Book> getBooksData() {
-        return bookRepository.findAll();
-    }
     public List<Book> getPostponedBooksData() {
         return bookRepository.findAll();
     }
@@ -70,5 +70,15 @@ public class BookService {
 
     public List<Book> getBestsellers() {
         return bookRepository.getBestsellers();
+    }
+
+    public Page<Book> getPageOfRecommendedBooks(Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findAll(nextPage);
+    }
+
+    public Page<Book> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findBooksByTitleContaining(searchWord, nextPage);
     }
 }
