@@ -36,7 +36,7 @@ public class BookService {
     }
 
     public List<Book> getRecentBooksData() {
-        Instant date = Instant.now().minus(Duration.ofDays(10));
+        Instant date = Instant.now().minus(Duration.ofDays(2 * 365));
         return bookRepository.findAllByPubDateGreaterThan(Date.from(date));
     }
 
@@ -75,6 +75,17 @@ public class BookService {
     public Page<Book> getPageOfRecommendedBooks(Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
         return bookRepository.findAll(nextPage);
+    }
+
+    public Page<Book> getPageOfPopularBooks(Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findAllByIsBestsellerEquals((byte) 1, nextPage);
+    }
+
+    public Page<Book> getPageOfRecentBooks(Integer offset, Integer limit) {
+        Instant date = Instant.now().minus(Duration.ofDays(2 * 365));
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.findAllByPubDateGreaterThan(Date.from(date), nextPage);
     }
 
     public Page<Book> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer limit) {

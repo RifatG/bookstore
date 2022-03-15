@@ -6,7 +6,7 @@
         </h2>
     </div>
     <div class="Slider Slider_carousel">
-        <div class="Slider-box Cards" data-load="recommended" data-loadoffset="0" data-loadlimit="6">
+        <div class="Slider-box Cards" data-load="recommended" th:attr="data-load = ${dataLoad}" data-loadoffset="0" data-loadlimit="6">
 
             <div class="Slider-item" th:each="book : ${booksData}">
                 <div class="Slider-content">

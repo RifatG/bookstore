@@ -67,4 +67,10 @@ public class BooksRestApiController {
         return ResponseEntity.ok(bookService.getBestsellers());
     }
 
+    @GetMapping("/books/recent_added")
+    @ApiOperation("operation to get book list which are bestseller")
+    public ResponseEntity<List<Book>> recentBooks() {
+        return ResponseEntity.ok(bookService.getRecentBooksData());
+    }
+
 }
