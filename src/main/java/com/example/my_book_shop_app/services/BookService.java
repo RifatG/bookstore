@@ -6,11 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 @Service
@@ -83,9 +86,16 @@ public class BookService {
     }
 
     public Page<Book> getPageOfRecentBooks(Integer offset, Integer limit) {
-        Instant date = Instant.now().minus(Duration.ofDays(2 * 365));
-        Pageable nextPage = PageRequest.of(offset, limit);
-        return bookRepository.findAllByPubDateGreaterThan(Date.from(date), nextPage);
+        Calendar max = new GregorianCalendar();
+        Calendar min = new GregorianCalendar();
+        min.set(Calendar.MONTH, max.get(Calendar.MONTH) - 1);
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by("pubDate"));
+        return bookRepository.findAllByPubDateBetween(min.getTime(), max.getTime(), nextPage);
+    }
+
+    public Page<Book> getPageOfBooksByDateRange(Date min, Date max, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit, Sort.by("pubDate"));
+        return bookRepository.findAllByPubDateBetween(min, max, nextPage);
     }
 
     public Page<Book> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer limit) {
