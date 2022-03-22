@@ -35,7 +35,7 @@ public class BookService {
     }
 
     public List<Book> getPopularBooksData() {
-        return bookRepository.findAllByIsBestseller((byte) 1);
+        return bookRepository.getBestsellers();
     }
 
     public List<Book> getRecentBooksData() {

@@ -53,6 +53,39 @@ public class Book {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Author author;
 
+    @Column(columnDefinition = "INT NOT NULL")
+    private Integer paidCount;
+
+    public Integer getPaidCount() {
+        return paidCount;
+    }
+
+    public void setPaidCount(Integer paidCount) {
+        this.paidCount = paidCount;
+    }
+
+    public Integer getInCartCount() {
+        return inCartCount;
+    }
+
+    public void setInCartCount(Integer inCartCount) {
+        this.inCartCount = inCartCount;
+    }
+
+    public Integer getKeptCount() {
+        return keptCount;
+    }
+
+    public void setKeptCount(Integer keptCount) {
+        this.keptCount = keptCount;
+    }
+
+    @Column(columnDefinition = "INT NOT NULL")
+    private Integer inCartCount;
+
+    @Column(columnDefinition = "INT NOT NULL")
+    private Integer keptCount;
+
     public int getPriceOld() {
         return (discount != 0) ? (100 * price)/(100 - discount) : 0;
     }

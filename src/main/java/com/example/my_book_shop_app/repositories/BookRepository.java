@@ -39,4 +39,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findAllByPubDateGreaterThan(Date date, Pageable nextPage);
 
     Page<Book> findAllByPubDateBetween(Date min, Date max, Pageable nextPage);
+
+    @Query(value = "SELECT * FROM books WHERE (paid_count + 0.7 * in_cart_count + 0.4 * kept_count) > 180", nativeQuery = true)
+    Page<Book> getPopularBooks(Pageable nextPage);
 }

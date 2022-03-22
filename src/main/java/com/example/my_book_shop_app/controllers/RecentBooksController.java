@@ -37,7 +37,6 @@ public class RecentBooksController {
 
     @GetMapping("/books/recent")
     public String recentBooks() {
-
         return "books/recent";
     }
 

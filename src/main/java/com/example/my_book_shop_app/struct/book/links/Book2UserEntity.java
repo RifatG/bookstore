@@ -1,5 +1,7 @@
 package com.example.my_book_shop_app.struct.book.links;
 
+import com.example.my_book_shop_app.struct.book.Book;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -17,8 +19,9 @@ public class Book2UserEntity {
     @Column(columnDefinition = "INT NOT NULL")
     private int typeId;
 
-    @Column(columnDefinition = "INT NOT NULL")
-    private int bookId;
+    @ManyToOne()
+    @JoinColumn(name = "book_id", referencedColumnName = "id")
+    private Book book;
 
     @Column(columnDefinition = "INT NOT NULL")
     private int userId;
@@ -47,12 +50,12 @@ public class Book2UserEntity {
         this.typeId = typeId;
     }
 
-    public int getBookId() {
-        return bookId;
+    public Book getBook() {
+        return book;
     }
 
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
+    public void setBook(Book book) {
+        this.book = book;
     }
 
     public int getUserId() {
