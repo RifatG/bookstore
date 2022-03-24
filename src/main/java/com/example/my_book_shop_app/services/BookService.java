@@ -26,6 +26,10 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
+    public List<Book> getBooksData() {
+        return bookRepository.findAll();
+    }
+
     public List<Book> getPostponedBooksData() {
         return bookRepository.findAll();
     }

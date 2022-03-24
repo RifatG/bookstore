@@ -23,12 +23,12 @@
     <div class="wrap">
         <main class="Middle-main">
             <ul class="breadcrumbs"
-                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category='Психологическая проза')}"></ul>
+                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=${tag.name})}"></ul>
             <div class="Section">
                 <div class="Section-header">
-                    <h1 class="Section-title">Психологическая проза
+                    <h1 class="Section-title" th:text="${tag.name}">Tag name
                     </h1>
-                    <div class="Section-header-links"><a class="Section-header-link" th:href="@{/}" href="/index.html#tags">Все
+                    <div class="Section-header-links"><a class="Section-header-link" th:href="@{/}" href="/index.html#tags" th:text="#{tags.alltags}">Все
                         тэги</a>
                     </div>
                 </div>

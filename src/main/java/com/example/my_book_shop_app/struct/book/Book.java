@@ -1,11 +1,14 @@
 package com.example.my_book_shop_app.struct.book;
 
 import com.example.my_book_shop_app.struct.author.Author;
+import com.example.my_book_shop_app.struct.tags.TagsEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "books")
@@ -56,6 +59,20 @@ public class Book {
     @Column(columnDefinition = "INT NOT NULL")
     private Integer paidCount;
 
+    @Column(columnDefinition = "INT NOT NULL")
+    private Integer inCartCount;
+
+    @Column(columnDefinition = "INT NOT NULL")
+    private Integer keptCount;
+
+    @ManyToMany
+    @JoinTable(
+            name = "book2Tags",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @JsonIgnore
+    private List<TagsEntity> tagList;
+
     public Integer getPaidCount() {
         return paidCount;
     }
@@ -80,14 +97,8 @@ public class Book {
         this.keptCount = keptCount;
     }
 
-    @Column(columnDefinition = "INT NOT NULL")
-    private Integer inCartCount;
-
-    @Column(columnDefinition = "INT NOT NULL")
-    private Integer keptCount;
-
     public int getPriceOld() {
-        return (discount != 0) ? (100 * price)/(100 - discount) : 0;
+        return (discount != 0 && discount != 100) ? (100 * price)/(100 - discount) : 0;
     }
 
     public byte isBestseller() {
@@ -168,5 +179,13 @@ public class Book {
 
     public void setDiscount(byte discount) {
         this.discount = discount;
+    }
+
+    public List<TagsEntity> getTagList() {
+        return tagList;
+    }
+
+    public void setTagList(List<TagsEntity> tagList) {
+        this.tagList = tagList;
     }
 }
