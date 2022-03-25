@@ -44,4 +44,6 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> getPopularBooks(Pageable nextPage);
 
     Page<Book> findAllByIdIn(List<Integer> idList, Pageable nextPage);
+
+    Page<Book> findAllByAuthorId(Integer id, Pageable nextPage);
 }

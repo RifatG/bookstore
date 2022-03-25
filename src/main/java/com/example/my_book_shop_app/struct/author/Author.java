@@ -84,6 +84,10 @@ public class Author {
         this.description = description;
     }
 
+    public int getBooksCount() {
+        return this.bookList.size();
+    }
+
     @Override
     public String toString() {
         return name;
