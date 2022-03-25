@@ -43,7 +43,7 @@ public class SearchController {
         return new BooksPageDto(bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), offset, limit).getContent());
     }
 
-    @GetMapping("/search/{searchWord}")
+    @GetMapping( value = "/search/{searchWord}", params = {"offset", "limit", "searchWord"})
     @ResponseBody
     public BooksPageDto getSearchPage(@RequestParam("offset") Integer offset,
                                           @RequestParam("limit") Integer limit,
