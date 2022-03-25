@@ -73,6 +73,14 @@ public class Book {
     @JsonIgnore
     private List<TagsEntity> tagList;
 
+    @ManyToMany
+    @JoinTable(
+            name = "book2genre",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    @JsonIgnore
+    private List<TagsEntity> genreList;
+
     public Integer getPaidCount() {
         return paidCount;
     }
@@ -187,5 +195,13 @@ public class Book {
 
     public void setTagList(List<TagsEntity> tagList) {
         this.tagList = tagList;
+    }
+
+    public List<TagsEntity> getGenreList() {
+        return genreList;
+    }
+
+    public void setGenreList(List<TagsEntity> genreList) {
+        this.genreList = genreList;
     }
 }

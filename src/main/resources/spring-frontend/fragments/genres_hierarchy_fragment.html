@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+    <div th:fragment="genreWithChild(parentId)" class="Tags Tags_embed"
+         th:each="genre : ${genreList}"
+         th:if="${genre.parentId} == ${parentId} AND ${genre.hasChild()}">
+        <div class="Tags-title">
+            <div class="Tag">
+                <a th:href="@{/genres/slug(genreId=${genre.id})}"><span class="undefined-amount"
+                                                                        th:text="${genre} + ' (' + ${genre.getBooksCount()} + ')'">SUB_PARENT</span></a>
+            </div>
+        </div>
+        <div th:replace="~{fragments/genres_hierarchy_fragment:: genreWithChild(parentId = ${genre.getId()})}"></div>
+        <div th:replace="~{fragments/genres_hierarchy_fragment :: genreWithoutChild(parentId = ${genre.getId()})}"></div>
+    </div>
+
+    <div th:fragment="genreWithoutChild(parentId)" class="Tag"
+         th:each="genre : ${genreList}" th:if="${genre.parentId} == ${parentId} AND ${!genre.hasChild()}">
+        <a th:href="@{/genres/slug(genreId=${genre.id})}">
+            <span class="undefined-amount" th:text="${genre} + ' (' + ${genre.getBooksCount()} + ')'">CHILD</span>
+        </a>
+    </div>
+</html>

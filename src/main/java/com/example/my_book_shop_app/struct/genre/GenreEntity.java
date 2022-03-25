@@ -1,6 +1,10 @@
 package com.example.my_book_shop_app.struct.genre;
 
+import com.example.my_book_shop_app.struct.book.Book;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "genre")
@@ -11,13 +15,20 @@ public class GenreEntity {
     private int id;
 
     @Column(columnDefinition = "INT")
-    private int parentId;
+    private Integer parentId;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String slug;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String name;
+
+    @ManyToMany(mappedBy = "genreList")
+    @JsonIgnore
+    private List<Book> bookList;
+
+    @Transient
+    private boolean hasChild;
 
     public int getId() {
         return id;
@@ -27,11 +38,11 @@ public class GenreEntity {
         this.id = id;
     }
 
-    public int getParentId() {
+    public Integer getParentId() {
         return parentId;
     }
 
-    public void setParentId(int parentId) {
+    public void setParentId(Integer parentId) {
         this.parentId = parentId;
     }
 
@@ -49,5 +60,22 @@ public class GenreEntity {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public boolean hasChild() {
+        return hasChild;
+    }
+
+    public void setChild(boolean hasChild) {
+        this.hasChild = hasChild;
+    }
+
+    public int getBooksCount() {
+        return bookList.size();
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

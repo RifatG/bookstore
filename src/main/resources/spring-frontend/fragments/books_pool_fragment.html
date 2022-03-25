@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-<div class="Cards Cards_refresh" th:fragment="pool">
+<div class="Cards Cards_refresh" th:fragment="pool(category)">
 
     <div class="Card" th:each="book : ${booksData}">
         <div class="Card-picture"><a href="#"><img th:src="${book.image}" alt="card.jpg"/></a>
@@ -18,9 +18,10 @@
             </div>
         </div>
     </div>
-    <div class="Cards-footer Cards-footer_center"><a class="btn btn_primary" href="#" th:attr="data-refreshshow = ${category}, data-refreshquery = ${searchWordDto.example}, data-refreshid = ${tag.id}" data-refreshshow="recent"
-                                                     data-refreshoffset="0" data-refreshlimit="5"
-                                                     th:text="#{footer.more}">Показать еще</a>
+    <div class="Cards-footer Cards-footer_center">
+        <a class="btn btn_primary" href="#"
+           th:attr="data-refreshshow = ${category}, data-refreshquery = ${searchWordDto}, data-refreshid = ${id}"
+           th:text="#{footer.more}" data-refreshshow="recent" data-refreshoffset="0" data-refreshlimit="5">Показать еще</a>
     </div>
 </div>
 </html>
