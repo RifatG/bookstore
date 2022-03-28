@@ -23,7 +23,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findBooksByPriceIs(int price);
 
-    @Query(value = "SELECT id, pub_date, is_bestseller, slug, title, image, description, price, discount, author_id, paid_count, in_cart_count, kept_count FROM books WHERE discount = (SELECT MAX(discount) FROM books)", nativeQuery = true)
+    @Query(value = "SELECT * FROM books WHERE discount = (SELECT MAX(discount) FROM books)", nativeQuery = true)
     List<Book> getBookWithMaxDiscount();
 
     @Query(value = "SELECT * FROM books WHERE price = (SELECT MAX(price) FROM books)", nativeQuery = true)
@@ -40,7 +40,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     Page<Book> findAllByPubDateBetween(Date min, Date max, Pageable nextPage);
 
-    @Query(value = "SELECT r.id, r.pub_date, r.is_bestseller, r.slug, r.title, r.image, r.description, r.price, r.discount, r.author_id, r.paid_count, r.in_cart_count, r.kept_count FROM (SELECT b.*, COUNT(CASE WHEN b2ut.code='PAID' then 1 ELSE NULL END) AS paid, COUNT(CASE WHEN b2ut.code='CART' then 1 ELSE NULL END) * 0.7 AS cart, COUNT(CASE WHEN b2ut.code='KEPT' then 1 ELSE NULL END) * 0.4 AS kept FROM books AS b JOIN book2user AS b2u ON b.id=b2u.book_id JOIN book2user_type AS b2ut ON b2u.type_id=b2ut.id GROUP BY b.id) AS r WHERE (r.paid + r.cart + r.kept) >= :rating OFFSET :offset LIMIT :limit", nativeQuery = true)
+    @Query(value = "SELECT r.id, r.pub_date, r.is_bestseller, r.slug, r.title, r.image, r.description, r.price, r.discount, r.author_id FROM (SELECT b.*, COUNT(CASE WHEN b2ut.code='PAID' then 1 ELSE NULL END) AS paid, COUNT(CASE WHEN b2ut.code='CART' then 1 ELSE NULL END) * 0.7 AS cart, COUNT(CASE WHEN b2ut.code='KEPT' then 1 ELSE NULL END) * 0.4 AS kept FROM books AS b JOIN book2user AS b2u ON b.id=b2u.book_id JOIN book2user_type AS b2ut ON b2u.type_id=b2ut.id GROUP BY b.id) AS r WHERE (r.paid + r.cart + r.kept) >= :rating OFFSET :offset LIMIT :limit", nativeQuery = true)
     List<Book> getPopularBooks(double rating, int offset, int limit);
 
     Page<Book> findAllByIdIn(List<Integer> idList, Pageable nextPage);

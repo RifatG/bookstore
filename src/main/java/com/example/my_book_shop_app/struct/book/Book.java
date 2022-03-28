@@ -2,6 +2,7 @@ package com.example.my_book_shop_app.struct.book;
 
 import com.example.my_book_shop_app.struct.author.Author;
 import com.example.my_book_shop_app.struct.book.links.Book2UserTypeEntity;
+import com.example.my_book_shop_app.struct.genre.GenreEntity;
 import com.example.my_book_shop_app.struct.tags.TagsEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
@@ -57,15 +58,6 @@ public class Book {
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Author author;
 
-    @Column(columnDefinition = "INT NOT NULL")
-    private Integer paidCount;
-
-    @Column(columnDefinition = "INT NOT NULL")
-    private Integer inCartCount;
-
-    @Column(columnDefinition = "INT NOT NULL")
-    private Integer keptCount;
-
     @ManyToMany
     @JoinTable(
             name = "book2user",
@@ -76,62 +68,22 @@ public class Book {
 
     @ManyToMany
     @JoinTable(
+            name = "book2genre",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    @JsonIgnore
+    private List<GenreEntity> genreList;
+
+    @ManyToMany
+    @JoinTable(
             name = "book2Tags",
             joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @JsonIgnore
     private List<TagsEntity> tagList;
 
-    @ManyToMany
-    @JoinTable(
-            name = "book2genre",
-            joinColumns = @JoinColumn(name = "book_id"),
-            inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    @JsonIgnore
-    private List<TagsEntity> genreList;
-
-    public Integer getPaidCount() {
-        return paidCount;
-    }
-
-    public void setPaidCount(Integer paidCount) {
-        this.paidCount = paidCount;
-    }
-
-    public Integer getInCartCount() {
-        return inCartCount;
-    }
-
-    public void setInCartCount(Integer inCartCount) {
-        this.inCartCount = inCartCount;
-    }
-
-    public Integer getKeptCount() {
-        return keptCount;
-    }
-
-    public void setKeptCount(Integer keptCount) {
-        this.keptCount = keptCount;
-    }
-
     public int getPriceOld() {
         return (discount != 0 && discount != 100) ? (100 * price)/(100 - discount) : 0;
-    }
-
-    public byte isBestseller() {
-        return isBestseller;
-    }
-
-    public void setBestseller(byte bestseller) {
-        isBestseller = bestseller;
-    }
-
-    public Author getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Author author) {
-        this.author = author;
     }
 
     public int getId() {
@@ -148,6 +100,14 @@ public class Book {
 
     public void setPubDate(Date pubDate) {
         this.pubDate = pubDate;
+    }
+
+    public byte getIsBestseller() {
+        return isBestseller;
+    }
+
+    public void setIsBestseller(byte isBestseller) {
+        this.isBestseller = isBestseller;
     }
 
     public String getSlug() {
@@ -198,20 +158,12 @@ public class Book {
         this.discount = discount;
     }
 
-    public List<TagsEntity> getTagList() {
-        return tagList;
+    public Author getAuthor() {
+        return author;
     }
 
-    public void setTagList(List<TagsEntity> tagList) {
-        this.tagList = tagList;
-    }
-
-    public List<TagsEntity> getGenreList() {
-        return genreList;
-    }
-
-    public void setGenreList(List<TagsEntity> genreList) {
-        this.genreList = genreList;
+    public void setAuthor(Author author) {
+        this.author = author;
     }
 
     public List<Book2UserTypeEntity> getUserRelations() {
@@ -220,5 +172,21 @@ public class Book {
 
     public void setUserRelations(List<Book2UserTypeEntity> userRelations) {
         this.userRelations = userRelations;
+    }
+
+    public List<GenreEntity> getGenreList() {
+        return genreList;
+    }
+
+    public void setGenreList(List<GenreEntity> genreList) {
+        this.genreList = genreList;
+    }
+
+    public List<TagsEntity> getTagList() {
+        return tagList;
+    }
+
+    public void setTagList(List<TagsEntity> tagList) {
+        this.tagList = tagList;
     }
 }
