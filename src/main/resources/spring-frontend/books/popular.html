@@ -27,7 +27,7 @@
                 th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=#{topbar.popular})}"></ul>
             <div class="Section">
                 <div class="Section-header">
-                    <h1 class="Section-title">Популярное
+                    <h1 class="Section-title" th:text="#{topbar.popular} + ' (' + ${booksCount} + ')'">Популярное
                     </h1>
                 </div>
                 <div class="Cards Cards_refresh"

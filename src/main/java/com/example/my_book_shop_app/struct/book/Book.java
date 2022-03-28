@@ -1,6 +1,7 @@
 package com.example.my_book_shop_app.struct.book;
 
 import com.example.my_book_shop_app.struct.author.Author;
+import com.example.my_book_shop_app.struct.book.links.Book2UserTypeEntity;
 import com.example.my_book_shop_app.struct.tags.TagsEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
@@ -64,6 +65,14 @@ public class Book {
 
     @Column(columnDefinition = "INT NOT NULL")
     private Integer keptCount;
+
+    @ManyToMany
+    @JoinTable(
+            name = "book2user",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "type_id"))
+    @JsonIgnore
+    private List<Book2UserTypeEntity> userRelations;
 
     @ManyToMany
     @JoinTable(
@@ -203,5 +212,13 @@ public class Book {
 
     public void setGenreList(List<TagsEntity> genreList) {
         this.genreList = genreList;
+    }
+
+    public List<Book2UserTypeEntity> getUserRelations() {
+        return userRelations;
+    }
+
+    public void setUserRelations(List<Book2UserTypeEntity> userRelations) {
+        this.userRelations = userRelations;
     }
 }

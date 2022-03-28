@@ -15,11 +15,11 @@ import java.util.List;
 @Controller
 public class PopularBooksController {
 
-    private BooksRatingAndPopulatityService bookService;
+    private final BooksRatingAndPopulatityService bookPopularityService;
 
     @Autowired
     public PopularBooksController(BooksRatingAndPopulatityService bookService) {
-        this.bookService = bookService;
+        this.bookPopularityService = bookService;
     }
 
     @ModelAttribute("searchWordDto")
@@ -29,7 +29,12 @@ public class PopularBooksController {
 
     @ModelAttribute("booksData")
     public List<Book> popularBooksAttribute() {
-        return bookService.getPageOfPopularBooks(0, 5).getContent();
+        return bookPopularityService.getPageOfPopularBooksBySql(0, 5);
+    }
+
+    @ModelAttribute("booksCount")
+    public Integer popularBooksCount() {
+        return bookPopularityService.getCountOfPopularBooks();
     }
 
     @GetMapping("/books/popular")
@@ -41,6 +46,6 @@ public class PopularBooksController {
     @ResponseBody
     public BooksPageDto popularBooks(@RequestParam("offset") Integer offset,
                                     @RequestParam("limit") Integer limit) {
-        return new BooksPageDto(bookService.getPageOfPopularBooks(offset, limit).getContent());
+        return new BooksPageDto(bookPopularityService.getPageOfPopularBooksBySql(offset, limit));
     }
 }
