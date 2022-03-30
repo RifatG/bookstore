@@ -1,5 +1,6 @@
 package com.example.my_book_shop_app.controllers;
 
+import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.services.BookService;
 import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,11 @@ public class CartController {
     @ModelAttribute("reservedBooks")
     public List<Book> postponedBooksAttribute(){
         return bookService.getReservedBooksData();
+    }
+
+    @ModelAttribute("searchWordDto")
+    public SearchWordDto searchWordDto() {
+        return new SearchWordDto();
     }
 
     @GetMapping("/cart")

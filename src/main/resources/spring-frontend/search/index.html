@@ -26,9 +26,9 @@
             </h1>
             <div class="Section">
                 <div class="search">
-                    <form class="form form_search" action="#" method="post" data-searchlimit="20">
+                    <form class="form form_search" action="#" method="post" data-searchlimit="5">
                         <input class="search-input" id="querypage" name="querypage" type="text"
-                               th:placeholder="#{searchbar.placeholder}" value="Техника"/>
+                               th:placeholder="#{searchbar.placeholder}" th:value="${searchWordDto.example}" value="Техника"/>
                         <button class="search-button" type="submit" name="searchpage" id="searchpage" th:text="#{searchbar.button}">Поиск
                         </button>
                     </form>
@@ -40,7 +40,7 @@
                     </h2>
                 </header>
                 <div class="Cards Cards_refresh"
-                     th:replace="~{fragments/books_pool_fragment :: pool(category='search')}"></div>
+                     th:replace="~{fragments/books_pool_fragment :: pool(category='search', booksData = ${searchResults})}"></div>
             </div>
         </main>
     </div>

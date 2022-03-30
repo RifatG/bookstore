@@ -24,13 +24,14 @@
     <div class="wrap">
         <main class="Middle-main">
             <ul class="breadcrumbs"
-                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category='Борис Васильевич Бедный')}"></ul>
-            <div th:replace="~{fragments/author_article_fragment :: article(author='Борис Васильевич Бедный')}"></div>
+                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=${author})}"></ul>
+            <div th:replace="~{fragments/author_article_fragment :: article(author=${author})}"></div>
             <div class="Section"
-                 th:replace="~{fragments/book_slider_fragment :: bookSlider(title='Книги автора')}"></div>
-            <footer class="Section-footer"><a class="Author-books" th:href="@{/books/author}" href="/books/author.html">Все
-                книги автора<span
-                        class="Author-amount">(55)</span></a>
+                 th:replace="~{fragments/book_slider_fragment :: bookSlider(title=#{authors.allbooks})}"></div>
+            <footer class="Section-footer">
+                <a class="Author-books" th:href="@{/books/author(authorId=${author.id})}" href="/books/author.html" >[[#{authors.allbooks}]]
+                    <span class="Author-amount" th:text="${author.getBooksCount()}">(55)</span>
+                </a>
             </footer>
         </main>
     </div>
