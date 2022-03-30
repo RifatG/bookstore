@@ -40,7 +40,7 @@ public class GenresController {
 
     @GetMapping("/genres/slug")
     public String bookList(@RequestParam("genreId") Integer genreId, Model model){
-        model.addAttribute("booksData", genreService.getPageOfBooksByGenreId(genreId, 0, 5).getContent());
+        model.addAttribute("booksData", genreService.getPageOfBooksByGenreIdBySql(genreId, 0, 5).getContent());
         model.addAttribute("genre", genreService.getGenreById(genreId));
         return "genres/slug";
     }
@@ -50,7 +50,7 @@ public class GenresController {
     public BooksPageDto bookList(@PathVariable(value = "genreId") Integer genreId,
                                  @RequestParam("offset") Integer offset,
                                  @RequestParam("limit") Integer limit) {
-        Page<Book> page = this.genreService.getPageOfBooksByGenreId(genreId, offset, limit);
+        Page<Book> page = this.genreService.getPageOfBooksByGenreIdBySql(genreId, offset, limit);
         return new BooksPageDto(page.getContent());
     }
 }

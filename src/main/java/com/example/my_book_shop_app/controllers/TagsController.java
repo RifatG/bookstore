@@ -25,7 +25,7 @@ public class TagsController {
 
     @GetMapping("/tags")
     public String bookList(@RequestParam("tagId") Integer tagId, Model model){
-        model.addAttribute("booksData", tagService.getPageOfBooksByTagId(tagId, 0, 5).getContent());
+        model.addAttribute("booksData", tagService.getPageOfBooksByTagIdBySql(tagId, 0, 5).getContent());
         model.addAttribute("tag", tagService.getTagById(tagId));
         return "tags/index";
     }
@@ -35,7 +35,7 @@ public class TagsController {
     public BooksPageDto bookList(@PathVariable(value = "tagId") Integer tagId,
                                  @RequestParam("offset") Integer offset,
                                  @RequestParam("limit") Integer limit) {
-        Page<Book> page = this.tagService.getPageOfBooksByTagId(tagId, offset, limit);
+        Page<Book> page = this.tagService.getPageOfBooksByTagIdBySql(tagId, offset, limit);
         return new BooksPageDto(page.getContent());
     }
 }

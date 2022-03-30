@@ -46,4 +46,10 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findAllByIdIn(List<Integer> idList, Pageable nextPage);
 
     Page<Book> findAllByAuthorId(Integer id, Pageable nextPage);
+
+    @Query("select b from Book b join Book2TagsEntity b2t on b.id = b2t.bookId join TagsEntity t on t.id = b2t.tagId where t.id = :tagId")
+    Page<Book> getBooksByTagId(Integer tagId, Pageable nextPage);
+
+    @Query("select b from Book b join Book2GenreEntity b2g on b.id = b2g.bookId join GenreEntity g on g.id = b2g.genreId where g.id = :genreId")
+    Page<Book> getBooksByGenreId(Integer genreId, Pageable nextPage);
 }

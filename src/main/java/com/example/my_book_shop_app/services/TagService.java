@@ -28,6 +28,10 @@ public class TagService {
         return this.tagRepository.findAll();
     }
 
+    public Page<Book> getPageOfBooksByTagIdBySql(int tagId, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return this.bookRepository.getBooksByTagId(tagId, nextPage);
+    }
     public Page<Book> getPageOfBooksByTagId(int tagId, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
         List<Integer> bookIdList = this.tagRepository.getBookIdListByTagId(tagId);

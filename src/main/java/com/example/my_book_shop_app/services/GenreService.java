@@ -32,6 +32,11 @@ public class GenreService {
         return genres;
     }
 
+    public Page<Book> getPageOfBooksByGenreIdBySql(int genreId, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return this.bookRepository.getBooksByGenreId(genreId, nextPage);
+    }
+
     public Page<Book> getPageOfBooksByGenreId(int genreId, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
         List<Integer> bookIdList = this.genreRepository.getBookIdListByGenreId(genreId);
