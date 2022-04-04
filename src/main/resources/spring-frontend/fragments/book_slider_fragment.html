@@ -10,18 +10,18 @@
 
             <div class="Slider-item" th:each="book : ${booksData}">
                 <div class="Slider-content">
-                    <div class="Card"><a class="Card-picture" href="/books/slug.html"><img
+                    <div class="Card"><a class="Card-picture" th:href="@{'/books/book/' + ${book.slug}}"><img
                             th:src="${book.image}" alt="card.jpg"/></a>
                         <div class="Card-content">
-                            <strong class="Card-title"><a href="/books/slug.html" th:text="${book.title}">Title</a>
+                            <strong class="Card-title"><a th:href="@{'/books/book/' + ${book.slug}}" th:text="${book.title}">Title</a>
                             </strong>
                             <div class="Card-description" th:text="${book.author}"> Author
                             </div>
                             <div class="Card-description" th:text="${book.tagList}"> Author
                             </div>
                             <div class="Card-cost">
-                                <span class="Card-priceOld" th:if="${book.priceOld != 0}" th:text="${book.priceOld}">₽300.00</span>
-                                <span class="Card-price" th:text="${book.price}">₽190.00</span>
+                                <span class="Card-priceOld" th:text="'₽' + ${book.price}">₽300.00</span>
+                                <span class="Card-price" th:if="${book.discount != 100}" th:text="'₽' + ${book.getDiscountPrice()}">₽190.00</span>
                             </div>
                         </div>
                     </div>

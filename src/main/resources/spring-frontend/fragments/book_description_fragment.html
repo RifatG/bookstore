@@ -2,12 +2,12 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div class="ProductCard-desc" th:fragment="bookDesc">
     <div class="ProductCard-header">
-        <h1 class="ProductCard-title">Мара и морок
+        <h1 class="ProductCard-title" th:text="${book.title}">Мара и морок
         </h1>
-        <div class="ProductCard-author"><span class="ProductCard-titleProp">Автор:</span>&#32;<a
-                href="#">Лия Арден</a>
+        <div class="ProductCard-author"><span class="ProductCard-titleProp" th:text="#{books.author}">Автор:</span>&#32;<a
+                href="#" th:text="${book.author}">Лия Арден</a>
         </div>
-        <div class="ProductCard-rating"><span class="ProductCard-titleProp">Рейтинг:</span>
+        <div class="ProductCard-rating"><span class="ProductCard-titleProp" th:text="#{books.rating}">Рейтинг:</span>
             <button class="trigger trigger_dropdown" type="button">
                 <div class="Rating Rating_noStyleLink"><span class="Rating-stars"><span
                         class="Rating-star Rating-star_view">
@@ -55,7 +55,7 @@
                 <div class="modal modal_compression modal_dropdown">
                     <div class="modal-window"><a class="modal-close"
                                                  href="#"><span></span><span></span></a>
-                        <strong class="modal-title">Распределение оценок
+                        <strong class="modal-title" th:text="#{books.gradeDistribution}">Распределение оценок
                         </strong>
                         <div class="RatingGroup"><span class="Rating"><span
                                 class="Rating-stars"><span class="Rating-star Rating-star_view">
@@ -272,7 +272,7 @@
             </button>
         </div>
         <div class="ProductCard-assessment"><span
-                class="ProductCard-titleProp">Оцените книгу:</span><span class="Rating Rating_input"
+                class="ProductCard-titleProp" th:text="#{books.rateTheBook}">Оцените книгу:</span><span class="Rating Rating_input"
                                                                          data-bookid="2121"><span
                 class="Rating-stars"><span class="Rating-star">
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -321,15 +321,17 @@
                         </svg></span>
                       <input name="rating" type="radio" value="5"/></span></span>
         </div>
-        <div class="ProductCard-tags"><span class="ProductCard-titleProp">Тэги:</span><a
-                href="/tags/">Современные</a>,&#32;<a href="/tags/">Психологическая проза</a>
+        <div class="ProductCard-tags">
+            <span class="ProductCard-titleProp">Тэги:</span>
+            <a href="/tags/" th:each="tag : ${book.tagList}" th:href="@{/tags(tagId=${tag.id})}" th:text="${tag.name} + ',&#32;'">Современные</a>,&#32;
         </div>
-        <div class="ProductCard-cost"><span class="ProductCard-titleProp">Цена:</span><span
-                class="ProductCard-priceOld">₽300</span><span class="ProductCard-price">₽180</span>
+        <div class="ProductCard-cost"><span class="ProductCard-titleProp" th:text="#{book.cost}">Цена:</span>
+            <span class="ProductCard-priceOld" th:text="'₽' + ${book.price}">₽300</span>
+            <span class="ProductCard-price" th:if="${book.discount != 100}" th:text="'₽' + ${book.getDiscountPrice()}">₽180</span>
         </div>
     </div>
     <div class="ProductCard-text">
-        <p>Таких, как я, называют Марами - отмеченными самой богиней смерти Мораной. Когда-то у меня
+        <p th:text="${book.description}">Таких, как я, называют Марами - отмеченными самой богиней смерти Мораной. Когда-то у меня
             и моих шести сестер был свой путь. Тогда люди нас уважали и просили о милосердии. Они
             приносили нам подношения и молились нам. Но 200 лет назад все изменилось, когда принц
             Серата осмелился поднять руку на одну из нас. Я пыталась отомстить, но погибли мы все.

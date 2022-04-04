@@ -111,4 +111,12 @@ public class BookService {
         Pageable nextPage = PageRequest.of(offset, limit);
         return this.bookRepository.findAllByAuthorId(authorId, nextPage);
     }
+
+    public Book getBookBySlug(String slug) {
+        return this.bookRepository.findBookBySlug(slug);
+    }
+
+    public void updateBook(Book bookToUpdate) {
+        this.bookRepository.save(bookToUpdate);
+    }
 }
