@@ -8,11 +8,11 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class MvcConfig implements WebMvcConfigurer {
 
-    @Value("${upload.path}")
+    @Value("${upload.path.book-covers}")
     private String uploadPath;
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/bookStoreStaticResources/**").addResourceLocations("file:" + uploadPath + "/");
+        registry.addResourceHandler("/book_store_static_resources/book_covers/**").addResourceLocations("file:" + uploadPath + "/");
     }
 }

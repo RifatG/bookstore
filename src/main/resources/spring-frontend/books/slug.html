@@ -14,9 +14,11 @@
     <link rel="stylesheet" href="/assets/css/basic.min.css?v=87821122">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=87821122">
+    <link rel="stylesheet" href="/assets/css/DownloadBookWindowStyle.css">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=87821122"></script>
     <script defer src="/assets/js/locale.js"></script>
+    <script defer src="/assets/js/downloadBookWindowScript.js"></script>
 </head>
 <body class="Site">
 <header class="Header" th:replace="~{fragments/common_header_fragment :: head(status='unauthorized')}"></header>
@@ -39,7 +41,7 @@
                 </div>
                 <div class="Product-comments">
                     <div class="Product-comments-header">
-                        <h3 class="Product-comments-title">Отзывы
+                        <h3 class="Product-comments-title" th:text="#{books.reviews}">Отзывы
                         </h3><span class="Product-comments-amount">567 отзывов</span>
                     </div>
                 </div>

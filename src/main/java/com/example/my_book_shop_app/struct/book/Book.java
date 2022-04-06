@@ -1,6 +1,7 @@
 package com.example.my_book_shop_app.struct.book;
 
 import com.example.my_book_shop_app.struct.author.Author;
+import com.example.my_book_shop_app.struct.book.file.BookFile;
 import com.example.my_book_shop_app.struct.book.links.Book2UserTypeEntity;
 import com.example.my_book_shop_app.struct.genre.GenreEntity;
 import com.example.my_book_shop_app.struct.tags.TagsEntity;
@@ -11,6 +12,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -88,6 +90,9 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "tag_id"))
     @JsonIgnore
     private List<TagsEntity> tagList;
+
+    @OneToMany(mappedBy = "book")
+    private List<BookFile> bookFileList = new ArrayList<>();
 
     @JsonProperty
     public Integer getDiscountPrice() {
@@ -196,5 +201,13 @@ public class Book {
 
     public void setTagList(List<TagsEntity> tagList) {
         this.tagList = tagList;
+    }
+
+    public List<BookFile> getBookFileList() {
+        return bookFileList;
+    }
+
+    public void setBookFileList(List<BookFile> bookFileList) {
+        this.bookFileList = bookFileList;
     }
 }

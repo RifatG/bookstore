@@ -998,3 +998,7 @@ insert into books (id, title, slug, description, image, is_bestseller, discount,
 insert into books (id, title, slug, description, image, is_bestseller, discount, author_id, price, pub_date) values (998, 'Porco Rosso (Crimson Pig) (Kurenai no buta)', '903479771-6', 'Nam nulla. Integer pede justo, lacinia eget, tincidunt eget, tempus vel, pede. Morbi porttitor lorem id ligula.', 'http://dummyimage.com/250x300.png/5fa2dd/ffffff', 1, 69, 60, 2054, '20/01/2022');
 insert into books (id, title, slug, description, image, is_bestseller, discount, author_id, price, pub_date) values (999, 'New World (Shin-sae-gye)', '932113594-4', 'Aliquam non mauris. Morbi non lectus. Aliquam sit amet diam in magna bibendum imperdiet. Nullam orci pede, venenatis non, sodales sed, tincidunt eu, felis. Fusce posuere felis sed lacus. Morbi sem mauris, laoreet ut, rhoncus aliquet, pulvinar sed, nisl.', 'http://dummyimage.com/250x300.png/5fa2dd/ffffff', 1, 60, 14, 944, '18/03/2022');
 insert into books (id, title, slug, description, image, is_bestseller, discount, author_id, price, pub_date) values (1000, 'Torn', '106898755-3', 'Nulla facilisi.', 'http://dummyimage.com/250x300.png/5fa2dd/ffffff', 1, 55, 52, 1166, '24/10/2021');
+
+insert into books_file (id, hash, type_id, path, book_id) values (1, 'fsd234ladsf12314', 1, '/simon_says.pdf', 1);
+insert into books_file (id, hash, type_id, path, book_id) values (2, 'fsd234ladsf12315', 2, '/simon_says.epub', 1);
+insert into books_file (id, hash, type_id, path, book_id) values (3, 'fsd234ladsf12316', 3, '/simon_says.fb2', 1);

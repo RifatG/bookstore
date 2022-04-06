@@ -4,10 +4,10 @@
     <div class="ProductCard-header">
         <h1 class="ProductCard-title" th:text="${book.title}">Мара и морок
         </h1>
-        <div class="ProductCard-author"><span class="ProductCard-titleProp" th:text="#{books.author}">Автор:</span>&#32;<a
+        <div class="ProductCard-author"><span class="ProductCard-titleProp" th:text="#{books.author} + ':'">Автор:</span>&#32;<a
                 href="#" th:text="${book.author}">Лия Арден</a>
         </div>
-        <div class="ProductCard-rating"><span class="ProductCard-titleProp" th:text="#{books.rating}">Рейтинг:</span>
+        <div class="ProductCard-rating"><span class="ProductCard-titleProp" th:text="#{books.rating} + ':'">Рейтинг:</span>
             <button class="trigger trigger_dropdown" type="button">
                 <div class="Rating Rating_noStyleLink"><span class="Rating-stars"><span
                         class="Rating-star Rating-star_view">
@@ -272,7 +272,7 @@
             </button>
         </div>
         <div class="ProductCard-assessment"><span
-                class="ProductCard-titleProp" th:text="#{books.rateTheBook}">Оцените книгу:</span><span class="Rating Rating_input"
+                class="ProductCard-titleProp" th:text="#{books.rateTheBook} + ':'">Оцените книгу:</span><span class="Rating Rating_input"
                                                                          data-bookid="2121"><span
                 class="Rating-stars"><span class="Rating-star">
                         <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
@@ -322,7 +322,7 @@
                       <input name="rating" type="radio" value="5"/></span></span>
         </div>
         <div class="ProductCard-tags">
-            <span class="ProductCard-titleProp">Тэги:</span>
+            <span class="ProductCard-titleProp" th:text="#{tag.tags} + ':'">Тэги:</span>
             <a href="/tags/" th:each="tag : ${book.tagList}" th:href="@{/tags(tagId=${tag.id})}" th:text="${tag.name} + ',&#32;'">Современные</a>,&#32;
         </div>
         <div class="ProductCard-cost"><span class="ProductCard-titleProp" th:text="#{book.cost}">Цена:</span>
