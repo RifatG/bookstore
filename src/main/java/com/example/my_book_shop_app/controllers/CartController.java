@@ -20,6 +20,7 @@ public class CartController {
 
     private final BookService bookService;
     private static final String IS_CART_EMPTY = "isCartEmpty";
+    private static final String CART_CONTENTS_COOKIE = "cartContents";
     private static final String COOKIE_BOOKS_PATH = "/books";
 
     @Autowired
@@ -38,7 +39,7 @@ public class CartController {
     }
 
     @GetMapping("/books/cart")
-    public String cart(@CookieValue(value = "cartContents", required = false) String cartContents, Model model) {
+    public String cart(@CookieValue(value = CART_CONTENTS_COOKIE, required = false) String cartContents, Model model) {
         if (cartContents == null || cartContents.equals("")) {
             model.addAttribute(IS_CART_EMPTY, true);
         } else {
@@ -53,17 +54,17 @@ public class CartController {
     }
 
     @PostMapping("/books/changeBookStatus/{slug}")
-    public String handleChangeBookStatus(@PathVariable("slug") String slug, @CookieValue(name = "cartContents", required = false) String cartContents,
+    public String handleChangeBookStatus(@PathVariable("slug") String slug, @CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents,
                                          HttpServletResponse response, Model model) {
         if(cartContents == null || cartContents.equals("")) {
-            Cookie cookie = new Cookie(IS_CART_EMPTY, slug);
+            Cookie cookie = new Cookie(CART_CONTENTS_COOKIE, slug);
             cookie.setPath(COOKIE_BOOKS_PATH);
             response.addCookie(cookie);
             model.addAttribute(IS_CART_EMPTY, false);
         } else if(!cartContents.contains(slug)){
             StringJoiner stringJoiner = new StringJoiner("/");
             stringJoiner.add(cartContents).add(slug);
-            Cookie cookie = new Cookie("cartContents", stringJoiner.toString());
+            Cookie cookie = new Cookie(CART_CONTENTS_COOKIE, stringJoiner.toString());
             cookie.setPath(COOKIE_BOOKS_PATH);
             response.addCookie(cookie);
             model.addAttribute(IS_CART_EMPTY, false);
@@ -72,12 +73,12 @@ public class CartController {
     }
 
     @PostMapping("/books/changeBookStatus/cart/remove/{slug}")
-    public String handleRemoveBookFromCartRequest(@PathVariable("slug") String slug, @CookieValue(name = "cartContents", required = false) String cartContents,
+    public String handleRemoveBookFromCartRequest(@PathVariable("slug") String slug, @CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents,
                                                   HttpServletResponse response, Model model) {
         if(cartContents != null && !cartContents.equals("")) {
             ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cartContents.split("/")));
             cookieBooks.remove(slug);
-            Cookie cookie = new Cookie("cartContents", String.join("/", cookieBooks));
+            Cookie cookie = new Cookie(CART_CONTENTS_COOKIE, String.join("/", cookieBooks));
             cookie.setPath(COOKIE_BOOKS_PATH);
             response.addCookie(cookie);
             model.addAttribute(IS_CART_EMPTY, false);
