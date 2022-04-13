@@ -1,5 +1,6 @@
 package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.exceptions.BookStoreApiWrongParameterException;
 import com.example.my_book_shop_app.repositories.BookRepository;
 import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,8 +56,17 @@ public class BookService {
         return bookRepository.findBooksByAuthorNameContaining(authorName);
     }
 
-    public List<Book> getBooksByTitle(String bookTitle) {
-        return bookRepository.findBooksByTitleContaining(bookTitle);
+    public List<Book> getBooksByTitle(String bookTitle) throws BookStoreApiWrongParameterException {
+        if(bookTitle.length()<=1) {
+            throw new BookStoreApiWrongParameterException("Wrong values passed to one or more parameters");
+        } else {
+            List<Book> data = bookRepository.findBooksByTitleContaining(bookTitle);
+            if (!data.isEmpty()) {
+                return data;
+            } else {
+                throw new BookStoreApiWrongParameterException("No data found with specified parameters...");
+            }
+        }
     }
 
     public List<Book> getBooksWithPriceBetween(int min, int max) {
@@ -104,7 +114,7 @@ public class BookService {
 
     public Page<Book> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
-        return bookRepository.findBooksByTitleContaining(searchWord, nextPage);
+        return bookRepository.findBooksByTitleContainingIgnoreCase(searchWord, nextPage);
     }
 
     public Page<Book> getPageOfBooksByAuthorId(Integer authorId, int offset, int limit) {
@@ -118,5 +128,9 @@ public class BookService {
 
     public void updateBook(Book bookToUpdate) {
         this.bookRepository.save(bookToUpdate);
+    }
+
+    public List<Book> getBooksBySlugs(String[] cookieSlugs) {
+        return this.bookRepository.findBooksBySlugIn(cookieSlugs);
     }
 }

@@ -2,6 +2,7 @@ package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.BooksPageDto;
 import com.example.my_book_shop_app.data.SearchWordDto;
+import com.example.my_book_shop_app.exceptions.EmptySearchException;
 import com.example.my_book_shop_app.services.BookService;
 import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,18 +29,24 @@ public class SearchController {
     }
 
     @GetMapping(value = {"/search", "/search/{searchWord}"})
-    public String getSearchResults(@PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto, Model model) {
-        model.addAttribute("searchWordDto", searchWordDto);
-        model.addAttribute("searchResults",
-                bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), 0, 5).getContent());
-        return "search/index";
+    public String getSearchResults(@PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto, Model model) throws EmptySearchException {
+        if (searchWordDto != null){
+            model.addAttribute("searchWordDto", searchWordDto);
+            model.addAttribute("searchResults",
+                    bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), 0, 5).getContent());
+            return "search/index";
+        } else {
+            throw new EmptySearchException("Search by null is impossible");
+        }
+
     }
 
     @GetMapping("/search/page/{searchWord}")
     @ResponseBody
     public BooksPageDto getNextSearchPage(@RequestParam("offset") Integer offset,
                                           @RequestParam("limit") Integer limit,
-                                          @PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto) {
+                                          @PathVariable(value = "searchWord", required = false) SearchWordDto searchWordDto, Model model) {
+        model.addAttribute("searchWordDto", searchWordDto);
         return new BooksPageDto(bookService.getPageOfSearchResultBooks(searchWordDto.getExample(), offset, limit).getContent());
     }
 

@@ -20,7 +20,7 @@
     </div>
     <div class="Cards-footer Cards-footer_center">
         <a class="btn btn_primary" href="#"
-           th:attr="data-refreshshow = ${category}, data-refreshquery = ${searchWordDto}, data-refreshid = ${id}"
+           th:attr="data-refreshshow = ${category}, data-refreshquery = ${searchWordDto.getExample()}, data-refreshid = ${id}"
            th:text="#{footer.more}" data-refreshshow="recent" data-refreshoffset="0" data-refreshlimit="5">Показать еще</a>
     </div>
 </div>
