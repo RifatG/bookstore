@@ -2,7 +2,12 @@ package com.example.my_book_shop_app.services;
 
 import com.example.my_book_shop_app.exceptions.BookStoreApiWrongParameterException;
 import com.example.my_book_shop_app.repositories.BookRepository;
+import com.example.my_book_shop_app.repositories.ReviewLikeRepository;
+import com.example.my_book_shop_app.repositories.ReviewRepository;
+import com.example.my_book_shop_app.repositories.UserRepository;
 import com.example.my_book_shop_app.struct.book.Book;
+import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
+import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -12,19 +17,23 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final ReviewRepository reviewRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, ReviewRepository reviewRepository, UserRepository userRepository, ReviewLikeRepository reviewLikeRepository) {
         this.bookRepository = bookRepository;
+        this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
+        this.reviewLikeRepository = reviewLikeRepository;
     }
 
     public List<Book> getBooksData() {
@@ -132,5 +141,31 @@ public class BookService {
 
     public List<Book> getBooksBySlugs(String[] cookieSlugs) {
         return this.bookRepository.findBooksBySlugIn(cookieSlugs);
+    }
+
+    public void addBookReviewBySlug(String slug, Integer userId, String text) {
+        BookReviewEntity reviewEntity = new BookReviewEntity();
+        reviewEntity.setBook(this.getBookBySlug(slug));
+        if (userId != null) {
+            this.userRepository.findById(userId).ifPresent(reviewEntity::setUser);
+        } else {
+            reviewEntity.setUser(null);
+        }
+        reviewEntity.setTime(LocalDateTime.now());
+        reviewEntity.setText(text);
+        this.reviewRepository.save(reviewEntity);
+    }
+
+    public void addRatingToBookReview(Integer reviewId, Integer userId, short value) {
+        BookReviewLikeEntity reviewLike = new BookReviewLikeEntity();
+        this.reviewRepository.findById(reviewId).ifPresent(reviewLike::setReviewEntity);
+        reviewLike.setTime(LocalDateTime.now());
+        reviewLike.setValue(value);
+        if (userId != null) {
+            this.userRepository.findById(userId).ifPresent(reviewLike::setUser);
+        } else {
+            reviewLike.setUser(null);
+        }
+        this.reviewLikeRepository.save(reviewLike);
     }
 }

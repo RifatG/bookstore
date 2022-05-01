@@ -1,7 +1,13 @@
 package com.example.my_book_shop_app.struct.user;
 
+import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
+import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +28,14 @@ public class UserEntity {
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String name;
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<BookReviewEntity> reviewList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<BookReviewLikeEntity> reviewLikeList = new ArrayList<>();
 
     public int getId() {
         return id;

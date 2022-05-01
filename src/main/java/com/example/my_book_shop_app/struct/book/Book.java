@@ -3,7 +3,9 @@ package com.example.my_book_shop_app.struct.book;
 import com.example.my_book_shop_app.struct.author.Author;
 import com.example.my_book_shop_app.struct.book.file.BookFile;
 import com.example.my_book_shop_app.struct.book.links.Book2UserTypeEntity;
+import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
 import com.example.my_book_shop_app.struct.genre.GenreEntity;
+import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
 import com.example.my_book_shop_app.struct.tags.TagsEntity;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -93,6 +95,14 @@ public class Book {
 
     @OneToMany(mappedBy = "book")
     private List<BookFile> bookFileList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private List<RatingEntity> ratingList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private List<BookReviewEntity> reviewList = new ArrayList<>();
 
     @JsonProperty
     public Integer getDiscountPrice() {
@@ -209,5 +219,21 @@ public class Book {
 
     public void setBookFileList(List<BookFile> bookFileList) {
         this.bookFileList = bookFileList;
+    }
+
+    public List<RatingEntity> getRatingList() {
+        return ratingList;
+    }
+
+    public void setRatingList(List<RatingEntity> ratingList) {
+        this.ratingList = ratingList;
+    }
+
+    public List<BookReviewEntity> getReviewList() {
+        return reviewList;
+    }
+
+    public void setReviewList(List<BookReviewEntity> reviewList) {
+        this.reviewList = reviewList;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.my_book_shop_app.struct.book.review;
 
+import com.example.my_book_shop_app.struct.user.UserEntity;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
@@ -11,11 +13,9 @@ public class BookReviewLikeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(columnDefinition = "INT NOT NULL")
-    private int reviewId;
-
-    @Column(columnDefinition = "INT NOT NULL")
-    private int userId;
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity user;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime time;
@@ -23,28 +23,16 @@ public class BookReviewLikeEntity {
     @Column(columnDefinition = "SMALLINT NOT NULL")
     private short value;
 
+    @ManyToOne
+    @JoinColumn(name = "review_id", referencedColumnName = "id")
+    private BookReviewEntity reviewEntity;
+
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public int getReviewId() {
-        return reviewId;
-    }
-
-    public void setReviewId(int reviewId) {
-        this.reviewId = reviewId;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
     }
 
     public LocalDateTime getTime() {
@@ -61,5 +49,21 @@ public class BookReviewLikeEntity {
 
     public void setValue(short value) {
         this.value = value;
+    }
+
+    public BookReviewEntity getReviewEntity() {
+        return reviewEntity;
+    }
+
+    public void setReviewEntity(BookReviewEntity reviewEntity) {
+        this.reviewEntity = reviewEntity;
+    }
+
+    public UserEntity getUser() {
+        return user;
+    }
+
+    public void setUser(UserEntity user) {
+        this.user = user;
     }
 }

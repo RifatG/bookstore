@@ -1,6 +1,9 @@
 package com.example.my_book_shop_app.controllers;
 
+import com.example.my_book_shop_app.data.RatingDto;
+import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.data.SearchWordDto;
+import com.example.my_book_shop_app.services.BooksRatingAndPopulatityService;
 import com.example.my_book_shop_app.services.CookieHandler;
 import com.example.my_book_shop_app.services.ResourceStorage;
 import com.example.my_book_shop_app.services.BookService;
@@ -25,16 +28,18 @@ import java.util.logging.Logger;
 public class BooksController {
 
     private final BookService bookService;
+    private final BooksRatingAndPopulatityService booksRatingAndPopulatityService;
     private final ResourceStorage storage;
     private final CookieHandler cookieHandler;
 
     private static final String REDIRECT_TO_BOOKS = "redirect:/books/book/";
 
     @Autowired
-    public BooksController(BookService bookService, ResourceStorage storage, CookieHandler cookieHandler) {
+    public BooksController(BookService bookService, ResourceStorage storage, CookieHandler cookieHandler, BooksRatingAndPopulatityService booksRatingAndPopulatityService) {
         this.storage = storage;
         this.bookService = bookService;
         this.cookieHandler = cookieHandler;
+        this.booksRatingAndPopulatityService = booksRatingAndPopulatityService;
     }
 
     @ModelAttribute("searchWordDto")
@@ -46,6 +51,8 @@ public class BooksController {
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         Book book = this.bookService.getBookBySlug(slug);
         model.addAttribute("book", book);
+        RatingDto rating = new RatingDto(book.getRatingList());
+        model.addAttribute("rating", rating);
         return "/books/slug";
     }
 
@@ -97,5 +104,29 @@ public class BooksController {
             default: return REDIRECT_TO_BOOKS + slug;
         }
         return REDIRECT_TO_BOOKS + slug;
+    }
+
+    @PostMapping("/rateBook")
+    @ResponseBody
+    public ResultDto handleRateBook(@RequestParam String bookId, @RequestParam Integer value) {
+        return new ResultDto(this.booksRatingAndPopulatityService.addRatingToBook(bookId, value));
+    }
+
+    @PostMapping("/bookReview")
+    @ResponseBody
+    public ResultDto handleBookReview(@RequestParam String bookId, @RequestParam String text, @CookieValue(value = "user_id", required = false) Integer userId) {
+        try {
+            this.bookService.addBookReviewBySlug(bookId, userId, text);
+        } catch (Exception e) {
+            return new ResultDto(false, "Возникла ошибка " + e.getMessage());
+        }
+        return new ResultDto(true);
+    }
+
+    @PostMapping("/rateBookReview")
+    @ResponseBody
+    public ResultDto handleRateBookReview(@RequestParam Integer reviewId, @RequestParam short value, @CookieValue(value = "user_id", required = false) Integer userId) {
+        this.bookService.addRatingToBookReview(reviewId, userId, value);
+        return new ResultDto(true);
     }
 }
