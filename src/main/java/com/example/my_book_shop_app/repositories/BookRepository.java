@@ -32,7 +32,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query("from Book where isBestseller = 1")
     List<Book> getBestsellers();
 
-    Page<Book> findBooksByTitleContaining(String bookTitle, Pageable nextPage);
+    Page<Book> findBooksByTitleContainingIgnoreCase(String bookTitle, Pageable nextPage);
 
     Page<Book> findAllByIsBestsellerEquals(byte is, Pageable nextPage);
 
@@ -52,4 +52,9 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("select b from Book b join Book2GenreEntity b2g on b.id = b2g.bookId join GenreEntity g on g.id = b2g.genreId where g.id = :genreId")
     Page<Book> getBooksByGenreId(Integer genreId, Pageable nextPage);
+
+    Book findBookBySlug(String slug);
+
+    List<Book> findBooksBySlugIn(String[] slugs);
+
 }

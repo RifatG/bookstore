@@ -1,7 +1,13 @@
 package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.exceptions.BookStoreApiWrongParameterException;
 import com.example.my_book_shop_app.repositories.BookRepository;
+import com.example.my_book_shop_app.repositories.ReviewLikeRepository;
+import com.example.my_book_shop_app.repositories.ReviewRepository;
+import com.example.my_book_shop_app.repositories.UserRepository;
 import com.example.my_book_shop_app.struct.book.Book;
+import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
+import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -11,19 +17,23 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Service
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final ReviewRepository reviewRepository;
+    private final ReviewLikeRepository reviewLikeRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, ReviewRepository reviewRepository, UserRepository userRepository, ReviewLikeRepository reviewLikeRepository) {
         this.bookRepository = bookRepository;
+        this.reviewRepository = reviewRepository;
+        this.userRepository = userRepository;
+        this.reviewLikeRepository = reviewLikeRepository;
     }
 
     public List<Book> getBooksData() {
@@ -55,8 +65,17 @@ public class BookService {
         return bookRepository.findBooksByAuthorNameContaining(authorName);
     }
 
-    public List<Book> getBooksByTitle(String bookTitle) {
-        return bookRepository.findBooksByTitleContaining(bookTitle);
+    public List<Book> getBooksByTitle(String bookTitle) throws BookStoreApiWrongParameterException {
+        if(bookTitle.length()<=1) {
+            throw new BookStoreApiWrongParameterException("Wrong values passed to one or more parameters");
+        } else {
+            List<Book> data = bookRepository.findBooksByTitleContaining(bookTitle);
+            if (!data.isEmpty()) {
+                return data;
+            } else {
+                throw new BookStoreApiWrongParameterException("No data found with specified parameters...");
+            }
+        }
     }
 
     public List<Book> getBooksWithPriceBetween(int min, int max) {
@@ -104,11 +123,49 @@ public class BookService {
 
     public Page<Book> getPageOfSearchResultBooks(String searchWord, Integer offset, Integer limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
-        return bookRepository.findBooksByTitleContaining(searchWord, nextPage);
+        return bookRepository.findBooksByTitleContainingIgnoreCase(searchWord, nextPage);
     }
 
     public Page<Book> getPageOfBooksByAuthorId(Integer authorId, int offset, int limit) {
         Pageable nextPage = PageRequest.of(offset, limit);
         return this.bookRepository.findAllByAuthorId(authorId, nextPage);
+    }
+
+    public Book getBookBySlug(String slug) {
+        return this.bookRepository.findBookBySlug(slug);
+    }
+
+    public void updateBook(Book bookToUpdate) {
+        this.bookRepository.save(bookToUpdate);
+    }
+
+    public List<Book> getBooksBySlugs(String[] cookieSlugs) {
+        return this.bookRepository.findBooksBySlugIn(cookieSlugs);
+    }
+
+    public void addBookReviewBySlug(String slug, Integer userId, String text) {
+        BookReviewEntity reviewEntity = new BookReviewEntity();
+        reviewEntity.setBook(this.getBookBySlug(slug));
+        if (userId != null) {
+            this.userRepository.findById(userId).ifPresent(reviewEntity::setUser);
+        } else {
+            reviewEntity.setUser(null);
+        }
+        reviewEntity.setTime(LocalDateTime.now());
+        reviewEntity.setText(text);
+        this.reviewRepository.save(reviewEntity);
+    }
+
+    public void addRatingToBookReview(Integer reviewId, Integer userId, short value) {
+        BookReviewLikeEntity reviewLike = new BookReviewLikeEntity();
+        this.reviewRepository.findById(reviewId).ifPresent(reviewLike::setReviewEntity);
+        reviewLike.setTime(LocalDateTime.now());
+        reviewLike.setValue(value);
+        if (userId != null) {
+            this.userRepository.findById(userId).ifPresent(reviewLike::setUser);
+        } else {
+            reviewLike.setUser(null);
+        }
+        this.reviewLikeRepository.save(reviewLike);
     }
 }

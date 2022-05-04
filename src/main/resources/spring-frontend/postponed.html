@@ -25,12 +25,13 @@
         <main class="Middle-main">
             <h1 class="Middle-title" th:text="#{topbar.postponed}">Отложенное
             </h1>
+            <h3 th:if="${isPostponedEmpty}" th:text="#{postponed.empty}"></h3>
             <form class="form Cart Cart_postponed" action="#" method="post">
 
                 <div class="Cart-product" th:each="book : ${postponedBooks}">
                     <div class="Cart-block Cart-block_row">
                         <div class="Cart-block Cart-block_pict"><a class="Cart-pict" href="#"><img class="Cart-img"
-                                                                                                   src="/assets/img/content/main/card.jpg"
+                                                                                                   th:src="${book.image}"
                                                                                                    alt="card.jpg"/></a>
                         </div>
                         <div class="Cart-block Cart-block_row">
@@ -85,6 +86,7 @@
                                 <div class="Cart-buttons">
                                     <div class="Cart-btn">
                                         <button class="btn btn_primary btn_outline" data-sendstatus="CART"
+                                                th:attr="data-bookid = ${book.slug}"
                                                 data-bookid="[1122]"><span class="btn-icon"><img
                                                 src="/assets/img/icons/shopping-basket.svg" alt="shopping-basket.svg"/></span><span
                                                 class="btn-content" th:text="#{buttons.buy}">Купить</span>
@@ -92,6 +94,7 @@
                                     </div>
                                     <div class="Cart-btn">
                                         <button class="btn btn_danger btn_outline" data-sendstatus="UNLINK"
+                                                th:attr="data-bookid = ${'postponed/remove/' + book.slug}"
                                                 data-bookid="[1122]"><span class="btn-icon"><img
                                                 src="/assets/img/icons/trash.svg" alt="trash.svg"/></span><span
                                                 class="btn-content" th:text="#{buttons.delete}">Удалить</span>
@@ -102,17 +105,17 @@
                             <div class="Cart-block Cart-block_price">
                                 <div class="Cart-priceTitle" th:text="#{book.cost}">Цена:
                                 </div>
-                                <div class="Cart-price Cart-price_old" th:if="${book.priceOld != null}" th:text="${book.priceOld}">150 р.
+                                <div class="Cart-price Cart-price_old" th:text="${book.price}">150 р.
                                 </div>
-                                <div class="Cart-price" th:text="${book.price}">100 р.
+                                <div class="Cart-price" th:text="${book.getDiscountPrice()}">100 р.
                                 </div>
-                                <div class="Cart-sale" th:if="${book.priceOld != null}" th:text="${book.getDiscount()} + '%'">-30%
+                                <div class="Cart-sale" th:text="${book.getDiscount()} + '%'">-30%
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="Cart-total">
+                <div th:if="${!isPostponedEmpty}" class="Cart-total">
                     <div class="Cart-block Cart-block_total">
                     </div>
                     <div class="Cart-block">

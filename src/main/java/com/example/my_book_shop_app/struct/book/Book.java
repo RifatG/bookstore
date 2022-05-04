@@ -1,14 +1,20 @@
 package com.example.my_book_shop_app.struct.book;
 
 import com.example.my_book_shop_app.struct.author.Author;
+import com.example.my_book_shop_app.struct.book.file.BookFile;
 import com.example.my_book_shop_app.struct.book.links.Book2UserTypeEntity;
+import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
 import com.example.my_book_shop_app.struct.genre.GenreEntity;
+import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
 import com.example.my_book_shop_app.struct.tags.TagsEntity;
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -47,7 +53,7 @@ public class Book {
     private String description;
 
     @Column(columnDefinition = "INT NOT NULL")
-    @ApiModelProperty("book price")
+    @ApiModelProperty("old book price")
     private int price;
 
     @Column(columnDefinition = "SMALLINT NOT NULL DEFAULT 0")
@@ -57,6 +63,11 @@ public class Book {
     @ManyToOne()
     @JoinColumn(name = "author_id", referencedColumnName = "id")
     private Author author;
+
+    @JsonGetter("authors")
+    public String authorsFullName() {
+        return this.author.toString();
+    }
 
     @ManyToMany
     @JoinTable(
@@ -82,8 +93,20 @@ public class Book {
     @JsonIgnore
     private List<TagsEntity> tagList;
 
-    public int getPriceOld() {
-        return (discount != 0 && discount != 100) ? (100 * price)/(100 - discount) : 0;
+    @OneToMany(mappedBy = "book")
+    private List<BookFile> bookFileList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private List<RatingEntity> ratingList = new ArrayList<>();
+
+    @OneToMany(mappedBy = "book")
+    @JsonIgnore
+    private List<BookReviewEntity> reviewList = new ArrayList<>();
+
+    @JsonProperty
+    public Integer getDiscountPrice() {
+        return price - Math.toIntExact(Math.round(price * ((double)discount / 100)));
     }
 
     public int getId() {
@@ -188,5 +211,29 @@ public class Book {
 
     public void setTagList(List<TagsEntity> tagList) {
         this.tagList = tagList;
+    }
+
+    public List<BookFile> getBookFileList() {
+        return bookFileList;
+    }
+
+    public void setBookFileList(List<BookFile> bookFileList) {
+        this.bookFileList = bookFileList;
+    }
+
+    public List<RatingEntity> getRatingList() {
+        return ratingList;
+    }
+
+    public void setRatingList(List<RatingEntity> ratingList) {
+        this.ratingList = ratingList;
+    }
+
+    public List<BookReviewEntity> getReviewList() {
+        return reviewList;
+    }
+
+    public void setReviewList(List<BookReviewEntity> reviewList) {
+        this.reviewList = reviewList;
     }
 }
