@@ -37,6 +37,28 @@ public class UserEntity {
     @JsonIgnore
     private List<BookReviewLikeEntity> reviewLikeList = new ArrayList<>();
 
+    @OneToOne(mappedBy = "user")
+    private UserContactEntity userContact;
+
+    @Column(columnDefinition = "VARCHAR(255) NOT NULL")
+    private String password;
+
+    public UserContactEntity getUserContact() {
+        return userContact;
+    }
+
+    public void setUserContact(UserContactEntity userContact) {
+        this.userContact = userContact;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public int getId() {
         return id;
     }
