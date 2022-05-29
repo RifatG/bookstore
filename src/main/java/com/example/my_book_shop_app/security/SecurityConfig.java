@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
-import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -51,12 +50,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/my", "/profile").hasRole("USER")
+                .antMatchers("/my", "/profile").authenticated()
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
                 .loginPage(SIGN_IN_URL).failureUrl(SIGN_IN_URL)
-                .and().logout().logoutUrl("/logout").logoutSuccessUrl(SIGN_IN_URL).deleteCookies("token");
-        http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+                .and().logout().logoutUrl("/logout").logoutSuccessUrl(SIGN_IN_URL).deleteCookies("token")
+                .and().oauth2Login()
+                .and().oauth2Client();
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }
 }
