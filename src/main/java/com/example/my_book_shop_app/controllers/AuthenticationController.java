@@ -5,7 +5,10 @@ import com.example.my_book_shop_app.data.ContactConfirmationResponse;
 import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.security.RegistrationForm;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthenticationController {
 
     private final BookstoreUserRegister userRegister;
+    private Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
     public AuthenticationController(BookstoreUserRegister userRegister) {
@@ -42,9 +46,7 @@ public class AuthenticationController {
     @PostMapping("/requestContactConfirmation")
     @ResponseBody
     public ContactConfirmationResponse handleRequestContactConfirmation(@RequestBody ContactConfirmationPayload payload) {
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
-        response.setResult("true");
-        return response;
+        return new ContactConfirmationResponse(true);
     }
 
     @PostMapping("/registration")
@@ -57,18 +59,24 @@ public class AuthenticationController {
     @PostMapping("/approveContact")
     @ResponseBody
     public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmationPayload payload) {
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
-        response.setResult("true");
-        return response;
+        return new ContactConfirmationResponse(true);
     }
 
     @PostMapping("/login")
     @ResponseBody
     public ContactConfirmationResponse handleLogin(@RequestBody ContactConfirmationPayload payload, HttpServletResponse httpServletResponse) {
-        ContactConfirmationResponse loginResponse = userRegister.jwtLogin(payload);
-        Cookie cookie = new Cookie("token", loginResponse.getResult());
-        httpServletResponse.addCookie(cookie);
-        return loginResponse;
+        try{
+            ContactConfirmationResponse loginResponse = userRegister.jwtLogin(payload);
+            Cookie cookie = new Cookie("token", loginResponse.getToken());
+            httpServletResponse.addCookie(cookie);
+            return loginResponse;
+        } catch (UsernameNotFoundException usernameNotFoundException) {
+            logger.error("User not found with email {}", payload.getContact());
+            return new ContactConfirmationResponse(usernameNotFoundException.getMessage());
+        } catch (Exception e) {
+            logger.error("LOGIN error: {}", e.getMessage());
+            return null;
+        }
     }
 
     @GetMapping("/my")

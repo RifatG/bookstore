@@ -61,18 +61,14 @@ public class BookstoreUserRegister {
     public ContactConfirmationResponse login(ContactConfirmationPayload payload) {
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(payload.getContact(), payload.getCode()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
-        response.setResult("true");
-        return response;
+        return new ContactConfirmationResponse(true);
     }
 
     public ContactConfirmationResponse jwtLogin(ContactConfirmationPayload payload) {
         BookstoreUserDetails userDetails = (BookstoreUserDetails) bookstoreUserDetailsService.loadUserByEmail(payload.getContact());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDetails.getUsername(), payload.getCode()));
         String jwtToken = jwtUtil.generateToken(userDetails);
-        ContactConfirmationResponse response = new ContactConfirmationResponse();
-        response.setResult(jwtToken);
-        return response;
+        return new ContactConfirmationResponse(true, jwtToken);
     }
 
     public UserEntity getCurrentUser() {

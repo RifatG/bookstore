@@ -34,8 +34,8 @@ public class BookstoreUserDetailsService implements UserDetailsService {
 
     public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
         UserContactEntity bookstoreUserContact = userContactRepository.findUserContactEntityByContact(email);
-        UserEntity bookstoreUser = userRepository.findUserEntityById(bookstoreUserContact.getUserId());
-        if (bookstoreUser != null) {
+        if (bookstoreUserContact != null) {
+            UserEntity bookstoreUser = userRepository.findUserEntityById(bookstoreUserContact.getUserId());
             return new BookstoreUserDetails(bookstoreUser);
         } else {
             throw new UsernameNotFoundException("User's email not found ");

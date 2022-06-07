@@ -1,5 +1,7 @@
 package com.example.my_book_shop_app.data;
 
+import net.minidev.json.JSONObject;
+
 public class ResultDto {
 
     private boolean result;
@@ -28,5 +30,13 @@ public class ResultDto {
 
     public void setError(String error) {
         this.error = error;
+    }
+
+    @Override
+    public String toString() {
+        JSONObject json = new JSONObject();
+        json.put("result", result);
+        json.put("errorMessage", error);
+        return json.toString();
     }
 }
