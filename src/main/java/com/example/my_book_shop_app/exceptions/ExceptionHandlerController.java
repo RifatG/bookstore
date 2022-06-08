@@ -20,6 +20,8 @@ import javax.servlet.http.HttpServletResponse;
 public class ExceptionHandlerController {
 
     Logger logger = LoggerFactory.getLogger(ExceptionHandlerController.class);
+    private static final String JWT_EXCEPTION_LOG_STRING = "JWT token exception: {}";
+    private static final String REDIRECT_SIGN_IN_PAGE_STRING = "redirect:/signin";
 
     @ExceptionHandler(BookStoreApiWrongParameterException.class)
     public ResponseEntity<ApiResponse<Book>> handleBookStoreApiWrongParameterException(Exception exception) {
@@ -32,10 +34,24 @@ public class ExceptionHandlerController {
     }
 
     @ExceptionHandler(JwtException.class)
-    public String handleAccessDeniedException(JwtException e, HttpServletResponse response){
-        logger.error("JWT token exception: {}", e.getMessage());
+    public String handleJwtException(JwtException e, HttpServletResponse response){
+        logger.error(JWT_EXCEPTION_LOG_STRING, e.getMessage());
         clearCookieAndContext(response);
-        return "redirect:/signin";
+        return REDIRECT_SIGN_IN_PAGE_STRING;
+    }
+
+    @ExceptionHandler(JwtInBlacklistException.class)
+    public String handleJwtInBlacklistException(JwtInBlacklistException e, HttpServletResponse response){
+        logger.error(JWT_EXCEPTION_LOG_STRING, e.getMessage());
+        clearCookieAndContext(response);
+        return REDIRECT_SIGN_IN_PAGE_STRING;
+    }
+
+    @ExceptionHandler(EmptyJwtTokenException.class)
+    public String handleEmptyJwtTokenException(EmptyJwtTokenException e, HttpServletResponse response){
+        logger.error(JWT_EXCEPTION_LOG_STRING, e.getMessage());
+        clearCookieAndContext(response);
+        return REDIRECT_SIGN_IN_PAGE_STRING;
     }
 
     private void clearCookieAndContext(HttpServletResponse response) {

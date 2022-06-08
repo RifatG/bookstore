@@ -3,6 +3,7 @@ package com.example.my_book_shop_app.services;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,5 +42,17 @@ public class CookieHandler {
         cookieValue = cookieValue.startsWith("/") ? cookieValue.substring(1) : cookieValue;
         cookieValue = cookieValue.endsWith("/") ? cookieValue.substring(0, cookieValue.length()-1) : cookieValue;
         return cookieValue.split("/");
+    }
+
+    public String getJwtTokenFromCookie(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("token")) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

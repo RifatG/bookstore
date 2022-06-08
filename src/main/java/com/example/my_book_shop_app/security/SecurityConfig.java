@@ -1,6 +1,8 @@
 package com.example.my_book_shop_app.security;
 
 import com.example.my_book_shop_app.security.jwt.JWTRequestFilter;
+import com.example.my_book_shop_app.services.CookieHandler;
+import com.example.my_book_shop_app.services.JwtBlacklistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,11 +22,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String SIGN_IN_URL = "/signin";
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTRequestFilter filter;
+    private final CookieHandler cookieHandler;
+    private final JwtBlacklistService jwtBlacklistService;
 
     @Autowired
-    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter filter) {
+    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter filter, CookieHandler cookieHandler, JwtBlacklistService jwtBlacklistService) {
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.filter = filter;
+        this.cookieHandler = cookieHandler;
+        this.jwtBlacklistService = jwtBlacklistService;
     }
 
     @Bean
@@ -54,7 +60,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
                 .loginPage(SIGN_IN_URL).failureUrl(SIGN_IN_URL)
-                .and().logout().logoutUrl("/logout").logoutSuccessUrl(SIGN_IN_URL).deleteCookies("token")
+                .and().logout().logoutUrl("/logout")
+                .addLogoutHandler(((request, response, authentication) -> {
+                    String token = cookieHandler.getJwtTokenFromCookie(request);
+                    jwtBlacklistService.addToBlacklist(token);
+                }))
+                .logoutSuccessUrl(SIGN_IN_URL).deleteCookies("token")
                 .and().oauth2Login()
                 .and().oauth2Client();
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);

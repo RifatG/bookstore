@@ -1,7 +1,10 @@
 package com.example.my_book_shop_app.security.jwt;
 
+import com.example.my_book_shop_app.exceptions.EmptyJwtTokenException;
+import com.example.my_book_shop_app.exceptions.JwtInBlacklistException;
 import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserDetailsService;
+import com.example.my_book_shop_app.services.JwtBlacklistService;
 import io.jsonwebtoken.JwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,12 +28,14 @@ public class JWTRequestFilter extends OncePerRequestFilter {
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
     private final JWTUtil jwtUtil;
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final JwtBlacklistService jwtBlacklistService;
 
     @Autowired
-    public JWTRequestFilter(BookstoreUserDetailsService bookstoreUserDetailsService, JWTUtil jwtUtil, HandlerExceptionResolver handlerExceptionResolver) {
+    public JWTRequestFilter(BookstoreUserDetailsService bookstoreUserDetailsService, JWTUtil jwtUtil, HandlerExceptionResolver handlerExceptionResolver, JwtBlacklistService jwtBlacklistService) {
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.jwtUtil = jwtUtil;
         this.handlerExceptionResolver = handlerExceptionResolver;
+        this.jwtBlacklistService = jwtBlacklistService;
     }
 
     @Override
@@ -44,6 +49,8 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                 for (Cookie cookie : cookies) {
                     if (cookie.getName().equals("token")) {
                         token = cookie.getValue();
+                        if (token == null || token.equals("")) throw new EmptyJwtTokenException("Jwt Token cannot be null of empty");
+                        if (jwtBlacklistService.isTokenInBlacklist(token)) throw new JwtInBlacklistException("Current token is in blacklist");
                         username = jwtUtil.extractUsername(token);
                     }
 
@@ -58,10 +65,9 @@ public class JWTRequestFilter extends OncePerRequestFilter {
                 }
             }
             filterChain.doFilter(httpServletRequest, httpServletResponse);
-        } catch (JwtException e) {
+        } catch (JwtException | JwtInBlacklistException | EmptyJwtTokenException e) {
             handlerExceptionResolver.resolveException(httpServletRequest, httpServletResponse, null, e);
             httpServletResponse.sendRedirect("signin");
         }
-
     }
 }
