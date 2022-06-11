@@ -3,6 +3,7 @@ package com.example.my_book_shop_app.controllers;
 import com.example.my_book_shop_app.data.ContactConfirmationPayload;
 import com.example.my_book_shop_app.data.ContactConfirmationResponse;
 import com.example.my_book_shop_app.data.SearchWordDto;
+import com.example.my_book_shop_app.exceptions.UserAlreadyExistException;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.security.RegistrationForm;
 import org.slf4j.Logger;
@@ -50,7 +51,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/registration")
-    public String handleUserRegistration(RegistrationForm registrationForm, Model model) {
+    public String handleUserRegistration(RegistrationForm registrationForm, Model model) throws UserAlreadyExistException {
         userRegister.registerNewUser(registrationForm);
         model.addAttribute("registrationOk", true);
         return "signin";

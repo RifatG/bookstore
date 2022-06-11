@@ -24,13 +24,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JWTRequestFilter filter;
     private final CookieHandler cookieHandler;
     private final JwtBlacklistService jwtBlacklistService;
+    private final OauthAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
     @Autowired
-    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter filter, CookieHandler cookieHandler, JwtBlacklistService jwtBlacklistService) {
+    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter filter, CookieHandler cookieHandler, JwtBlacklistService jwtBlacklistService, OauthAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.filter = filter;
         this.cookieHandler = cookieHandler;
         this.jwtBlacklistService = jwtBlacklistService;
+        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
     }
 
     @Bean
@@ -63,10 +65,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and().logout().logoutUrl("/logout")
                 .addLogoutHandler(((request, response, authentication) -> {
                     String token = cookieHandler.getJwtTokenFromCookie(request);
-                    jwtBlacklistService.addToBlacklist(token);
+                    if(token != null) jwtBlacklistService.addToBlacklist(token);
                 }))
                 .logoutSuccessUrl(SIGN_IN_URL).deleteCookies("token")
-                .and().oauth2Login()
+                .and().oauth2Login().successHandler(customAuthenticationSuccessHandler)
                 .and().oauth2Client();
         http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
     }

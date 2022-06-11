@@ -54,6 +54,13 @@ public class ExceptionHandlerController {
         return REDIRECT_SIGN_IN_PAGE_STRING;
     }
 
+    @ExceptionHandler(UserAlreadyExistException.class)
+    public String handleUserAlreadyExistException(UserAlreadyExistException e, HttpServletResponse response){
+        logger.error("Registration exception: {}", e.getMessage());
+        clearCookieAndContext(response);
+        return REDIRECT_SIGN_IN_PAGE_STRING;
+    }
+
     private void clearCookieAndContext(HttpServletResponse response) {
         Cookie cookie = new Cookie("token", null);
         cookie.setMaxAge(0);
