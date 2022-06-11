@@ -1,12 +1,13 @@
 package com.example.my_book_shop_app.security;
 
 import com.example.my_book_shop_app.exceptions.UserAlreadyExistException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
-import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -15,13 +16,13 @@ import java.io.IOException;
 @Component
 public class OauthAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+    Logger logger = LoggerFactory.getLogger(OauthAuthenticationSuccessHandler.class);
+
     private final BookstoreUserRegister userRegister;
-    private final HandlerExceptionResolver handlerExceptionResolver;
 
     @Autowired
-    public OauthAuthenticationSuccessHandler(BookstoreUserRegister userRegister, HandlerExceptionResolver handlerExceptionResolver) {
+    public OauthAuthenticationSuccessHandler(BookstoreUserRegister userRegister) {
         this.userRegister = userRegister;
-        this.handlerExceptionResolver = handlerExceptionResolver;
     }
 
     @Override
@@ -29,10 +30,10 @@ public class OauthAuthenticationSuccessHandler implements AuthenticationSuccessH
         DefaultOAuth2User user = (DefaultOAuth2User) authentication.getPrincipal();
         try {
             userRegister.registerNewUser(user);
-            response.sendRedirect("/my");
+            logger.info("New user has been registered while authentication via oauth2. User has successfully signed up!");
         } catch (UserAlreadyExistException e) {
-            handlerExceptionResolver.resolveException(request, response, null, e);
-            response.sendRedirect("/signin");
+            logger.info("User is already exist while authentication via oauth2. User has successfully signed up!");
         }
+        response.sendRedirect("/my");
     }
 }
