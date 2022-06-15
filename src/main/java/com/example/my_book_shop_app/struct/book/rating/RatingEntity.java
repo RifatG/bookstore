@@ -1,9 +1,12 @@
 package com.example.my_book_shop_app.struct.book.rating;
 
 import com.example.my_book_shop_app.struct.book.Book;
+import com.example.my_book_shop_app.struct.user.UserEntity;
+import lombok.Data;
 
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(name = "ratings")
 public class RatingEntity {
@@ -19,27 +22,7 @@ public class RatingEntity {
     @JoinColumn(name = "book_id", referencedColumnName = "id")
     private Book book;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getRatingCount() {
-        return ratingCount;
-    }
-
-    public void setRatingCount(int ratingCount) {
-        this.ratingCount = ratingCount;
-    }
-
-    public Book getBook() {
-        return book;
-    }
-
-    public void setBook(Book book) {
-        this.book = book;
-    }
+    @ManyToOne
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private UserEntity user;
 }

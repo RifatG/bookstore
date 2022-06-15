@@ -18,7 +18,7 @@
     <script defer src="/assets/js/locale.js"></script>
 </head>
 <body class="Site">
-<header class="Header" th:replace="~{fragments/common_header_fragment :: head(status='unauthorized')}"></header>
+<header class="Header" th:replace="~{fragments/common_header_fragment :: head(status=${authenticated})}"></header>
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">

@@ -8,6 +8,7 @@ import com.example.my_book_shop_app.repositories.UserRepository;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
 import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
+import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -26,13 +27,11 @@ public class BookService {
     private final BookRepository bookRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewLikeRepository reviewLikeRepository;
-    private final UserRepository userRepository;
 
     @Autowired
     public BookService(BookRepository bookRepository, ReviewRepository reviewRepository, UserRepository userRepository, ReviewLikeRepository reviewLikeRepository) {
         this.bookRepository = bookRepository;
         this.reviewRepository = reviewRepository;
-        this.userRepository = userRepository;
         this.reviewLikeRepository = reviewLikeRepository;
     }
 
@@ -143,29 +142,27 @@ public class BookService {
         return this.bookRepository.findBooksBySlugIn(cookieSlugs);
     }
 
-    public void addBookReviewBySlug(String slug, Integer userId, String text) {
+    public void addBookReviewBySlug(String slug, UserEntity user, String text) {
         BookReviewEntity reviewEntity = new BookReviewEntity();
         reviewEntity.setBook(this.getBookBySlug(slug));
-        if (userId != null) {
-            this.userRepository.findById(userId).ifPresent(reviewEntity::setUser);
-        } else {
-            reviewEntity.setUser(null);
-        }
+        reviewEntity.setUser(user);
         reviewEntity.setTime(LocalDateTime.now());
         reviewEntity.setText(text);
         this.reviewRepository.save(reviewEntity);
     }
 
-    public void addRatingToBookReview(Integer reviewId, Integer userId, short value) {
-        BookReviewLikeEntity reviewLike = new BookReviewLikeEntity();
-        this.reviewRepository.findById(reviewId).ifPresent(reviewLike::setReviewEntity);
-        reviewLike.setTime(LocalDateTime.now());
-        reviewLike.setValue(value);
-        if (userId != null) {
-            this.userRepository.findById(userId).ifPresent(reviewLike::setUser);
+    public void addRatingToBookReview(Integer reviewId, UserEntity user, short value) {
+        BookReviewEntity review = reviewRepository.findBookReviewEntityById(reviewId);
+        BookReviewLikeEntity existLike = reviewLikeRepository.findByUserAndReviewEntityAndValue(user, review, value);
+        if (existLike == null) {
+            BookReviewLikeEntity reviewLike = new BookReviewLikeEntity();
+            reviewLike.setReviewEntity(review);
+            reviewLike.setTime(LocalDateTime.now());
+            reviewLike.setValue(value);
+            reviewLike.setUser(user);
+            this.reviewLikeRepository.save(reviewLike);
         } else {
-            reviewLike.setUser(null);
+            reviewLikeRepository.delete(existLike);
         }
-        this.reviewLikeRepository.save(reviewLike);
     }
 }

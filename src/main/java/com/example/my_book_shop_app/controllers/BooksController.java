@@ -3,16 +3,23 @@ package com.example.my_book_shop_app.controllers;
 import com.example.my_book_shop_app.data.RatingDto;
 import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.data.SearchWordDto;
+import com.example.my_book_shop_app.data.request.BookReviewRequest;
+import com.example.my_book_shop_app.data.request.ChangeBookStatusRequest;
+import com.example.my_book_shop_app.security.BookstoreUserDetails;
+import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.BooksRatingAndPopulatityService;
 import com.example.my_book_shop_app.services.CookieHandler;
 import com.example.my_book_shop_app.services.ResourceStorage;
 import com.example.my_book_shop_app.services.BookService;
 import com.example.my_book_shop_app.struct.book.Book;
+import com.example.my_book_shop_app.struct.user.UserEntity;
 import com.google.common.net.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -31,20 +38,33 @@ public class BooksController {
     private final BooksRatingAndPopulatityService booksRatingAndPopulatityService;
     private final ResourceStorage storage;
     private final CookieHandler cookieHandler;
+    private final BookstoreUserRegister userRegister;
 
     private static final String REDIRECT_TO_BOOKS = "redirect:/books/book/";
 
     @Autowired
-    public BooksController(BookService bookService, ResourceStorage storage, CookieHandler cookieHandler, BooksRatingAndPopulatityService booksRatingAndPopulatityService) {
+    public BooksController(BookService bookService, ResourceStorage storage, CookieHandler cookieHandler, BooksRatingAndPopulatityService booksRatingAndPopulatityService, BookstoreUserRegister userRegister) {
         this.storage = storage;
         this.bookService = bookService;
         this.cookieHandler = cookieHandler;
         this.booksRatingAndPopulatityService = booksRatingAndPopulatityService;
+        this.userRegister = userRegister;
     }
 
     @ModelAttribute("searchWordDto")
     public SearchWordDto searchWordDto() {
         return new SearchWordDto();
+    }
+
+    @ModelAttribute("currentUser")
+    public UserEntity currentUser() {
+        return userRegister.getCurrentUser();
+    }
+    
+    @ModelAttribute("authenticated")
+    public String isAuthenticated() {
+        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return (user instanceof DefaultOAuth2User || user instanceof BookstoreUserDetails) ? "authorized" : "unauthorized";
     }
 
     @GetMapping("/book/{slug}")
@@ -87,8 +107,8 @@ public class BooksController {
     @PostMapping("/changeBookStatus/{slug}")
     public String handleChangeBookStatus(@PathVariable("slug") String slug, @CookieValue(name = "cartContents", required = false) String cartContents,
                                          @CookieValue(name = "postponedContents", required = false) String postponedContents,
-                                         HttpServletResponse response, Model model, @RequestParam String status) {
-        switch (status) {
+                                         HttpServletResponse response, Model model, @RequestBody ChangeBookStatusRequest request) {
+        switch (request.getStatus()) {
             case "CART" : {
                 cookieHandler.updateSlugInCookie(cartContents, "cartContents", response, slug);
                 cookieHandler.removeSlugFromCookie(postponedContents, "postponedContents", response, slug);
@@ -108,15 +128,15 @@ public class BooksController {
 
     @PostMapping("/rateBook")
     @ResponseBody
-    public ResultDto handleRateBook(@RequestParam String bookId, @RequestParam Integer value) {
-        return new ResultDto(this.booksRatingAndPopulatityService.addRatingToBook(bookId, value));
+    public ResultDto handleRateBook(@RequestBody BookReviewRequest request) {
+        return new ResultDto(this.booksRatingAndPopulatityService.addRatingToBook(request.getBookId(), this.userRegister.getCurrentUser(), request.getValue()));
     }
 
     @PostMapping("/bookReview")
     @ResponseBody
-    public ResultDto handleBookReview(@RequestParam String bookId, @RequestParam String text, @CookieValue(value = "user_id", required = false) Integer userId) {
+    public ResultDto handleBookReview(@RequestBody BookReviewRequest request) {
         try {
-            this.bookService.addBookReviewBySlug(bookId, userId, text);
+            this.bookService.addBookReviewBySlug(request.getBookId(), this.userRegister.getCurrentUser(), request.getText());
         } catch (Exception e) {
             return new ResultDto(false, "Возникла ошибка " + e.getMessage());
         }
@@ -125,8 +145,8 @@ public class BooksController {
 
     @PostMapping("/rateBookReview")
     @ResponseBody
-    public ResultDto handleRateBookReview(@RequestParam Integer reviewId, @RequestParam short value, @CookieValue(value = "user_id", required = false) Integer userId) {
-        this.bookService.addRatingToBookReview(reviewId, userId, value);
+    public ResultDto handleRateBookReview(@RequestBody BookReviewRequest request) {
+        this.bookService.addRatingToBookReview(request.getReviewId(), this.userRegister.getCurrentUser(), request.getValue().shortValue());
         return new ResultDto(true);
     }
 }

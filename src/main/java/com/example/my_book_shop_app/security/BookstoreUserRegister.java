@@ -91,8 +91,11 @@ public class BookstoreUserRegister {
             String username = oAuth2User.getAttributes().get("name").toString();
             return this.userRepository.findUserEntityByName(username);
         }
-        BookstoreUserDetails bookstoreUserDetails = (BookstoreUserDetails) userDetails;
-        return bookstoreUserDetails.getBookstoreUser();
+        if(userDetails instanceof BookstoreUserDetails) {
+            BookstoreUserDetails bookstoreUserDetails = (BookstoreUserDetails) userDetails;
+            return bookstoreUserDetails.getBookstoreUser();
+        }
+        return null;
     }
 
 }

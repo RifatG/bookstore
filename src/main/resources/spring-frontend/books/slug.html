@@ -21,7 +21,8 @@
     <script defer src="/assets/js/downloadBookWindowScript.js"></script>
 </head>
 <body class="Site">
-<header class="Header" th:replace="~{fragments/common_header_fragment :: head(status='unauthorized')}"></header>
+<header class="Header"
+        th:replace="~{fragments/common_header_fragment :: head(status=${authenticated})}"></header>
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">
@@ -45,19 +46,8 @@
                         </h3><span class="Product-comments-amount" th:text="${book.reviewList.size()} + ' ' + #{books.review-size}">567 отзывов</span>
                     </div>
                 </div>
-                <strong class="Comments-title" th:text="#{books.write-review}">Написать отзыв
-                </strong>
-                <div class="Comments-addComment">
-                    <form class="form" action="#" method="post" th:attr="data-bookid=${book.slug}">
-                        <div class="form-group">
-                                <textarea class="form-textarea Comments-review" name="review" id="review"
-                                          th:placeholder="#{books.review-text-placeholder}" data-validate="require"></textarea>
-                        </div>
-                        <div class="form-group Comments-sendReview">
-                            <button class="btn btn_warning" type="submit" th:text="#{books.send-review}">Отправить отзыв
-                            </button>
-                        </div>
-                    </form>
+                <div th:if="${authenticated == 'authorized'}">
+                    <div th:replace="~{fragments/book_review_sending_fragment :: bookReviewSending}"></div>
                 </div>
                 <div th:replace="~{fragments/book_reviews_fragment :: reviewBlock}"></div>
             </div>

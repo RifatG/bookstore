@@ -1,14 +1,17 @@
 package com.example.my_book_shop_app.struct.user;
 
+import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
 import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
 import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+@Data
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -37,65 +40,13 @@ public class UserEntity {
     @JsonIgnore
     private List<BookReviewLikeEntity> reviewLikeList = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user")
+    @JsonIgnore
+    private List<RatingEntity> ratingList = new ArrayList<>();
+
     @OneToOne(mappedBy = "user")
     private UserContactEntity userContact;
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String password;
-
-    public UserContactEntity getUserContact() {
-        return userContact;
-    }
-
-    public void setUserContact(UserContactEntity userContact) {
-        this.userContact = userContact;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getHash() {
-        return hash;
-    }
-
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    public LocalDateTime getRegTime() {
-        return regTime;
-    }
-
-    public void setRegTime(LocalDateTime regTime) {
-        this.regTime = regTime;
-    }
-
-    public int getBalance() {
-        return balance;
-    }
-
-    public void setBalance(int balance) {
-        this.balance = balance;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 }
