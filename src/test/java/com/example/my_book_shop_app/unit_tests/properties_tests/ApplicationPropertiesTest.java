@@ -1,4 +1,4 @@
-package com.example.my_book_shop_app.properties_tests;
+package com.example.my_book_shop_app.unit_tests.properties_tests;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;

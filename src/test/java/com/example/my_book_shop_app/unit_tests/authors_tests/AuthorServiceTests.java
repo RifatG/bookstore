@@ -1,4 +1,4 @@
-package com.example.my_book_shop_app.authors_tests;
+package com.example.my_book_shop_app.unit_tests.authors_tests;
 
 import com.example.my_book_shop_app.repositories.AuthorRepository;
 import com.example.my_book_shop_app.services.AuthorService;
