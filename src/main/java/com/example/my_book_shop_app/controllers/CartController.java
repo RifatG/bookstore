@@ -1,10 +1,15 @@
 package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.SearchWordDto;
+import com.example.my_book_shop_app.security.BookstoreUserDetails;
+import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.BookService;
 import com.example.my_book_shop_app.services.CookieHandler;
 import com.example.my_book_shop_app.struct.book.Book;
+import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -18,14 +23,16 @@ public class CartController {
 
     private final BookService bookService;
     private final CookieHandler cookieHandler;
+    private final BookstoreUserRegister userRegister;
 
     private static final String IS_CART_EMPTY = "isCartEmpty";
     private static final String CART_CONTENTS_COOKIE = "cartContents";
 
     @Autowired
-    public CartController(BookService bookService, CookieHandler cookieHandler) {
+    public CartController(BookService bookService, CookieHandler cookieHandler, BookstoreUserRegister userRegister) {
         this.bookService = bookService;
         this.cookieHandler = cookieHandler;
+        this.userRegister = userRegister;
     }
 
     @ModelAttribute("cartBooks")
@@ -36,6 +43,17 @@ public class CartController {
     @ModelAttribute("searchWordDto")
     public SearchWordDto searchWordDto() {
         return new SearchWordDto();
+    }
+
+    @ModelAttribute("currentUser")
+    public UserEntity currentUser() {
+        return userRegister.getCurrentUser();
+    }
+    
+    @ModelAttribute("authenticated")
+    public String isAuthenticated() {
+        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return (user instanceof DefaultOAuth2User || user instanceof BookstoreUserDetails) ? "authorized" : "unauthorized";
     }
 
     @GetMapping("/books/cart")

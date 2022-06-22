@@ -19,18 +19,18 @@
 </head>
 <body class="Site">
 <header class="Header"
-        th:replace="~{fragments/common_header_fragment :: head(status='authorized')}"></header>
+        th:replace="~{fragments/common_header_fragment :: head(status=${authenticated})}"></header>
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">
             <ul class="breadcrumbs"
-                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category='Мои книги')}"></ul>
+                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=#{books.my-books})}"></ul>
             <div class="Section">
                 <div class="Section-header">
-                    <h1 class="Section-title">Мои книги
+                    <h1 class="Section-title" th:text="#{books.my-books}">Мои книги
                     </h1>
-                    <div class="Section-header-links"><span class="Section-header-link Section-header-link_ACTIVE">Непрочитанные</span><a
-                            class="Section-header-link" th:href="@{/myarchive}" href="/myarchive.html">Архив</a>
+                    <div class="Section-header-links"><span class="Section-header-link Section-header-link_ACTIVE" th:text="#{books.unread}">Непрочитанные</span><a
+                            class="Section-header-link" th:href="@{/myarchive}" href="/myarchive.html" th:text="#{books.archive}">Архив</a>
                     </div>
                 </div>
                 <div class="Cards">

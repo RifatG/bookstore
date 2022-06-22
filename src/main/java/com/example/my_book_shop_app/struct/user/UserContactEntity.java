@@ -13,9 +13,10 @@ public class UserContactEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @Column(columnDefinition = "INT NOT NULL")
+    @Column(name = "user_id", columnDefinition = "INT NOT NULL")
     private int userId;
 
+    @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private ContactType type;
 
     @Column(columnDefinition = "SMALLINT NOT NULL")
@@ -32,6 +33,10 @@ public class UserContactEntity {
 
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String contact;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id", referencedColumnName = "id", insertable = false, updatable = false)
+    private UserEntity user;
 
     public int getId() {
         return id;

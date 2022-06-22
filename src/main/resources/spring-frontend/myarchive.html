@@ -19,14 +19,14 @@
 </head>
 <body class="Site">
 <header class="Header"
-        th:replace="~{fragments/common_header_fragment :: head(status='authorized')}"></header>
+        th:replace="~{fragments/common_header_fragment :: head(status=${authenticated})}"></header>
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">
             <ul class="breadcrumbs">
-                <li class="breadcrumbs-item"><a href="/index.html">Главная</a>
+                <li class="breadcrumbs-item"><a href="/index.html" th:href="@{/}">Главная</a>
                 </li>
-                <li class="breadcrumbs-item"><a href="/profile.html">Мой профиль</a>
+                <li class="breadcrumbs-item"><a href="/profile.html" th:href="@{/profile}">Мой профиль</a>
                 </li>
                 <li class="breadcrumbs-item breadcrumbs-item_current"><span>Мои книги</span>
                 </li>
@@ -36,7 +36,7 @@
                     <h1 class="Section-title">Мои книги
                     </h1>
                     <div class="Section-header-links"><a class="Section-header-link"
-                                                         href="/my.html">Непрочитанные</a><span
+                                                         href="/my.html" th:href="@{/my}">Непрочитанные</a><span
                             class="Section-header-link Section-header-link_ACTIVE">Архив</span>
                     </div>
                 </div>

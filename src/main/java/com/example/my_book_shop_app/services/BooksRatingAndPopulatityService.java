@@ -5,6 +5,7 @@ import com.example.my_book_shop_app.repositories.RatingRepository;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.book.links.Book2UserTypeEntity;
 import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
+import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -70,10 +71,17 @@ public class BooksRatingAndPopulatityService {
         return popularBookIdList;
     }
 
-    public boolean addRatingToBook(String slug, Integer value) {
-        RatingEntity rating = new RatingEntity();
-        rating.setRatingCount(value);
-        rating.setBook(this.bookRepository.findBookBySlug(slug));
+    public boolean addRatingToBook(String slug, UserEntity user, Integer value) {
+        Book book = bookRepository.findBookBySlug(slug);
+        RatingEntity rating = this.ratingRepository.findRatingEntityByBookAndUser(book, user);
+        if(rating == null) {
+            rating = new RatingEntity();
+            rating.setRatingCount(value);
+            rating.setBook(this.bookRepository.findBookBySlug(slug));
+            rating.setUser(user);
+        } else {
+            rating.setRatingCount(value);
+        }
         this.ratingRepository.save(rating);
         return true;
     }

@@ -292,7 +292,7 @@
                 </div>
             </button>
         </div>
-        <div class="ProductCard-assessment"><span
+        <div class="ProductCard-assessment" th:if="${authenticated == 'authorized'}"><span
                 class="ProductCard-titleProp" th:text="#{books.rateTheBook} + ':'">Оцените книгу:</span><span
                 class="Rating Rating_input"
                 data-bookid="2121"
@@ -345,7 +345,7 @@
                       <input name="rating" type="radio" value="5"/></span></span>
         </div>
         <div class="ProductCard-tags">
-            <span class="ProductCard-titleProp" th:text="#{tag.tags} + ':'">Тэги:</span>
+            <span class="ProductCard-titleProp" th:text="#{books.tags} + ':'">Тэги:</span>
             <a href="/tags/" th:each="tag : ${book.tagList}" th:href="@{/tags(tagId=${tag.id})}"
                th:text="${tag.name} + ',&#32;'">Современные</a>,&#32;
         </div>

@@ -20,7 +20,7 @@ public class BookReviewLikeEntity {
     @Column(columnDefinition = "TIMESTAMP NOT NULL")
     private LocalDateTime time;
 
-    @Column(columnDefinition = "SMALLINT NOT NULL")
+    @Column(columnDefinition = "INT NOT NULL")
     private short value;
 
     @ManyToOne

@@ -10,7 +10,7 @@
             <div class="Comment-column">
                 <header class="Comment-header">
                     <div>
-                        <strong class="Comment-title" >[[${review.getUser() !=null ? review.getUser() : 'Anonymous'}]]
+                        <strong class="Comment-title" >[[${review.getUser() !=null ? review.getUser().getName() : 'Anonymous'}]]
                             <span class="Comment-rating">
                                 <span class="Rating Rating_comment">
                                     <span class="Rating-stars">[[${review.getRating()}]]
@@ -76,7 +76,7 @@
                             </p>
                         </div>
                         <div class="Comment-footer">
-                            <div class="Comment-appeal">
+                            <div th:if="${authenticated == 'authorized'}" class="Comment-appeal">
                                 <button class="btn btn_white btn_like" data-btntype="check" data-check="false"
                                         data-btnradio="one1" data-likeid="333" th:attr="data-likeid = ${review.id}"><span class="btn-icon"><img
                                         src="/assets/img/icons/comment/like.svg" alt="like.svg"/></span><span
