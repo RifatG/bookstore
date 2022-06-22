@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource("application-test.properties")
+@TestPropertySource("classpath:application-test.properties")
 class SearchPageControllerTests {
 
     private final MockMvc mockMvc;
@@ -26,7 +26,6 @@ class SearchPageControllerTests {
     @Test
     void SearchQueryTest() throws Exception {
         mockMvc.perform(get("/search/Simon"))
-                .andDo(print())
-                .andExpect(xpath("").string("Simon Says"));
+                .andExpect(xpath("//div[@class='Card']//strong[@class='Card-title']/a").string("Simon Says"));
     }
 }
