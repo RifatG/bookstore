@@ -2,13 +2,7 @@ package com.example.my_book_shop_app.services;
 
 import com.example.my_book_shop_app.exceptions.BookStoreApiWrongParameterException;
 import com.example.my_book_shop_app.repositories.BookRepository;
-import com.example.my_book_shop_app.repositories.ReviewLikeRepository;
-import com.example.my_book_shop_app.repositories.ReviewRepository;
-import com.example.my_book_shop_app.repositories.UserRepository;
 import com.example.my_book_shop_app.struct.book.Book;
-import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
-import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
-import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,46 +12,21 @@ import org.springframework.stereotype.Service;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final ReviewRepository reviewRepository;
-    private final ReviewLikeRepository reviewLikeRepository;
 
     @Autowired
-    public BookService(BookRepository bookRepository, ReviewRepository reviewRepository, UserRepository userRepository, ReviewLikeRepository reviewLikeRepository) {
+    public BookService(BookRepository bookRepository) {
         this.bookRepository = bookRepository;
-        this.reviewRepository = reviewRepository;
-        this.reviewLikeRepository = reviewLikeRepository;
-    }
-
-    public List<Book> getBooksData() {
-        return bookRepository.findAll();
-    }
-
-    public List<Book> getPostponedBooksData() {
-        return bookRepository.findAll();
-    }
-
-    public List<Book> getReservedBooksData() {
-        return bookRepository.findAll();
-    }
-
-    public List<Book> getPopularBooksData() {
-        return bookRepository.getBestsellers();
     }
 
     public List<Book> getRecentBooksData() {
         Instant date = Instant.now().minus(Duration.ofDays(2 * 365));
         return bookRepository.findAllByPubDateGreaterThan(Date.from(date));
-    }
-
-    public List<Book> getRecommendedBooksData() {
-        return bookRepository.findAll();
     }
 
     public List<Book> getBooksByAuthor(String authorName) {
@@ -142,27 +111,4 @@ public class BookService {
         return this.bookRepository.findBooksBySlugIn(cookieSlugs);
     }
 
-    public void addBookReviewBySlug(String slug, UserEntity user, String text) {
-        BookReviewEntity reviewEntity = new BookReviewEntity();
-        reviewEntity.setBook(this.getBookBySlug(slug));
-        reviewEntity.setUser(user);
-        reviewEntity.setTime(LocalDateTime.now());
-        reviewEntity.setText(text);
-        this.reviewRepository.save(reviewEntity);
-    }
-
-    public void addRatingToBookReview(Integer reviewId, UserEntity user, short value) {
-        BookReviewEntity review = reviewRepository.findBookReviewEntityById(reviewId);
-        BookReviewLikeEntity existLike = reviewLikeRepository.findByUserAndReviewEntityAndValue(user, review, value);
-        if (existLike == null) {
-            BookReviewLikeEntity reviewLike = new BookReviewLikeEntity();
-            reviewLike.setReviewEntity(review);
-            reviewLike.setTime(LocalDateTime.now());
-            reviewLike.setValue(value);
-            reviewLike.setUser(user);
-            this.reviewLikeRepository.save(reviewLike);
-        } else {
-            reviewLikeRepository.delete(existLike);
-        }
-    }
 }
