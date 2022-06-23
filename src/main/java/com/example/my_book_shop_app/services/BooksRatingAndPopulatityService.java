@@ -3,13 +3,9 @@ package com.example.my_book_shop_app.services;
 import com.example.my_book_shop_app.repositories.BookRepository;
 import com.example.my_book_shop_app.repositories.RatingRepository;
 import com.example.my_book_shop_app.struct.book.Book;
-import com.example.my_book_shop_app.struct.book.links.Book2UserTypeEntity;
 import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
