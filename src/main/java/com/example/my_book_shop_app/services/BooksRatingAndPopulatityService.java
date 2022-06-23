@@ -38,7 +38,7 @@ public class BooksRatingAndPopulatityService {
         if(rating == null) {
             rating = new RatingEntity();
             rating.setRatingCount(value);
-            rating.setBook(this.bookRepository.findBookBySlug(slug));
+            rating.setBook(book);
             rating.setUser(user);
         } else {
             rating.setRatingCount(value);
