@@ -25,7 +25,6 @@ class UserRepositoryTests {
     @Test
     void addNewUserTest() {
         UserEntity user = new UserEntity();
-        user.setId(2);
         user.setName("Tester");
         user.setRegTime(LocalDateTime.now());
         user.setHash("hash");
