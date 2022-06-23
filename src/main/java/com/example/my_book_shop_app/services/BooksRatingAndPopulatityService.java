@@ -30,45 +30,11 @@ public class BooksRatingAndPopulatityService {
 
     public List<Book> getPageOfPopularBooksBySql(Integer offset, Integer limit) {
         offset = offset * limit;
-        return bookRepository.getPopularBooks(RATING, offset, limit);
-    }
-
-    public Page<Book> getPageOfPopularBooks(Integer offset, Integer limit) {
-        Pageable nextPage = PageRequest.of(offset, limit);
-        List<Book> books = bookRepository.findAll();
-        List<Integer> popularBookIdList = getPopularBookIdList(books);
-        return bookRepository.findAllByIdIn(popularBookIdList, nextPage);
+        return bookRepository.getPageOfPopularBooks(RATING, offset, limit);
     }
 
     public Integer getCountOfPopularBooks() {
-        List<Book> books = bookRepository.findAll();
-        return getPopularBookIdList(books).size();
-    }
-
-    private List<Integer> getPopularBookIdList(List<Book> allBooks) {
-        List<Integer> popularBookIdList = new ArrayList<>();
-        allBooks.forEach(book -> {
-            double popularity = 0;
-            for (Book2UserTypeEntity relation: book.getUserRelations()) {
-                switch (relation.getCode()) {
-                    case "PAID" : {
-                        popularity++;
-                        break;
-                    }
-                    case "CART" : {
-                        popularity += 0.7;
-                        break;
-                    }
-                    case "KEPT" : {
-                        popularity += 0.4;
-                        break;
-                    }
-                    default: break;
-                }
-            }
-            if (popularity >= RATING) popularBookIdList.add(book.getId());
-        });
-        return popularBookIdList;
+        return bookRepository.getPopularBooks(RATING).size();
     }
 
     public boolean addRatingToBook(String slug, UserEntity user, Integer value) {
