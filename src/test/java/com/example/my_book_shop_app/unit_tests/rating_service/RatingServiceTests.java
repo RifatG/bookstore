@@ -4,6 +4,7 @@ import com.example.my_book_shop_app.repositories.BookRepository;
 import com.example.my_book_shop_app.repositories.RatingRepository;
 import com.example.my_book_shop_app.repositories.ReviewLikeRepository;
 import com.example.my_book_shop_app.repositories.ReviewRepository;
+import com.example.my_book_shop_app.services.BookService;
 import com.example.my_book_shop_app.services.BooksRatingAndPopulatityService;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
@@ -15,6 +16,9 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,6 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RatingServiceTests {
 
     private final BooksRatingAndPopulatityService ratingService;
+    private final BookService bookService;
 
     private static final double RATING = 2;
 
@@ -42,15 +47,16 @@ class RatingServiceTests {
     private ReviewRepository reviewRepository;
 
     @Autowired
-    public RatingServiceTests(BooksRatingAndPopulatityService ratingService) {
+    public RatingServiceTests(BooksRatingAndPopulatityService ratingService, BookService bookService) {
         this.ratingService = ratingService;
+        this.bookService = bookService;
     }
 
     @Test
     void getPageOfPopularBooksTest() {
         List<Book> popularBooks = Collections.singletonList(new Book());
-        int offset = 5;
-        int limit = 1;
+        int offset = 1;
+        int limit = 5;
         Mockito.doReturn(popularBooks).when(bookRepository).getPageOfPopularBooks(RATING, offset, limit);
 
         assertEquals(popularBooks, ratingService.getPageOfPopularBooksBySql(offset, limit));
@@ -63,6 +69,15 @@ class RatingServiceTests {
 
         assertEquals(1, ratingService.getCountOfPopularBooks());
         Mockito.verify(bookRepository, Mockito.times(1)).getPopularBooks(RATING);
+    }
+
+    @Test
+    void getPageOfRecommendedBooksTest() {
+        Page<Book> books = new PageImpl<>(Collections.singletonList(new Book()));
+        Mockito.doReturn(books).when(bookRepository).findAll(Mockito.any(PageRequest.class));
+
+        assertEquals(books, bookService.getPageOfRecommendedBooks(1,5));
+        Mockito.verify(bookRepository, Mockito.times(1)).findAll(Mockito.any(PageRequest.class));
     }
 
     @Test
