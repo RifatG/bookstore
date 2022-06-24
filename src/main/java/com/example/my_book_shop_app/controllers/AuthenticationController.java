@@ -66,7 +66,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/registration")
-    public String handleUserRegistration(RegistrationForm registrationForm, Model model) throws UserAlreadyExistException {
+    public String handleUserRegistration(@RequestBody RegistrationForm registrationForm, Model model) throws UserAlreadyExistException {
         userRegister.registerNewUser(registrationForm);
         model.addAttribute("registrationOk", true);
         return "signin";
