@@ -57,10 +57,10 @@ class RatingServiceTests {
         List<Book> popularBooks = Collections.singletonList(new Book());
         int offset = 1;
         int limit = 5;
-        Mockito.doReturn(popularBooks).when(bookRepository).getPageOfPopularBooks(RATING, offset, limit);
+        Mockito.doReturn(popularBooks).when(bookRepository).getPageOfPopularBooks(RATING, offset*limit, limit);
 
         assertEquals(popularBooks, ratingService.getPageOfPopularBooksBySql(offset, limit));
-        Mockito.verify(bookRepository, Mockito.times(1)).getPageOfPopularBooks(RATING, offset, limit);
+        Mockito.verify(bookRepository, Mockito.times(1)).getPageOfPopularBooks(RATING, offset*limit, limit);
     }
 
     @Test
