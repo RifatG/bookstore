@@ -41,7 +41,10 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     Page<Book> findAllByPubDateBetween(Date min, Date max, Pageable nextPage);
 
     @Query(value = "SELECT r.id, r.pub_date, r.is_bestseller, r.slug, r.title, r.image, r.description, r.price, r.discount, r.author_id FROM (SELECT b.*, COUNT(CASE WHEN b2ut.code='PAID' then 1 ELSE NULL END) AS paid, COUNT(CASE WHEN b2ut.code='CART' then 1 ELSE NULL END) * 0.7 AS cart, COUNT(CASE WHEN b2ut.code='KEPT' then 1 ELSE NULL END) * 0.4 AS kept FROM books AS b JOIN book2user AS b2u ON b.id=b2u.book_id JOIN book2user_type AS b2ut ON b2u.type_id=b2ut.id GROUP BY b.id) AS r WHERE (r.paid + r.cart + r.kept) >= :rating OFFSET :offset LIMIT :limit", nativeQuery = true)
-    List<Book> getPopularBooks(double rating, int offset, int limit);
+    List<Book> getPageOfPopularBooks(double rating, int offset, int limit);
+
+    @Query(value = "SELECT r.id, r.pub_date, r.is_bestseller, r.slug, r.title, r.image, r.description, r.price, r.discount, r.author_id FROM (SELECT b.*, COUNT(CASE WHEN b2ut.code='PAID' then 1 ELSE NULL END) AS paid, COUNT(CASE WHEN b2ut.code='CART' then 1 ELSE NULL END) * 0.7 AS cart, COUNT(CASE WHEN b2ut.code='KEPT' then 1 ELSE NULL END) * 0.4 AS kept FROM books AS b JOIN book2user AS b2u ON b.id=b2u.book_id JOIN book2user_type AS b2ut ON b2u.type_id=b2ut.id GROUP BY b.id) AS r WHERE (r.paid + r.cart + r.kept) >= :rating", nativeQuery = true)
+    List<Book> getPopularBooks(double rating);
 
     Page<Book> findAllByIdIn(List<Integer> idList, Pageable nextPage);
 

@@ -136,7 +136,7 @@ public class BooksController {
     @ResponseBody
     public ResultDto handleBookReview(@RequestBody BookReviewRequest request) {
         try {
-            this.bookService.addBookReviewBySlug(request.getBookId(), this.userRegister.getCurrentUser(), request.getText());
+            this.booksRatingAndPopulatityService.addBookReviewBySlug(request.getBookId(), this.userRegister.getCurrentUser(), request.getText());
         } catch (Exception e) {
             return new ResultDto(false, "Возникла ошибка " + e.getMessage());
         }
@@ -146,7 +146,7 @@ public class BooksController {
     @PostMapping("/rateBookReview")
     @ResponseBody
     public ResultDto handleRateBookReview(@RequestBody BookReviewRequest request) {
-        this.bookService.addRatingToBookReview(request.getReviewId(), this.userRegister.getCurrentUser(), request.getValue().shortValue());
+        this.booksRatingAndPopulatityService.addRatingToBookReview(request.getReviewId(), this.userRegister.getCurrentUser(), request.getValue().shortValue());
         return new ResultDto(true);
     }
 }
