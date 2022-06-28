@@ -1,5 +1,6 @@
 package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.aop.annotations.BookStatusCookieChangedLogger;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.Cookie;
@@ -14,6 +15,7 @@ public class CookieHandler {
 
     private static final String COOKIE_BOOKS_PATH = "/books";
 
+    @BookStatusCookieChangedLogger
     public void updateSlugInCookie(String cookieValue, String cookieName, HttpServletResponse response, String slug) {
         if(cookieValue == null || cookieValue.equals("")) {
             Cookie cookie = new Cookie(cookieName, slug);
@@ -28,6 +30,7 @@ public class CookieHandler {
         }
     }
 
+    @BookStatusCookieChangedLogger
     public void removeSlugFromCookie(String cookieValue, String cookieName, HttpServletResponse response, String slug) {
         if(cookieValue != null && !cookieValue.equals("")) {
             ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cookieValue.split("/")));
