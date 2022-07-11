@@ -104,6 +104,13 @@
 			<version>1.18.24</version>
 		</dependency>
 
+		<!--	AOP     |     starter-aop-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
+			<version>2.7.0</version>
+		</dependency>
+
 		<!--	TEST     |     starter-test-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
