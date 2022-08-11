@@ -1,5 +1,10 @@
 package com.example.my_book_shop_app.data;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@NoArgsConstructor
+@Data
 public class ContactConfirmationResponse {
 
     private Boolean result;
@@ -17,30 +22,6 @@ public class ContactConfirmationResponse {
 
     public ContactConfirmationResponse(String error) {
         this.result = false;
-        this.error = error;
-    }
-
-    public Boolean getResult() {
-        return result;
-    }
-
-    public void setResult(Boolean result) {
-        this.result = result;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getError() {
-        return error;
-    }
-
-    public void setError(String error) {
         this.error = error;
     }
 }

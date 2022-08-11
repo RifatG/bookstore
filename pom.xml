@@ -111,6 +111,19 @@
 			<version>2.7.0</version>
 		</dependency>
 
+		<!--	EXTERNAL API     |     twilio-->
+		<dependency>
+			<groupId>com.twilio.sdk</groupId>
+			<artifactId>twilio</artifactId>
+			<version>8.31.0</version>
+		</dependency>
+
+		<!--	WEB HTTP CLIENT     |     webclient-->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+
 		<!--	TEST     |     starter-test-->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

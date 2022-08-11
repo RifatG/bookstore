@@ -27,7 +27,7 @@ public class BookstoreUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return bookstoreUser.getPassword();
+        return null;
     }
 
     @Override

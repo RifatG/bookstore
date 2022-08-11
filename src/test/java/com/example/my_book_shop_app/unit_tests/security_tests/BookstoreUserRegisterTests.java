@@ -65,7 +65,6 @@ class BookstoreUserRegisterTests {
         registrationForm = new RegistrationForm();
         registrationForm.setEmail("test@mail.org");
         registrationForm.setName("Tester");
-        registrationForm.setPassword("iddqd");
         registrationForm.setPhoneNumber("9031232323");
     }
 
@@ -80,7 +79,7 @@ class BookstoreUserRegisterTests {
 
         Mockito.verify(bookstoreUserRepositoryMock, Mockito.times(1))
                 .save(Mockito.any(UserEntity.class));
-        Mockito.verify(userContactRepositoryMock, Mockito.times(1))
+        Mockito.verify(userContactRepositoryMock, Mockito.times(2))
                 .save(Mockito.any(UserContactEntity.class));
     }
 
@@ -92,13 +91,14 @@ class BookstoreUserRegisterTests {
         attributes.put("id", "1234");
         attributes.put("name", "Tester");
         attributes.put("email", "test@test.test");
+        attributes.put("phone", "79999999999");
         DefaultOAuth2User user = new DefaultOAuth2User(authorities, attributes, "id");
 
         userRegister.registerNewUser(user);
 
         Mockito.verify(bookstoreUserRepositoryMock, Mockito.times(1))
                 .save(Mockito.any(UserEntity.class));
-        Mockito.verify(userContactRepositoryMock, Mockito.times(1))
+        Mockito.verify(userContactRepositoryMock, Mockito.times(2))
                 .save(Mockito.any(UserContactEntity.class));
     }
 

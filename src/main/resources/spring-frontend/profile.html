@@ -51,7 +51,7 @@
                                             <label class="form-label" for="mail" th:text="#{profile.email}">E-mail
                                             </label>
                                             <input class="form-input" id="mail" name="mail" type="text"
-                                                   value="addr@sait.com" data-validate="require mail" th:value="${currentUser.getUserContact().contact}"/>
+                                                   value="addr@sait.com" data-validate="require mail" th:value="${currentUser.getEmailContact().contact}"/>
                                             <div class="Profile-btn Profile-btn_confirm">
                                                 <button class="btn btn_primary" type="button">Подтвердить
                                                 </button>
@@ -62,7 +62,7 @@
                                             </label>
                                             <input class="form-input" id="phone" name="phone" type="text"
                                                    value="+70000000000" data-mask="+7 (999) 999-99-99"
-                                                   data-validate="require"/>
+                                                   data-validate="require" th:value="${currentUser.getPhoneContact().contact}"/>
                                             <div class="Profile-btn Profile-btn_confirm">
                                                 <button class="btn btn_primary" type="button">Подтвердить
                                                 </button>

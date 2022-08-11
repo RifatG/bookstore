@@ -3,6 +3,7 @@ package com.example.my_book_shop_app.struct.user;
 import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
 import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
 import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
+import com.example.my_book_shop_app.struct.enums.ContactType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
@@ -44,9 +45,14 @@ public class UserEntity {
     @JsonIgnore
     private List<RatingEntity> ratingList = new ArrayList<>();
 
-    @OneToOne(mappedBy = "user")
-    private UserContactEntity userContact;
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
+    private List<UserContactEntity> userContacts;
 
-    @Column(columnDefinition = "VARCHAR(255) NOT NULL")
-    private String password;
+    public UserContactEntity getEmailContact() {
+        return this.userContacts.stream().filter(contact -> contact.getType().equals(ContactType.EMAIL)).findFirst().orElse(null);
+    }
+
+    public UserContactEntity getPhoneContact() {
+        return this.userContacts.stream().filter(contact -> contact.getType().equals(ContactType.PHONE)).findFirst().orElse(null);
+    }
 }
