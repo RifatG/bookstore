@@ -48,6 +48,9 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER)
     private List<UserContactEntity> userContacts;
 
+    @Column(columnDefinition = "VARCHAR(255) NOT NULL")
+    private String password;
+
     public UserContactEntity getEmailContact() {
         return this.userContacts.stream().filter(contact -> contact.getType().equals(ContactType.EMAIL)).findFirst().orElse(null);
     }

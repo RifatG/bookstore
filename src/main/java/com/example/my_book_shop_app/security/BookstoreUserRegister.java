@@ -43,20 +43,21 @@ public class BookstoreUserRegister {
     }
 
     public void registerNewUser(RegistrationForm registrationForm) throws UserAlreadyExistException {
-        registerNewUser(registrationForm.getEmail(), registrationForm.getName(), registrationForm.getPhoneNumber());
+        registerNewUser(registrationForm.getEmail(), registrationForm.getName(), registrationForm.getPhoneNumber(), registrationForm.getPassword());
     }
 
     public void registerNewUser(DefaultOAuth2User oAuth2User) throws UserAlreadyExistException {
         Map<String, Object> attrs = oAuth2User.getAttributes();
-        registerNewUser(attrs.get("email").toString(), attrs.get("name").toString(), attrs.get("phone").toString());
+        registerNewUser(attrs.get("email").toString(), attrs.get("name").toString(), attrs.get("phone").toString(), attrs.get("id").toString());
     }
 
-    private void registerNewUser(String email, String name, String phoneNumber) throws UserAlreadyExistException {
+    private void registerNewUser(String email, String name, String phoneNumber, String password) throws UserAlreadyExistException {
         if(userContactRepository.findUserContactEntityByContact(email) == null) {
             UserEntity user = new UserEntity();
             user.setName(name);
             user.setRegTime(LocalDateTime.now());
             user.setHash("hash");
+            user.setPassword(passwordEncoder.encode(password));
             userRepository.save(user);
             createUserContactsForUser(ContactType.EMAIL, user.getId(), email);
             createUserContactsForUser(ContactType.PHONE, user.getId(), phoneNumber);

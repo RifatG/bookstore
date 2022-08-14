@@ -28,13 +28,13 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthenticationController {
 
     private final BookstoreUserRegister userRegister;
-    private final ConfirmationCodeService smsService;
+    private final ConfirmationCodeService confirmationCodeService;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
-    public AuthenticationController(BookstoreUserRegister userRegister, ConfirmationCodeService smsService) {
+    public AuthenticationController(BookstoreUserRegister userRegister, ConfirmationCodeService confirmationCodeService) {
         this.userRegister = userRegister;
-        this.smsService = smsService;
+        this.confirmationCodeService = confirmationCodeService;
     }
 
     @ModelAttribute("searchWordDto")
@@ -67,17 +67,33 @@ public class AuthenticationController {
     @PostMapping("/requestContactConfirmation")
     @ResponseBody
     public ContactConfirmationResponse handleRequestContactConfirmation(@RequestBody ContactConfirmationPayload payload) {
-        ContactConfirmationResponse response = new ContactConfirmationResponse(true);
-        if (!payload.getContact().contains("@")) {
-            try {
-                String confirmationCodeString = smsService.sendConfirmationCode(payload.getContact());
-                smsService.saveNewConfirmationCode(new ConfirmationCode(confirmationCodeString, 60));
-            } catch (ConfirmationCodeException e) {
-                logger.error("Confirmation code wasn't sent. Error: {}", e.getMessage());
-                return new ContactConfirmationResponse(e.getMessage());
-            }
+        return new ContactConfirmationResponse(true);
+    }
+
+    @PostMapping("/requestEmailConfirmation")
+    @ResponseBody
+    public ContactConfirmationResponse handleRequestEmailConfirmation(@RequestBody ContactConfirmationPayload payload) {
+        try {
+            String confirmationCodeString = confirmationCodeService.sendEmailConfirmationCode(payload.getContact());
+            confirmationCodeService.saveNewConfirmationCode(new ConfirmationCode(confirmationCodeString, 300));
+        } catch (ConfirmationCodeException e) {
+            logger.error(e.getMessage());
+            return new ContactConfirmationResponse(e.getMessage());
         }
-        return response;
+        return new ContactConfirmationResponse(true);
+    }
+
+    @PostMapping("/requestPhoneConfirmation")
+    @ResponseBody
+    public ContactConfirmationResponse handleRequestPhoneConfirmation(@RequestBody ContactConfirmationPayload payload) {
+        try {
+            String confirmationCodeString = confirmationCodeService.sendPhoneConfirmationCode(payload.getContact());
+            confirmationCodeService.saveNewConfirmationCode(new ConfirmationCode(confirmationCodeString, 60));
+        } catch (ConfirmationCodeException e) {
+            logger.error("Confirmation code wasn't sent. Error: {}", e.getMessage());
+            return new ContactConfirmationResponse(e.getMessage());
+        }
+        return new ContactConfirmationResponse(true);
     }
 
     @PostMapping("/registration")
@@ -92,9 +108,8 @@ public class AuthenticationController {
     @ResponseBody
     public ContactConfirmationResponse handleApproveContact(@RequestBody ContactConfirmationPayload payload) {
         ContactConfirmationResponse response = new ContactConfirmationResponse();
-        if (Boolean.TRUE.equals(smsService.verifyConfirmationCode(payload.getCode())) || payload.getContact().contains("@")) {
+        if (Boolean.TRUE.equals(confirmationCodeService.verifyConfirmationCode(payload.getCode()))) {
             response.setResult(true);
-            return response;
         } else {
             response.setResult(false);
             response.setError("Incorrect code. Please try again");
@@ -102,7 +117,7 @@ public class AuthenticationController {
         return response;
     }
 
-    @PostMapping("/login")
+    @PostMapping("/login-by-email")
     @ResponseBody
     public ContactConfirmationResponse handleLogin(@RequestBody ContactConfirmationPayload payload, HttpServletResponse httpServletResponse) {
         try{
@@ -123,14 +138,14 @@ public class AuthenticationController {
     @ResponseBody
     public ContactConfirmationResponse handleLoginByPhoneNumber(@RequestBody ContactConfirmationPayload payload, HttpServletResponse httpServletResponse) {
         payload.setContact(payload.getContact().replaceAll("\\D+", ""));
-            if (Boolean.TRUE.equals(smsService.verifyConfirmationCode(payload.getCode()))) {
+            if (Boolean.TRUE.equals(confirmationCodeService.verifyConfirmationCode(payload.getCode()))) {
             try{
                 ContactConfirmationResponse loginResponse = userRegister.jwtLoginByPhoneNumber(payload);
                 Cookie cookie = new Cookie("token", loginResponse.getToken());
                 httpServletResponse.addCookie(cookie);
                 return loginResponse;
             } catch (UsernameNotFoundException usernameNotFoundException) {
-                logger.error("User not found with email {}", payload.getContact());
+                logger.error("User not found with phone {}", payload.getContact());
                 return new ContactConfirmationResponse(usernameNotFoundException.getMessage());
             } catch (Exception e) {
                 logger.error("LOGIN error: {}", e.getMessage());
