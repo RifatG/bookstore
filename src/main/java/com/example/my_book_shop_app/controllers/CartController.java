@@ -5,6 +5,7 @@ import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.BookService;
 import com.example.my_book_shop_app.services.CookieHandler;
+import com.example.my_book_shop_app.services.PaymentService;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,8 +14,10 @@ import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.servlet.http.HttpServletResponse;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,15 +27,17 @@ public class CartController {
     private final BookService bookService;
     private final CookieHandler cookieHandler;
     private final BookstoreUserRegister userRegister;
+    private final PaymentService paymentService;
 
     private static final String IS_CART_EMPTY = "isCartEmpty";
     private static final String CART_CONTENTS_COOKIE = "cartContents";
 
     @Autowired
-    public CartController(BookService bookService, CookieHandler cookieHandler, BookstoreUserRegister userRegister) {
+    public CartController(BookService bookService, CookieHandler cookieHandler, BookstoreUserRegister userRegister, PaymentService paymentService) {
         this.bookService = bookService;
         this.cookieHandler = cookieHandler;
         this.userRegister = userRegister;
+        this.paymentService = paymentService;
     }
 
     @ModelAttribute("cartBooks")
@@ -81,4 +86,10 @@ public class CartController {
         return "redirect:/books/cart";
     }
 
+    @GetMapping("/books/pay")
+    public RedirectView handlePay(@CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents) throws NoSuchAlgorithmException {
+        List<Book> booksFromCookieSlugs = this.bookService.getBooksBySlugs(this.cookieHandler.getSlugsFromCookie(cartContents));
+        String paymentUrl = paymentService.getPaymentUrl(booksFromCookieSlugs);
+        return new RedirectView(paymentUrl);
+    }
 }
