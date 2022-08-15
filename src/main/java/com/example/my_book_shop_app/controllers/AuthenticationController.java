@@ -160,8 +160,4 @@ public class AuthenticationController {
         return "my";
     }
 
-    @GetMapping("/profile")
-    public String handleProfile(Model model) {
-        return "profile";
-    }
 }
