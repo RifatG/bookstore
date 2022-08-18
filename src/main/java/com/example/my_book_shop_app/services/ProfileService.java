@@ -30,4 +30,10 @@ public class ProfileService {
             logger.info("User password has NOT been changed. New password is empty");
         }
     }
+
+    public void topUpUserBalance(UserEntity user, Double sum) {
+        user.setBalance(user.getBalance() + sum);
+        userRepository.save(user);
+        logger.info("User balance has been increased to {}", user.getBalance());
+    }
 }

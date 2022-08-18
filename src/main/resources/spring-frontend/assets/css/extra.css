@@ -4341,6 +4341,10 @@ img {
   color: #2aa73a;
   text-align: center;
 }
+.Topup-error {
+  color: #f10226;
+  text-align: center;
+}
 
 .Transactions {
   visibility: visible;

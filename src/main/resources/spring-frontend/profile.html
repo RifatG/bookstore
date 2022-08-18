@@ -32,9 +32,10 @@
             <h2 class="Middle-title" th:text="#{profile.my-profile}">Мой профиль
             </h2>
             <div class="Tabs Tabs_default">
-                <div class="Tabs-links"><a class="Tabs-link Tabs-link_ACTIVE" href="#basic" th:text="#{profile.basic-information}">Основные сведения</a><a
-                        class="Tabs-link" href="#transactions" th:text="#{profile.transaction-story}">История транзакций</a><a class="Tabs-link" href="#topup" th:text="#{profile.top-up-balance}">Пополнить
-                    счет</a>
+                <div class="Tabs-links">
+                    <a class="Tabs-link Tabs-link_ACTIVE" href="#basic"  th:text="#{profile.basic-information}">Основные сведения</a>
+                    <a class="Tabs-link" href="#transactions" th:text="#{profile.transaction-story}">История транзакций</a>
+                    <a class="Tabs-link" href="#topup" th:text="#{profile.top-up-balance}">Пополнить счет</a>
                 </div>
                 <div class="Tabs-wrap">
                     <div class="Tabs-block" id="basic">
@@ -174,6 +175,10 @@
                                         <button class="btn btn_primary" th:text="#{profile.top-up}">Пополнить
                                         </button>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="Topup-success" th:if="${paymentSuccess}">Оплата прошла успешно</div>
+                                    <div class="Topup-error" th:if="${paymentFail}">Оплата не прошла</div>
                                 </div>
                             </div>
                         </form>

@@ -1,13 +1,11 @@
 package com.example.my_book_shop_app.services;
 
-import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 
 @Service
 public class PaymentService {
@@ -19,18 +17,17 @@ public class PaymentService {
     private String firstTestPass;
 
 
-    public String getPaymentUrl(List<Book> booksFromCookieSlugs) throws NoSuchAlgorithmException {
-        double paymentSumTotal = booksFromCookieSlugs.stream().mapToDouble(Book::getDiscountPrice).sum();
+    public String getPaymentUrl(String paymentSumm) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("MD5");
         String invId = "5"; //just for testing TODO order indexing later
-        md.update((merchantLogin + ":" + paymentSumTotal + ":" + invId + ":" + firstTestPass).getBytes());
+        md.update((merchantLogin + ":" + paymentSumm + ":" + invId + ":" + firstTestPass).getBytes());
         return "https://auth.robokassa.ru/Merchant/Index.aspx"+
                 "?MerchantLogin="+merchantLogin+
-                "&IndId="+invId+
+                "&InvId="+invId+
                 "&Culture=ru"+
                 "&Encoding=utf-8"+
-                "&OutSum="+paymentSumTotal+
-                "&SignatureValue="+ DatatypeConverter.printHexBinary(md.digest()).toUpperCase()+
+                "&OutSum="+paymentSumm+
+                "&SignatureValue="+ DatatypeConverter.printHexBinary(md.digest())+
                 "&IsTest=1";
     }
 }

@@ -88,8 +88,7 @@ public class CartController {
 
     @GetMapping("/books/pay")
     public RedirectView handlePay(@CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents) throws NoSuchAlgorithmException {
-        List<Book> booksFromCookieSlugs = this.bookService.getBooksBySlugs(this.cookieHandler.getSlugsFromCookie(cartContents));
-        String paymentUrl = paymentService.getPaymentUrl(booksFromCookieSlugs);
+        String paymentUrl = paymentService.getPaymentUrl("100");
         return new RedirectView(paymentUrl);
     }
 }
