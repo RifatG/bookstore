@@ -108,4 +108,9 @@ public class BookstoreUserRegister {
         }
         return null;
     }
+
+    public boolean isAuthenticated() {
+        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return (user instanceof DefaultOAuth2User || user instanceof BookstoreUserDetails);
+    }
 }

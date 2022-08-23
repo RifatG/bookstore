@@ -1,5 +1,6 @@
 package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.exceptions.LowUserBalanceException;
 import com.example.my_book_shop_app.repositories.UserRepository;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.slf4j.Logger;
@@ -31,9 +32,17 @@ public class ProfileService {
         }
     }
 
-    public void topUpUserBalance(UserEntity user, Double sum) {
+    public UserEntity increaseUserBalance(UserEntity user, Double sum) {
         user.setBalance(user.getBalance() + sum);
-        userRepository.save(user);
-        logger.info("User balance has been increased to {}", user.getBalance());
+        logger.info("User's ({}) balance has been increased to {}", user.getName(), user.getBalance());
+        return userRepository.save(user);
+    }
+
+    public UserEntity reduceUserBalance(UserEntity user, Double sum) throws LowUserBalanceException {
+        Double currentBalance = user.getBalance();
+        if (currentBalance < sum) throw new LowUserBalanceException(String.format("Balance of user %s is %.2f, that lower than %.2f, that is total price of books", user.getName(), currentBalance, sum));
+        user.setBalance(currentBalance - sum);
+        logger.info("User's ({}) balance has been reduced to {}", user.getName(), user.getBalance());
+        return userRepository.save(user);
     }
 }

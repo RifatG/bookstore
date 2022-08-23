@@ -1,23 +1,23 @@
 package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.SearchWordDto;
+import com.example.my_book_shop_app.exceptions.LowUserBalanceException;
 import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
-import com.example.my_book_shop_app.services.BookService;
-import com.example.my_book_shop_app.services.CookieHandler;
-import com.example.my_book_shop_app.services.PaymentService;
+import com.example.my_book_shop_app.services.*;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.user.UserEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.HttpServletResponse;
-import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,17 +27,21 @@ public class CartController {
     private final BookService bookService;
     private final CookieHandler cookieHandler;
     private final BookstoreUserRegister userRegister;
-    private final PaymentService paymentService;
+    private final ProfileService profileService;
+    private final TransactionService transactionService;
+
+    private final Logger logger = LoggerFactory.getLogger(CartController.class);
 
     private static final String IS_CART_EMPTY = "isCartEmpty";
     private static final String CART_CONTENTS_COOKIE = "cartContents";
 
     @Autowired
-    public CartController(BookService bookService, CookieHandler cookieHandler, BookstoreUserRegister userRegister, PaymentService paymentService) {
+    public CartController(BookService bookService, CookieHandler cookieHandler, BookstoreUserRegister userRegister, ProfileService profileService, TransactionService transactionService) {
         this.bookService = bookService;
         this.cookieHandler = cookieHandler;
         this.userRegister = userRegister;
-        this.paymentService = paymentService;
+        this.profileService = profileService;
+        this.transactionService = transactionService;
     }
 
     @ModelAttribute("cartBooks")
@@ -86,9 +90,24 @@ public class CartController {
         return "redirect:/books/cart";
     }
 
-    @GetMapping("/books/pay")
-    public RedirectView handlePay(@CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents) throws NoSuchAlgorithmException {
-        String paymentUrl = paymentService.getPaymentUrl("100");
-        return new RedirectView(paymentUrl);
+    @GetMapping("/books/buy")
+    public String handlePay(@CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents, RedirectAttributes redirectAttributes) {
+        if (!userRegister.isAuthenticated()) {
+            logger.info("User is not authenticated. It is need to be authenticated to buy a book");
+            return "signin";
+        }
+        List<Book> booksFromCookieSlugs = this.bookService.getBooksBySlugs(this.cookieHandler.getSlugsFromCookie(cartContents));
+        Double totalPrice = booksFromCookieSlugs.stream().mapToDouble(Book::getDiscountPrice).sum();
+        UserEntity user = currentUser();
+        try {
+            this.profileService.reduceUserBalance(user, totalPrice);
+            booksFromCookieSlugs.forEach(book -> this.transactionService.createNegativeTransaction(
+                    user.getId(), book, book.getDiscountPrice()*-1d));
+        } catch (LowUserBalanceException e) {
+            logger.info(e.getMessage());
+            redirectAttributes.addFlashAttribute("BalanceNotEnough", true);
+        }
+        return "redirect:/books/cart";
+
     }
 }

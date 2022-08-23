@@ -1,8 +1,11 @@
 package com.example.my_book_shop_app.struct.payments;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
+@Data
 @Entity
 @Table(name = "balance_transaction")
 public class BalanceTransactionEntity {
@@ -18,59 +21,11 @@ public class BalanceTransactionEntity {
     private LocalDateTime time;
 
     @Column(columnDefinition = "INT NOT NULL  DEFAULT 0")
-    private int value;
+    private Double value;
 
     @Column(columnDefinition = "INT NOT NULL")
     private int bookId;
 
     @Column(columnDefinition = "TEXT NOT NULL")
     private String description;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getUserId() {
-        return userId;
-    }
-
-    public void setUserId(int userId) {
-        this.userId = userId;
-    }
-
-    public LocalDateTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalDateTime time) {
-        this.time = time;
-    }
-
-    public int getValue() {
-        return value;
-    }
-
-    public void setValue(int value) {
-        this.value = value;
-    }
-
-    public int getBookId() {
-        return bookId;
-    }
-
-    public void setBookId(int bookId) {
-        this.bookId = bookId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 }

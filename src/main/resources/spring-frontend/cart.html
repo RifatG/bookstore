@@ -26,7 +26,7 @@
             <h1 class="Middle-title" th:text="#{topbar.cart}">Корзина
             </h1>
             <h3 th:if="${isCartEmpty}" th:text="#{cart.empty}"></h3>
-            <form class="form Cart" action="#" method="post">
+            <form class="form Cart" th:action="@{books/buy}" method="post">
                 <div class="Cart-product" th:each="book : ${cartBooks}">
                     <div class="Cart-block Cart-block_row">
                         <div class="Cart-block Cart-block_pict"><a class="Cart-pict" href="#"><img class="Cart-img"
@@ -119,9 +119,10 @@
                         <strong class="Cart-title" th:text="#{book.total}">Итого:
                         </strong><span class="Cart-price" th:text="${totalDiscountPrice}">534 р.</span><span class="Cart-price_old"th:text="${totalPrice}">658 р.</span>
                     </div>
-                    <div class="Cart-block"><a class="btn btn_success btn_md" href="/order.html" th:text="#{buttons.buy}" th:href="@{/books/pay}">Купить</a>
+                    <div class="Cart-block"><a class="btn btn_success btn_md" href="/order.html" th:text="#{buttons.buy}" th:href="@{/books/buy}">Купить</a>
                     </div>
                 </div>
+                <span th:if="${BalanceNotEnough}" th:text="#{cart.balance-not-enough}" style="color: red"></span>
             </form>
         </main>
     </div>
