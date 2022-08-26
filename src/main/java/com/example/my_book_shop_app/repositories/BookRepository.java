@@ -60,4 +60,15 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     List<Book> findBooksBySlugIn(String[] slugs);
 
+    @Query("select b from Book b join Book2UserEntity b2u on b.id = b2u.bookId where b2u.typeId = 3 and b2u.userId = :userId")
+    List<Book> findBooksByUserId(Integer userId);
+
+    @Query("select b from Book b join Book2UserEntity b2u on b.id = b2u.bookId where b2u.typeId = 2 and b2u.userId = :userId")
+    List<Book> findBooksInCartByUserId(Integer userId);
+
+    @Query("select b from Book b join Book2UserEntity b2u on b.id = b2u.bookId where b2u.typeId = 1 and b2u.userId = :userId")
+    List<Book> findBooksInKeptByUserId(Integer userId);
+
+    @Query("select b from Book b join Book2UserEntity b2u on b.id = b2u.bookId where b2u.typeId = 4 and b2u.userId = :userId")
+    List<Book> findBooksInArchiveByUserId(Integer userId);
 }

@@ -155,9 +155,4 @@ public class AuthenticationController {
         return null;
     }
 
-    @GetMapping("/my")
-    public String handleMy(Model model) {
-        return "my";
-    }
-
 }

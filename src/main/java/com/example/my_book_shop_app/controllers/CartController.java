@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class CartController {
@@ -91,18 +92,29 @@ public class CartController {
     }
 
     @GetMapping("/books/buy")
-    public String handlePay(@CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents, RedirectAttributes redirectAttributes) {
+    public String handlePay(@CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents, RedirectAttributes redirectAttributes, HttpServletResponse response) {
         if (!userRegister.isAuthenticated()) {
             logger.info("User is not authenticated. It is need to be authenticated to buy a book");
             return "signin";
         }
         List<Book> booksFromCookieSlugs = this.bookService.getBooksBySlugs(this.cookieHandler.getSlugsFromCookie(cartContents));
-        Double totalPrice = booksFromCookieSlugs.stream().mapToDouble(Book::getDiscountPrice).sum();
         UserEntity user = currentUser();
         try {
+            final List<Book> boughtBooks = new ArrayList<>();
+            booksFromCookieSlugs.forEach(book -> {
+                if (bookService.setBookAsPaid(user.getId(), book.getId()) != null) {
+                    boughtBooks.add(book);
+                    logger.info("Status of book {} of user {} has been changed to PAID", book.getTitle(), user.getName());
+                } else {
+                    logger.info("Status of book {} of user {} has NOT been changed to PAID", book.getTitle(), user.getName());
+                }
+            });
+            Double totalPrice = boughtBooks.stream().mapToDouble(Book::getDiscountPrice).sum();
             this.profileService.reduceUserBalance(user, totalPrice);
-            booksFromCookieSlugs.forEach(book -> this.transactionService.createNegativeTransaction(
-                    user.getId(), book, book.getDiscountPrice()*-1d));
+            boughtBooks.forEach(book -> this.transactionService.createNegativeTransaction(
+                        user.getId(), book, book.getDiscountPrice()*-1d));
+            redirectAttributes.addFlashAttribute("BoughtBooks", boughtBooks.stream().map(Book::getTitle).collect(Collectors.toList()));
+            this.cookieHandler.removeAllSlugs(CART_CONTENTS_COOKIE, response);
         } catch (LowUserBalanceException e) {
             logger.info(e.getMessage());
             redirectAttributes.addFlashAttribute("BalanceNotEnough", true);

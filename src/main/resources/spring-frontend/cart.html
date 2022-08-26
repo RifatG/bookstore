@@ -123,6 +123,7 @@
                     </div>
                 </div>
                 <span th:if="${BalanceNotEnough}" th:text="#{cart.balance-not-enough}" style="color: red"></span>
+                <span th:if="${BoughtBooks != null}" th:text="'bought' + ${BoughtBooks} " style="color: green"></span>
             </form>
         </main>
     </div>
