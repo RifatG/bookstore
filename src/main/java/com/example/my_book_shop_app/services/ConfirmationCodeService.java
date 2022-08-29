@@ -77,13 +77,14 @@ public class ConfirmationCodeService {
     }
 
     public void saveNewConfirmationCode(ConfirmationCode code) {
+        code.setCode(code.getCode().replace(" ", ""));
         if (confirmationCodeRepository.findByCode(code.getCode()) == null) {
             confirmationCodeRepository.save(code);
         }
     }
 
     public Boolean verifyConfirmationCode(String code) {
-        ConfirmationCode confirmationCode = confirmationCodeRepository.findByCode(code);
+        ConfirmationCode confirmationCode = confirmationCodeRepository.findByCode(code.replace(" ", ""));
         return confirmationCode != null && !confirmationCode.isExpired();
     }
 

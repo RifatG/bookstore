@@ -1,6 +1,7 @@
 package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.PaymentResponse;
+import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.data.TransactionsPageDto;
 import com.example.my_book_shop_app.data.request.ChangeProfileInfoPayload;
@@ -68,9 +69,19 @@ public class ProfileController {
     }
 
     @PostMapping("/profile")
-    public String handleChangeProfileInfo(ChangeProfileInfoPayload payload) {
-        profileService.changePassword(currentUser(), payload.getPassword());
-        return "redirect:/profile";
+    @ResponseBody
+    public ResultDto handleChangeProfileInfo(@RequestBody ChangeProfileInfoPayload payload) {
+        payload.setPhone(payload.getPhone().replaceAll("\\D+", ""));
+        UserEntity user = currentUser();
+        profileService.changeName(user, payload.getName());
+        profileService.changePassword(user, payload.getPassword());
+        if(payload.isMailApproved()) {
+            profileService.changeMail(user, payload.getMail());
+        }
+        if(payload.isPhoneApproved()) {
+            profileService.changePhone(user, payload.getPhone());
+        }
+        return new ResultDto(true);
     }
 
     @PostMapping("/payment")

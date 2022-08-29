@@ -54,6 +54,7 @@ public class BookstoreUserRegister {
     private void registerNewUser(String email, String name, String phoneNumber, String password) throws UserAlreadyExistException {
         if(userContactRepository.findUserContactEntityByContact(email) == null) {
             UserEntity user = new UserEntity();
+            user.setBalance(0d);
             user.setName(name);
             user.setRegTime(LocalDateTime.now());
             user.setHash("hash");

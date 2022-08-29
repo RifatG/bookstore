@@ -9,5 +9,6 @@ public class ChangeProfileInfoPayload {
     private String mail;
     private String phone;
     private String password;
-    private String passwordReply;
+    private boolean mailApproved;
+    private boolean phoneApproved;
 }
