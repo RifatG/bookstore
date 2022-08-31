@@ -3,7 +3,7 @@ package com.example.my_book_shop_app.controllers;
 import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
-import com.example.my_book_shop_app.services.BookService;
+import com.example.my_book_shop_app.services.UserBooksService;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +19,12 @@ import java.util.List;
 public class MyBooksPageController {
 
     private final BookstoreUserRegister userRegister;
-    private final BookService bookService;
+    private final UserBooksService userBooksService;
 
     @Autowired
-    public MyBooksPageController(BookstoreUserRegister userRegister, BookService bookService) {
+    public MyBooksPageController(BookstoreUserRegister userRegister, UserBooksService userBooksService) {
         this.userRegister = userRegister;
-        this.bookService = bookService;
+        this.userBooksService = userBooksService;
     }
 
     @ModelAttribute("searchWordDto")
@@ -45,7 +45,7 @@ public class MyBooksPageController {
 
     @ModelAttribute("booksData")
     public List<Book> popularBooksAttribute() {
-        return bookService.getBooksOfUser(currentUser().getId());
+        return userBooksService.getBooksOfUser(currentUser().getId());
     }
 
     @GetMapping("/my")

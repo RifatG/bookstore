@@ -95,6 +95,11 @@ public class BookstoreUserRegister {
         String jwtToken = jwtUtil.generateToken(userDetails);
         return new ContactConfirmationResponse(true, jwtToken);
     }
+
+    public UserEntity getUserByContact(String contact) {
+        BookstoreUserDetails userDetails = (BookstoreUserDetails) bookstoreUserDetailsService.loadUserByContact(contact);
+        return userDetails.getBookstoreUser();
+    }
     
     public UserEntity getCurrentUser() {
         Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

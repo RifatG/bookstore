@@ -7,10 +7,7 @@ import com.example.my_book_shop_app.data.request.BookReviewRequest;
 import com.example.my_book_shop_app.data.request.ChangeBookStatusRequest;
 import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
-import com.example.my_book_shop_app.services.BooksRatingAndPopulatityService;
-import com.example.my_book_shop_app.services.CookieHandler;
-import com.example.my_book_shop_app.services.ResourceStorage;
-import com.example.my_book_shop_app.services.BookService;
+import com.example.my_book_shop_app.services.*;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import com.google.common.net.HttpHeaders;
@@ -39,16 +36,18 @@ public class BooksController {
     private final ResourceStorage storage;
     private final CookieHandler cookieHandler;
     private final BookstoreUserRegister userRegister;
+    private final UserBooksService userBooksService;
 
     private static final String REDIRECT_TO_BOOKS = "redirect:/books/book/";
 
     @Autowired
-    public BooksController(BookService bookService, ResourceStorage storage, CookieHandler cookieHandler, BooksRatingAndPopulatityService booksRatingAndPopulatityService, BookstoreUserRegister userRegister) {
+    public BooksController(BookService bookService, ResourceStorage storage, CookieHandler cookieHandler, BooksRatingAndPopulatityService booksRatingAndPopulatityService, BookstoreUserRegister userRegister, UserBooksService userBooksService) {
         this.storage = storage;
         this.bookService = bookService;
         this.cookieHandler = cookieHandler;
         this.booksRatingAndPopulatityService = booksRatingAndPopulatityService;
         this.userRegister = userRegister;
+        this.userBooksService = userBooksService;
     }
 
     @ModelAttribute("searchWordDto")
@@ -108,16 +107,27 @@ public class BooksController {
     public String handleChangeBookStatus(@PathVariable("slug") String slug, @CookieValue(name = "cartContents", required = false) String cartContents,
                                          @CookieValue(name = "postponedContents", required = false) String postponedContents,
                                          HttpServletResponse response, Model model, @RequestBody ChangeBookStatusRequest request) {
+        boolean isAuth = userRegister.isAuthenticated();
+        int userId = isAuth ? currentUser().getId() : 0;
+        int bookId = bookService.getBookBySlug(slug).getId();
         switch (request.getStatus()) {
             case "CART" : {
-                cookieHandler.updateSlugInCookie(cartContents, "cartContents", response, slug);
-                cookieHandler.removeSlugFromCookie(postponedContents, "postponedContents", response, slug);
+                if (isAuth) {
+                    userBooksService.setBookAsCart(userId, bookId);
+                } else {
+                    cookieHandler.updateSlugInCookie(cartContents, "cartContents", response, slug);
+                    cookieHandler.removeSlugFromCookie(postponedContents, "postponedContents", response, slug);
+                }
                 model.addAttribute("isCartEmpty", false);
                 break;
             }
             case "KEPT" : {
-                cookieHandler.updateSlugInCookie(postponedContents, "postponedContents", response, slug);
-                cookieHandler.removeSlugFromCookie(cartContents, "cartContents", response, slug);
+                if (isAuth) {
+                    userBooksService.setBookAsKept(userId, bookId);
+                } else {
+                    cookieHandler.updateSlugInCookie(postponedContents, "postponedContents", response, slug);
+                    cookieHandler.removeSlugFromCookie(cartContents, "cartContents", response, slug);
+                }
                 model.addAttribute("isPostponedEmpty", false);
                 break;
             }

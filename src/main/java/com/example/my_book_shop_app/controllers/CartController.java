@@ -30,6 +30,7 @@ public class CartController {
     private final BookstoreUserRegister userRegister;
     private final ProfileService profileService;
     private final TransactionService transactionService;
+    private final UserBooksService userBooksService;
 
     private final Logger logger = LoggerFactory.getLogger(CartController.class);
 
@@ -37,12 +38,13 @@ public class CartController {
     private static final String CART_CONTENTS_COOKIE = "cartContents";
 
     @Autowired
-    public CartController(BookService bookService, CookieHandler cookieHandler, BookstoreUserRegister userRegister, ProfileService profileService, TransactionService transactionService) {
+    public CartController(BookService bookService, CookieHandler cookieHandler, BookstoreUserRegister userRegister, ProfileService profileService, TransactionService transactionService, UserBooksService userBooksService) {
         this.bookService = bookService;
         this.cookieHandler = cookieHandler;
         this.userRegister = userRegister;
         this.profileService = profileService;
         this.transactionService = transactionService;
+        this.userBooksService = userBooksService;
     }
 
     @ModelAttribute("cartBooks")
@@ -68,17 +70,19 @@ public class CartController {
 
     @GetMapping("/books/cart")
     public String cart(@CookieValue(value = CART_CONTENTS_COOKIE, required = false) String cartContents, Model model) {
-        if (cartContents == null || cartContents.equals("")) {
-            model.addAttribute(IS_CART_EMPTY, true);
-        } else {
+        List<Book> cartBooks;
+        cartBooks = userRegister.isAuthenticated()
+                ? userBooksService.getBooksInCartOfUser(currentUser().getId())
+                : this.bookService.getBooksBySlugs(this.cookieHandler.getSlugsFromCookie(cartContents));
+        if (cartBooks != null && !cartBooks.isEmpty()) {
             model.addAttribute(IS_CART_EMPTY, false);
-            List<Book> booksFromCookieSlugs = this.bookService.getBooksBySlugs(this.cookieHandler.getSlugsFromCookie(cartContents));
-            Integer totalPrice = booksFromCookieSlugs.stream().mapToInt(Book::getPrice).sum();
-            Integer totalDiscountPrice = booksFromCookieSlugs.stream().mapToInt(Book::getDiscountPrice).sum();
-            model.addAttribute("cartBooks", booksFromCookieSlugs);
+            Integer totalPrice = cartBooks.stream().mapToInt(Book::getPrice).sum();
+            Integer totalDiscountPrice = cartBooks.stream().mapToInt(Book::getDiscountPrice).sum();
+            model.addAttribute("cartBooks", cartBooks);
             model.addAttribute("totalPrice", totalPrice);
             model.addAttribute("totalDiscountPrice", totalDiscountPrice);
-
+        } else {
+            model.addAttribute(IS_CART_EMPTY, true);
         }
         return "cart";
     }
@@ -86,23 +90,30 @@ public class CartController {
     @PostMapping("/books/changeBookStatus/cart/remove/{slug}")
     public String handleRemoveBookFromCartRequest(@PathVariable("slug") String slug, @CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents,
                                                   HttpServletResponse response, Model model) {
-        this.cookieHandler.removeSlugFromCookie(cartContents, CART_CONTENTS_COOKIE, response, slug);
-        model.addAttribute(IS_CART_EMPTY, cartContents == null || cartContents.equals(""));
+        if (userRegister.isAuthenticated()) {
+            UserEntity user = currentUser();
+            this.userBooksService.removeBookFromCart(user.getId(), bookService.getBookBySlug(slug).getId());
+            model.addAttribute(IS_CART_EMPTY, userBooksService.getBooksInCartOfUser(user.getId()).isEmpty());
+        } else {
+            this.cookieHandler.removeSlugFromCookie(cartContents, CART_CONTENTS_COOKIE, response, slug);
+            model.addAttribute(IS_CART_EMPTY, cartContents == null || cartContents.equals(""));
+        }
         return "redirect:/books/cart";
     }
 
     @GetMapping("/books/buy")
-    public String handlePay(@CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents, RedirectAttributes redirectAttributes, HttpServletResponse response) {
+    public String handlePay(RedirectAttributes redirectAttributes, HttpServletResponse response) {
         if (!userRegister.isAuthenticated()) {
             logger.info("User is not authenticated. It is need to be authenticated to buy a book");
             return "signin";
         }
-        List<Book> booksFromCookieSlugs = this.bookService.getBooksBySlugs(this.cookieHandler.getSlugsFromCookie(cartContents));
         UserEntity user = currentUser();
+        List<Book> cartBooks = this.userBooksService.getBooksInCartOfUser(user.getId());
+
         try {
             final List<Book> boughtBooks = new ArrayList<>();
-            booksFromCookieSlugs.forEach(book -> {
-                if (bookService.setBookAsPaid(user.getId(), book.getId()) != null) {
+            cartBooks.forEach(book -> {
+                if (userBooksService.setBookAsPaid(user.getId(), book.getId()) != null) {
                     boughtBooks.add(book);
                     logger.info("Status of book {} of user {} has been changed to PAID", book.getTitle(), user.getName());
                 } else {

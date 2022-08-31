@@ -13,7 +13,7 @@ import java.util.StringJoiner;
 @Service
 public class CookieHandler {
 
-    private static final String COOKIE_BOOKS_PATH = "/books";
+    private static final String COOKIE_BOOKS_PATH = "/";
 
     @BookStatusCookieChangedLogger
     public void updateSlugInCookie(String cookieValue, String cookieName, HttpServletResponse response, String slug) {
