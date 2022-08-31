@@ -71,4 +71,7 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("select b from Book b join Book2UserEntity b2u on b.id = b2u.bookId where b2u.typeId = 4 and b2u.userId = :userId")
     List<Book> findBooksInArchiveByUserId(Integer userId);
+
+    @Query("select b from Book b join ViewedBook2UserEntity vb2u on b.id = vb2u.bookId where vb2u.userId = :userId order by vb2u.time desc")
+    Page<Book> findViewedBooks(Integer userId, Pageable nextPage);
 }

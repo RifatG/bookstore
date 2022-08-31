@@ -69,6 +69,9 @@ public class BooksController {
     @GetMapping("/book/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         Book book = this.bookService.getBookBySlug(slug);
+        if (userRegister.isAuthenticated()) {
+            this.userBooksService.setBookAsViewed(currentUser().getId(), book.getId());
+        }
         model.addAttribute("book", book);
         RatingDto rating = new RatingDto(book.getRatingList());
         model.addAttribute("rating", rating);

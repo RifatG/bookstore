@@ -110,4 +110,9 @@ public class BookService {
     public List<Book> getBooksBySlugs(String[] cookieSlugs) {
         return this.bookRepository.findBooksBySlugIn(cookieSlugs);
     }
+
+    public Page<Book> getPageOfViewedBooks(Integer userId, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return this.bookRepository.findViewedBooks(userId, nextPage);
+    }
 }
