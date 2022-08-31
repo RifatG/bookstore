@@ -48,7 +48,9 @@ public class ControllerRequestMappingLoggerAspect {
             pointcut = "requestMappingPointcut()",
             returning = "response")
     public void requestMappingSuccessReturningLogger(Object response) {
-        logger.info("Request has been handled successfully and returned {}", response.getClass().getTypeName());
+        if (response != null) {
+            logger.info("Request has been handled successfully and returned {}", response.getClass().getTypeName());
+        }
     }
 
     @AfterThrowing(

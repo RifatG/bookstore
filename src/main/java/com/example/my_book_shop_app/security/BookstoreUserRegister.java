@@ -43,32 +43,38 @@ public class BookstoreUserRegister {
     }
 
     public void registerNewUser(RegistrationForm registrationForm) throws UserAlreadyExistException {
-        registerNewUser(registrationForm.getEmail(), registrationForm.getName(), registrationForm.getPassword());
+        registerNewUser(registrationForm.getEmail(), registrationForm.getName(), registrationForm.getPhoneNumber(), registrationForm.getPassword());
     }
 
     public void registerNewUser(DefaultOAuth2User oAuth2User) throws UserAlreadyExistException {
         Map<String, Object> attrs = oAuth2User.getAttributes();
-        registerNewUser(attrs.get("email").toString(), attrs.get("name").toString(), attrs.get("id").toString());
+        registerNewUser(attrs.get("email").toString(), attrs.get("name").toString(), attrs.get("phone").toString(), attrs.get("id").toString());
     }
 
-    private void registerNewUser(String email, String name, String password) throws UserAlreadyExistException {
+    private void registerNewUser(String email, String name, String phoneNumber, String password) throws UserAlreadyExistException {
         if(userContactRepository.findUserContactEntityByContact(email) == null) {
             UserEntity user = new UserEntity();
+            user.setBalance(0d);
             user.setName(name);
             user.setRegTime(LocalDateTime.now());
             user.setHash("hash");
             user.setPassword(passwordEncoder.encode(password));
             userRepository.save(user);
-            UserContactEntity contact = new UserContactEntity();
-            contact.setType(ContactType.EMAIL);
-            contact.setApproved((short) 1);
-            contact.setUserId(user.getId());
-            contact.setCode("code");
-            contact.setCodeTime(LocalDateTime.now());
-            contact.setCodeTrails(1);
-            contact.setContact(email);
-            userContactRepository.save(contact);
+            createUserContactsForUser(ContactType.EMAIL, user.getId(), email);
+            createUserContactsForUser(ContactType.PHONE, user.getId(), phoneNumber);
         } else throw new UserAlreadyExistException("User with email " + email + " is already signed up");
+    }
+
+    private void createUserContactsForUser(ContactType contactType, Integer userId, String contact) {
+        UserContactEntity userContact = new UserContactEntity();
+        userContact.setType(contactType);
+        userContact.setApproved((short) 1);
+        userContact.setUserId(userId);
+        userContact.setCode("code");
+        userContact.setCodeTime(LocalDateTime.now());
+        userContact.setCodeTrails(0);
+        userContact.setContact(contact);
+        userContactRepository.save(userContact);
     }
 
     public ContactConfirmationResponse login(ContactConfirmationPayload payload) {
@@ -78,12 +84,18 @@ public class BookstoreUserRegister {
     }
 
     public ContactConfirmationResponse jwtLogin(ContactConfirmationPayload payload) {
-        BookstoreUserDetails userDetails = (BookstoreUserDetails) bookstoreUserDetailsService.loadUserByEmail(payload.getContact());
+        BookstoreUserDetails userDetails = (BookstoreUserDetails) bookstoreUserDetailsService.loadUserByContact(payload.getContact());
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(userDetails.getUsername(), payload.getCode()));
         String jwtToken = jwtUtil.generateToken(userDetails);
         return new ContactConfirmationResponse(true, jwtToken);
     }
 
+    public ContactConfirmationResponse jwtLoginByPhoneNumber(ContactConfirmationPayload payload) {
+        BookstoreUserDetails userDetails = (BookstoreUserDetails) bookstoreUserDetailsService.loadUserByContact(payload.getContact());
+        String jwtToken = jwtUtil.generateToken(userDetails);
+        return new ContactConfirmationResponse(true, jwtToken);
+    }
+    
     public UserEntity getCurrentUser() {
         Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         if (userDetails instanceof DefaultOAuth2User) {
@@ -98,4 +110,8 @@ public class BookstoreUserRegister {
         return null;
     }
 
+    public boolean isAuthenticated() {
+        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return (user instanceof DefaultOAuth2User || user instanceof BookstoreUserDetails);
+    }
 }

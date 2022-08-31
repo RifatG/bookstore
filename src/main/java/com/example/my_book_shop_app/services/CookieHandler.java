@@ -58,4 +58,10 @@ public class CookieHandler {
         }
         return null;
     }
+
+    public void removeAllSlugs(String cookieName, HttpServletResponse response) {
+        Cookie cookie = new Cookie(cookieName, "");
+        cookie.setPath(COOKIE_BOOKS_PATH);
+        response.addCookie(cookie);
+    }
 }
