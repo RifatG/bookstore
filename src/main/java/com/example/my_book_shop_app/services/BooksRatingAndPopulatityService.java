@@ -1,15 +1,14 @@
 package com.example.my_book_shop_app.services;
 
-import com.example.my_book_shop_app.repositories.BookRepository;
-import com.example.my_book_shop_app.repositories.RatingRepository;
-import com.example.my_book_shop_app.repositories.ReviewLikeRepository;
-import com.example.my_book_shop_app.repositories.ReviewRepository;
+import com.example.my_book_shop_app.repositories.*;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
 import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
 import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -22,20 +21,33 @@ public class BooksRatingAndPopulatityService {
     private final RatingRepository ratingRepository;
     private final ReviewRepository reviewRepository;
     private final ReviewLikeRepository reviewLikeRepository;
+    private final RecommendedBookRepository recommendedBookRepository;
     private static final double RATING = 2;
 
     @Autowired
-    public BooksRatingAndPopulatityService(BookRepository bookRepository, RatingRepository ratingRepository, ReviewRepository reviewRepository, ReviewLikeRepository reviewLikeRepository) {
+    public BooksRatingAndPopulatityService(BookRepository bookRepository, RatingRepository ratingRepository, ReviewRepository reviewRepository, ReviewLikeRepository reviewLikeRepository, RecommendedBookRepository recommendedBookRepository) {
         this.bookRepository = bookRepository;
         this.ratingRepository = ratingRepository;
         this.reviewRepository = reviewRepository;
         this.reviewLikeRepository = reviewLikeRepository;
+        this.recommendedBookRepository = recommendedBookRepository;
     }
 
     public List<Book> getPageOfPopularBooksBySql(Integer offset, Integer limit) {
         offset = offset * limit;
         return bookRepository.getPageOfPopularBooks(RATING, offset, limit);
     }
+
+    public List<Book> getPageOfHighRatingBooks(Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return bookRepository.getPageOfHighRatingBooks(nextPage).getContent();
+    }
+
+    public List<Book> getPageOfRecommendedBooks(Integer userId, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return recommendedBookRepository.getAllRecommendedBooksByUserId(userId, nextPage).getContent();
+    }
+
 
     public Integer getCountOfPopularBooks() {
         return bookRepository.getPopularBooks(RATING).size();

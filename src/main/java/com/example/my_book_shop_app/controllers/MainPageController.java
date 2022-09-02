@@ -4,6 +4,7 @@ import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.BookService;
+import com.example.my_book_shop_app.services.BooksRatingAndPopulatityService;
 import com.example.my_book_shop_app.services.TagService;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.tags.TagsEntity;
@@ -20,24 +21,26 @@ import java.util.List;
 public class MainPageController {
 
     private final BookService bookService;
+    private final BooksRatingAndPopulatityService bookRatingService;
     private final TagService tagService;
     private final BookstoreUserRegister userRegister;
 
     @Autowired
-    public MainPageController(BookService bookService, TagService tagService, BookstoreUserRegister userRegister) {
+    public MainPageController(BookService bookService, BooksRatingAndPopulatityService bookRatingService, TagService tagService, BookstoreUserRegister userRegister) {
         this.bookService = bookService;
+        this.bookRatingService = bookRatingService;
         this.tagService = tagService;
         this.userRegister = userRegister;
     }
 
     @ModelAttribute("recommendedBooks")
     public List<Book> recommendedBooks(){
-        return bookService.getPageOfRecommendedBooks(0, 6).getContent();
+        return userRegister.isAuthenticated() ? bookRatingService.getPageOfRecommendedBooks(currentUser().getId(), 0, 6) : bookRatingService.getPageOfHighRatingBooks(0, 6);
     }
 
     @ModelAttribute("popularBooks")
     public List<Book> popularBooks() {
-        return bookService.getPageOfPopularBooks(0, 6).getContent();
+        return bookRatingService.getPageOfPopularBooksBySql(0, 6);
     }
 
     @ModelAttribute("recentBooks")
