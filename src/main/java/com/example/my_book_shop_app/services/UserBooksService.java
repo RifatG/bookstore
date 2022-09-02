@@ -186,4 +186,16 @@ public class UserBooksService {
     public List<Book> getArchivedBooksOfUser(int userId) {
         return this.bookRepository.findBooksInArchiveByUserId(userId);
     }
+
+    public long getKeptCount(int userId) {
+        return this.book2UserRepository.getCountByUserIdAndTypeId(userId, KEPT_STATUS_ID);
+    }
+
+    public long getCartCount(int userId) {
+        return this.book2UserRepository.getCountByUserIdAndTypeId(userId, CART_STATUS_ID);
+    }
+
+    public long getMyBooksCount(int userId) {
+        return this.book2UserRepository.getCountByUserIdAndTypeId(userId, PAID_STATUS_ID) + this.book2UserRepository.getCountByUserIdAndTypeId(userId, ARCHIVED_STATUS_ID);
+    }
 }

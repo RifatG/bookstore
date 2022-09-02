@@ -1,8 +1,6 @@
 package com.example.my_book_shop_app.controllers;
 
-import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.exceptions.LowUserBalanceException;
-import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.*;
 import com.example.my_book_shop_app.struct.book.Book;
@@ -10,8 +8,6 @@ import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -52,27 +48,11 @@ public class CartController {
         return new ArrayList<>();
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("currentUser")
-    public UserEntity currentUser() {
-        return userRegister.getCurrentUser();
-    }
-    
-    @ModelAttribute("authenticated")
-    public String isAuthenticated() {
-        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return (user instanceof DefaultOAuth2User || user instanceof BookstoreUserDetails) ? "authorized" : "unauthorized";
-    }
-
     @GetMapping("/books/cart")
     public String cart(@CookieValue(value = CART_CONTENTS_COOKIE, required = false) String cartContents, Model model) {
         List<Book> cartBooks;
         cartBooks = userRegister.isAuthenticated()
-                ? userBooksService.getBooksInCartOfUser(currentUser().getId())
+                ? userBooksService.getBooksInCartOfUser(userRegister.getCurrentUser().getId())
                 : this.bookService.getBooksBySlugs(this.cookieHandler.getSlugsFromCookie(cartContents));
         if (cartBooks != null && !cartBooks.isEmpty()) {
             model.addAttribute(IS_CART_EMPTY, false);
@@ -91,7 +71,7 @@ public class CartController {
     public String handleRemoveBookFromCartRequest(@PathVariable("slug") String slug, @CookieValue(name = CART_CONTENTS_COOKIE, required = false) String cartContents,
                                                   HttpServletResponse response, Model model) {
         if (userRegister.isAuthenticated()) {
-            UserEntity user = currentUser();
+            UserEntity user = userRegister.getCurrentUser();
             this.userBooksService.removeBookFromCart(user.getId(), bookService.getBookBySlug(slug).getId());
             model.addAttribute(IS_CART_EMPTY, userBooksService.getBooksInCartOfUser(user.getId()).isEmpty());
         } else {
@@ -107,7 +87,7 @@ public class CartController {
             logger.info("User is not authenticated. It is need to be authenticated to buy a book");
             return "signin";
         }
-        UserEntity user = currentUser();
+        UserEntity user = userRegister.getCurrentUser();
         List<Book> cartBooks = this.userBooksService.getBooksInCartOfUser(user.getId());
 
         try {

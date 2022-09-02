@@ -12,7 +12,7 @@
                 </g>
             </g>
         </svg>
-        <span class="CartBlock-amount">0</span></a><a class="CartBlock-block" th:href="@{/books/cart}"
+        <span class="CartBlock-amount" th:text="${postponedCount}">0</span></a><a class="CartBlock-block" th:href="@{/books/cart}"
                                                       href="/cart.html">
         <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="30" height="23"
              viewBox="0 0 30 23">
@@ -23,7 +23,7 @@
                 </g>
             </g>
         </svg>
-        <span class="CartBlock-amount">0</span></a><a class="CartBlock-block" th:href="@{/signin}"
+        <span class="CartBlock-amount" th:text="${cartCount}">0</span></a><a class="CartBlock-block" th:href="@{/signin}"
                                                       href="/signin.html">
         <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="22" height="23"
              viewBox="0 0 22 23">
@@ -58,7 +58,7 @@
             <g> </g>
             <g> </g>
             <g> </g></svg>
-        <span class="CartBlock-amount">0</span></a><a class="CartBlock-block" th:href="@{/books/postponed}" href="/postponed.html">
+        <span class="CartBlock-amount" th:text="${myBooksCount}">0</span></a><a class="CartBlock-block" th:href="@{/books/postponed}" href="/postponed.html">
         <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" height="23" width="23" viewBox="0 0 512 512">
             <g>
                 <g>
@@ -67,7 +67,7 @@
                 </g>
             </g>
         </svg>
-        <span class="CartBlock-amount">0</span></a><a class="CartBlock-block" th:href="@{/books/cart}" href="/cart.html">
+        <span class="CartBlock-amount" th:text="${postponedCount}">0</span></a><a class="CartBlock-block" th:href="@{/books/cart}" href="/cart.html">
         <svg class="CartBlock-img" xmlns="http://www.w3.org/2000/svg" width="30" height="23" viewBox="0 0 30 23">
             <g>
                 <g>
@@ -76,7 +76,7 @@
                 </g>
             </g>
         </svg>
-        <span class="CartBlock-amount">0</span></a><a class="CartBlock-block CartBlock-block_text" th:href="@{/profile}" href="/profile.html">
+        <span class="CartBlock-amount" th:text="${cartCount}">0</span></a><a class="CartBlock-block CartBlock-block_text" th:href="@{/profile}" href="/profile.html">
         <svg class="CartBlock-img" height="30" viewBox="0 0 511.989 511.989" width="30"
              xmlns="http://www.w3.org/2000/svg">
             <g>

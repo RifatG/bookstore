@@ -2,21 +2,16 @@ package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.RatingDto;
 import com.example.my_book_shop_app.data.ResultDto;
-import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.data.request.BookReviewRequest;
 import com.example.my_book_shop_app.data.request.ChangeBookStatusRequest;
-import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.*;
 import com.example.my_book_shop_app.struct.book.Book;
-import com.example.my_book_shop_app.struct.user.UserEntity;
 import com.google.common.net.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -50,30 +45,16 @@ public class BooksController {
         this.userBooksService = userBooksService;
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("currentUser")
-    public UserEntity currentUser() {
-        return userRegister.getCurrentUser();
-    }
-    
-    @ModelAttribute("authenticated")
-    public String isAuthenticated() {
-        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return (user instanceof DefaultOAuth2User || user instanceof BookstoreUserDetails) ? "authorized" : "unauthorized";
-    }
-
     @GetMapping("/book/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         Book book = this.bookService.getBookBySlug(slug);
         if (userRegister.isAuthenticated()) {
-            int userId = currentUser().getId();
+            int userId = userRegister.getCurrentUser().getId();
             int bookId = book.getId();
             this.userBooksService.setBookAsViewed(userId, bookId);
             model.addAttribute("paid", userBooksService.isBookPaidOrArchived(userId, bookId));
+        } else {
+            model.addAttribute("paid", false);
         }
         model.addAttribute("book", book);
         RatingDto rating = new RatingDto(book.getRatingList());
@@ -114,7 +95,7 @@ public class BooksController {
                                          @CookieValue(name = "postponedContents", required = false) String postponedContents,
                                          HttpServletResponse response, Model model, @RequestBody ChangeBookStatusRequest request) {
         boolean isAuth = userRegister.isAuthenticated();
-        int userId = isAuth ? currentUser().getId() : 0;
+        int userId = isAuth ? userRegister.getCurrentUser().getId() : 0;
         int bookId = bookService.getBookBySlug(slug).getId();
         switch (request.getStatus()) {
             case "CART" : {
