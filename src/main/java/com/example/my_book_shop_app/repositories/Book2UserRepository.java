@@ -7,5 +7,8 @@ public interface Book2UserRepository extends JpaRepository<Book2UserEntity, Inte
 
     boolean existsBook2UserEntityByUserIdAndBookId(Integer userId, Integer bookId);
 
+    boolean existsBook2UserEntityByUserIdAndBookIdAndTypeId(Integer userId, Integer bookId, Integer typeId);
+
+
     Book2UserEntity findBook2UserEntityByUserIdAndBookId(Integer userId, Integer bookId);
 }

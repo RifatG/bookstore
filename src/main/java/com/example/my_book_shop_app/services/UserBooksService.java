@@ -26,6 +26,7 @@ public class UserBooksService {
     private static final int KEPT_STATUS_ID = 1;
     private static final int CART_STATUS_ID = 2;
     private static final int PAID_STATUS_ID = 3;
+    private static final int ARCHIVED_STATUS_ID = 4;
 
     @Autowired
     public UserBooksService(BookRepository bookRepository, Book2UserRepository book2UserRepository, ViewedBook2UserRepository viewedBook2UserRepository, GenreRepository genreRepository, AuthorRepository authorRepository, RecommendedBookRepository recommendedBookRepository) {
@@ -62,6 +63,19 @@ public class UserBooksService {
             if (book2User.getTypeId() == KEPT_STATUS_ID || book2User.getTypeId() == CART_STATUS_ID) {
                 addLikeBooksToRecommended(userId, bookId, false);
                 book2User.setTypeId(Book2UserRelationType.PAID.getTypeId());
+                return this.book2UserRepository.save(book2User);
+            } else return null;
+        }
+    }
+
+    public Book2UserEntity setBookAsArchived(Integer userId, Integer bookId) {
+        if (!book2UserRepository.existsBook2UserEntityByUserIdAndBookId(userId, bookId)) {
+            return createBook2User(userId, bookId, ARCHIVED_STATUS_ID);
+        } else {
+            Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
+            if (book2User.getTypeId() == PAID_STATUS_ID) {
+                addLikeBooksToRecommended(userId, bookId, false);
+                book2User.setTypeId(Book2UserRelationType.ARCHIVED.getTypeId());
                 return this.book2UserRepository.save(book2User);
             } else return null;
         }
@@ -162,5 +176,14 @@ public class UserBooksService {
             recommendedBook.setUserId(userId);
             recommendedBookRepository.save(recommendedBook);
         }
+    }
+
+    public boolean isBookPaidOrArchived(int userId, int bookId) {
+        return book2UserRepository.existsBook2UserEntityByUserIdAndBookIdAndTypeId(userId, bookId, PAID_STATUS_ID)
+                || book2UserRepository.existsBook2UserEntityByUserIdAndBookIdAndTypeId(userId, bookId, ARCHIVED_STATUS_ID);
+    }
+
+    public List<Book> getArchivedBooksOfUser(int userId) {
+        return this.bookRepository.findBooksInArchiveByUserId(userId);
     }
 }

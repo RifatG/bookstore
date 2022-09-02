@@ -70,7 +70,10 @@ public class BooksController {
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         Book book = this.bookService.getBookBySlug(slug);
         if (userRegister.isAuthenticated()) {
-            this.userBooksService.setBookAsViewed(currentUser().getId(), book.getId());
+            int userId = currentUser().getId();
+            int bookId = book.getId();
+            this.userBooksService.setBookAsViewed(userId, bookId);
+            model.addAttribute("paid", userBooksService.isBookPaidOrArchived(userId, bookId));
         }
         model.addAttribute("book", book);
         RatingDto rating = new RatingDto(book.getRatingList());
@@ -132,6 +135,12 @@ public class BooksController {
                     cookieHandler.removeSlugFromCookie(cartContents, "cartContents", response, slug);
                 }
                 model.addAttribute("isPostponedEmpty", false);
+                break;
+            }
+            case "ARCHIVED" : {
+                if (isAuth) {
+                    userBooksService.setBookAsArchived(userId, bookId);
+                }
                 break;
             }
             default: return REDIRECT_TO_BOOKS + slug;
