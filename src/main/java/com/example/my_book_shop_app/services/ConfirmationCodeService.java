@@ -12,8 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -30,19 +28,16 @@ public class ConfirmationCodeService {
     @Value("${sms_ru.account_id}")
     private String accountId;
 
-    @Value("${app-email.email}")
-    private String codeSendingEmail;
-
     private final ConfirmationCodeRepository confirmationCodeRepository;
     private final RestTemplate restClient;
     private final Logger logger = LoggerFactory.getLogger(ConfirmationCodeService.class);
     private final Random random;
-    private final JavaMailSender javaMailSender;
+    private final MailService mailService;
 
     @Autowired
-    public ConfirmationCodeService(ConfirmationCodeRepository smsCodeRepository, RestTemplate restClient, JavaMailSender javaMailSender) throws NoSuchAlgorithmException {
+    public ConfirmationCodeService(ConfirmationCodeRepository smsCodeRepository, RestTemplate restClient, MailService mailService) throws NoSuchAlgorithmException {
         this.confirmationCodeRepository = smsCodeRepository;
-        this.javaMailSender = javaMailSender;
+        this.mailService = mailService;
         this.restClient = restClient;
         this.restClient.setMessageConverters(getConvertersForRestTemplate());
         random = SecureRandom.getInstanceStrong();
@@ -62,14 +57,9 @@ public class ConfirmationCodeService {
     }
 
     public String sendEmailConfirmationCode(String contact) throws ConfirmationCodeException {
-        SimpleMailMessage message = new SimpleMailMessage();
         String confirmationCode = generateConfirmationCode();
-        message.setFrom(codeSendingEmail);
-        message.setTo(contact);
-        message.setSubject("Bookstore email verification");
-        message.setText("Verification code is: " + confirmationCode);
         try {
-            javaMailSender.send(message);
+            mailService.sendMail(contact, "Bookstore email verification", "Verification code is: " + confirmationCode);
         } catch (MailException e) {
             throw new ConfirmationCodeException("Confirmation code wasn't sent. Error: " + e.getMessage());
         }
