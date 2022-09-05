@@ -1,5 +1,6 @@
 package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.data.RatingDto;
 import com.example.my_book_shop_app.repositories.*;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.book.rating.RatingEntity;
@@ -90,5 +91,24 @@ public class BooksRatingAndPopulatityService {
         reviewEntity.setTime(LocalDateTime.now());
         reviewEntity.setText(text);
         this.reviewRepository.save(reviewEntity);
+    }
+
+    public RatingDto getUserRating(int userId) {
+        long likesCount = this.reviewLikeRepository.getLikesByUserId(userId);
+        long dislikesCount = this.reviewLikeRepository.getDislikesByUserId(userId);
+        long voicesCount;
+        double ratingDouble;
+        int rating;
+        voicesCount = likesCount + dislikesCount;
+        if (voicesCount > 0) {
+            ratingDouble = (double) likesCount / voicesCount;
+            if(ratingDouble < 0.2d) rating = 1;
+            else if(ratingDouble < 0.4d) rating = 2;
+            else if(ratingDouble < 0.6d) rating = 3;
+            else if(ratingDouble < 0.8) rating = 4;
+            else rating = 5;
+            return new RatingDto(rating, (int) voicesCount);
+        }
+        return new RatingDto(0,0);
     }
 }

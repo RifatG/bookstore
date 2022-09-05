@@ -26,6 +26,16 @@ public class RatingDto {
         this.fiveRatesCount = (int) rating.stream().filter(rate -> rate.getRatingCount() == 5).count();
     }
 
+    public RatingDto(Integer currentRating, Integer totalCount) {
+        this.currentRating = currentRating;
+        this.totalCount = totalCount;
+        this.oneRateCount = null;
+        this.twoRatesCount = null;
+        this.threeRatesCount = null;
+        this.fourRatesCount = null;
+        this.fiveRatesCount = null;
+    }
+
     public Integer getTotalCount() {
         return totalCount;
     }

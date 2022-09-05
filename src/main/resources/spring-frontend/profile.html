@@ -31,6 +31,64 @@
         <main class="Middle-main">
             <h2 class="Middle-title" th:text="#{profile.my-profile}">Мой профиль
             </h2>
+
+            <h3 th:text="#{profile.your-rating}"></h3>
+            <div class="Rating Rating_noStyleLink">
+                    <span class="Rating-stars">
+                        <span class="Rating-star" th:classappend="${currentRating.getCurrentRating() >= 1 ? 'Rating-star_view' : ''}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
+                            <g>
+                              <g>
+                                <path fill="#ffc000"
+                                      d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        <span class="Rating-star" th:classappend="${currentRating.getCurrentRating() >= 2 ? 'Rating-star_view' : ''}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
+                            <g>
+                              <g>
+                                <path fill="#ffc000"
+                                      d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        <span class="Rating-star" th:classappend="${currentRating.getCurrentRating() >= 3 ? 'Rating-star_view' : ''}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
+                            <g>
+                              <g>
+                                <path fill="#ffc000"
+                                      d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        <span class="Rating-star" th:classappend="${currentRating.getCurrentRating() >= 4 ? 'Rating-star_view' : ''}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
+                            <g>
+                              <g>
+                                <path fill="#ffc000"
+                                      d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                        <span class="Rating-star" th:classappend="${currentRating.getCurrentRating() == 5 ? 'Rating-star_view' : ''}">
+                          <svg xmlns="http://www.w3.org/2000/svg" width="19" height="18" viewBox="0 0 19 18">
+                            <g>
+                              <g>
+                                <path fill="#ffc000"
+                                      d="M9.5 14.925L3.629 18l1.121-6.512L0 6.875l6.564-.95L9.5 0l2.936 5.925 6.564.95-4.75 4.613L15.371 18z"></path>
+                              </g>
+                            </g>
+                          </svg>
+                        </span>
+                    <span class="Rating-title" th:text="'(' + ${currentRating.getTotalCount()} + ')'">(567)</span>
+                    </span>
+            </div>
+
             <div class="Tabs Tabs_default">
                 <div class="Tabs-links">
                     <a class="Tabs-link Tabs-link_ACTIVE" href="#basic"  th:text="#{profile.basic-information}">Основные сведения</a>
