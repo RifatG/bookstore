@@ -2,6 +2,7 @@ package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.ContactConfirmationPayload;
 import com.example.my_book_shop_app.data.ContactConfirmationResponse;
+import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.exceptions.ConfirmationCodeException;
 import com.example.my_book_shop_app.exceptions.UserAlreadyExistException;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -81,11 +83,16 @@ public class AuthenticationController {
     }
 
     @PostMapping("/registration")
-    public String handleUserRegistration(RegistrationForm registrationForm, Model model) throws UserAlreadyExistException {
+    @ResponseBody
+    public ResultDto handleUserRegistration(@RequestBody RegistrationForm registrationForm, RedirectAttributes attributes) {
         registrationForm.setPhoneNumber(registrationForm.getPhoneNumber().replaceAll("\\D+", ""));
-        userRegister.registerNewUser(registrationForm);
-        model.addAttribute("registrationOk", true);
-        return "signin";
+        try {
+            userRegister.registerNewUser(registrationForm);
+            attributes.addFlashAttribute("registrationOk", true);
+        } catch (UserAlreadyExistException e) {
+            return new ResultDto(false, e.getMessage());
+        }
+        return new ResultDto(true);
     }
 
     @PostMapping("/approveContact")

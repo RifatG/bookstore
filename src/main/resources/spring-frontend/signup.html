@@ -31,16 +31,16 @@
     </div>
     <div class="wrap">
         <main class="Middle-main">
-            <form class="form Login Login_registration" th:object="${registrationForm}" th:action="@{/registration}" method="post" a>
+            <div class="form Login Login_registration">
                 <div class="Login-ins">
                     <div class="Login-step">
                         <div class="form-group">
-                            <input class="form-input" id="name" name="name" type="text" th:placeholder="#{contacts.enter-name}" data-validate="require" th:field="*{name}"/>
+                            <input class="form-input" id="name" name="name" type="text" th:placeholder="#{contacts.enter-name}" data-validate="require" />
                         </div>
                         <div class="form-group form-group_row">
                             <div class="form-group">
                                 <input class="form-input form-input_phone" id="phone" name="phone" type="text"
-                                       th:field="*{phoneNumber}"
+
                                        th:placeholder="#{sign.enterphone}" data-mask="+7 (999) 999-99-99"
                                        data-validate="require"/>
                             </div>
@@ -57,7 +57,6 @@
                         <div class="form-group form-group_row">
                             <div class="form-group">
                                 <input class="form-input form-input_mail" id="mail" name="mail" type="text"
-                                       th:field="*{email}"
                                        th:placeholder="#{sign.enteremail}" data-validate="mail require"/>
                             </div>
                             <div class="form-group form-group_key">
@@ -73,7 +72,6 @@
 
                         <div class="form-group">
                             <input class="form-input form-input_password" id="password" name="password" type="text"
-                                   th:field="*{password}"
                                    th:placeholder="#{sign.enter-password}" data-validate="password require"/>
                         </div>
 
@@ -84,7 +82,7 @@
                         </div>
                     </div>
                 </div>
-            </form>
+            </div>
         </main>
     </div>
 </div>

@@ -28,6 +28,8 @@ class UserRepositoryTests {
         user.setName("Tester");
         user.setRegTime(LocalDateTime.now());
         user.setHash("hash");
+        user.setBalance(0d);
+        user.setPassword("password");
 
         assertNotNull(userRepository.save(user));
     }

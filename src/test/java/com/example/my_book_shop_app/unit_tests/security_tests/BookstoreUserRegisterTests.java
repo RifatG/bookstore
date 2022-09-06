@@ -66,6 +66,7 @@ class BookstoreUserRegisterTests {
         registrationForm.setEmail("test@mail.org");
         registrationForm.setName("Tester");
         registrationForm.setPhoneNumber("9031232323");
+        registrationForm.setPassword("123123");
     }
 
     @AfterEach

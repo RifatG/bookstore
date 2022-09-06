@@ -35,22 +35,23 @@ public class DbService {
         Integer userId = user.getId();
         List<Book> booksInCart = null;
         List<Book> booksInKept = null;
-        for (Cookie cookie : cookies) {
-            switch (cookie.getName()) {
-                case CART_CONTENTS_COOKIE: {
-                    booksInCart = bookService.getBooksBySlugs(cookieHandler.getSlugsFromCookie(cookie.getValue()));
-                    cookieHandler.removeAllSlugs(CART_CONTENTS_COOKIE, response);
-                    break;
-                } case POSTPONED_CONTENTS_COOKIE:{
-                    booksInKept = bookService.getBooksBySlugs(cookieHandler.getSlugsFromCookie(cookie.getValue()));
-                    cookieHandler.removeAllSlugs(POSTPONED_CONTENTS_COOKIE, response);
-                    break;
-                } default: break;
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                switch (cookie.getName()) {
+                    case CART_CONTENTS_COOKIE: {
+                        booksInCart = bookService.getBooksBySlugs(cookieHandler.getSlugsFromCookie(cookie.getValue()));
+                        cookieHandler.removeAllSlugs(CART_CONTENTS_COOKIE, response);
+                        break;
+                    } case POSTPONED_CONTENTS_COOKIE:{
+                        booksInKept = bookService.getBooksBySlugs(cookieHandler.getSlugsFromCookie(cookie.getValue()));
+                        cookieHandler.removeAllSlugs(POSTPONED_CONTENTS_COOKIE, response);
+                        break;
+                    } default: break;
+                }
             }
+            if (booksInCart != null) booksInCart.forEach(book -> setBooksAs(userId, book.getId(), CART_STATUS_ID));
+            if (booksInKept != null) booksInKept.forEach(book -> setBooksAs(userId, book.getId(), KEPT_STATUS_ID));
         }
-        if (booksInCart != null) booksInCart.forEach(book -> setBooksAs(userId, book.getId(), CART_STATUS_ID));
-        if (booksInKept != null) booksInKept.forEach(book -> setBooksAs(userId, book.getId(), KEPT_STATUS_ID));
-
     }
 
     private void setBooksAs(Integer userId, Integer bookId, int statusId) {

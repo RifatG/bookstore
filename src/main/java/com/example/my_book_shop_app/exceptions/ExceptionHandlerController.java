@@ -1,6 +1,7 @@
 package com.example.my_book_shop_app.exceptions;
 
 import com.example.my_book_shop_app.data.ApiResponse;
+import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.struct.book.Book;
 import io.jsonwebtoken.JwtException;
 import org.slf4j.Logger;
@@ -64,10 +65,10 @@ public class ExceptionHandlerController {
     }
 
     @ExceptionHandler(UserAlreadyExistException.class)
-    public String handleUserAlreadyExistException(UserAlreadyExistException e, HttpServletResponse response){
+    public ResultDto handleUserAlreadyExistException(UserAlreadyExistException e, HttpServletResponse response){
         logger.error("Registration exception: {}", e.getMessage());
         clearCookieAndContext(response);
-        return REDIRECT_SIGN_IN_PAGE_STRING;
+        return new ResultDto(false, e.getMessage());
     }
 
     @ExceptionHandler(UsernameNotFoundException.class)
