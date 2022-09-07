@@ -2,8 +2,10 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div class="ProductCard-desc" th:fragment="bookDesc">
     <div class="ProductCard-header">
-        <h1 class="ProductCard-title" th:text="${book.title}">Мара и морок
+        <h1 class="ProductCard-title" th:text="${book.title}" style="display: inline-block">Мара и морок
         </h1>
+        <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book title', popup_id='book_title', endpoint = '/books/' + ${book.slug} + '/title', isTextarea = false)}"></span>
+
         <div class="ProductCard-author"><span class="ProductCard-titleProp"
                                               th:text="#{books.author} + ':'">Автор:</span>&#32;<a
                 href="#" th:text="${book.author}">Лия Арден</a>
@@ -364,7 +366,10 @@
             вернуть меня к жизни. Дать второй шанс на месть и свободу, привязав меня к тому, против
             кого я никогда не пойду. Таких, как он, называют Морок, и их боятся абсолютно все.
         </p>
+        <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book description', popup_id='book_description', endpoint = '/books/' + ${book.slug} + '/description', isTextarea = true)}"></span>
+
     </div>
     <div th:replace="~{fragments/book_slug_buttons_fragment :: panel}"></div>
+
 </div>
 </html>

@@ -71,4 +71,6 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("select b from Book b join Book2UserEntity b2u on b.id = b2u.bookId where b2u.typeId = 4 and b2u.userId = :userId")
     List<Book> findBooksInArchiveByUserId(Integer userId);
+
+    boolean existsBookByTitle(String title);
 }

@@ -1,4 +1,4 @@
-#myPopup {
+.myPopup {
     width: 300px;
     height: 220px;
     padding: 18px 9px;
@@ -15,7 +15,7 @@
     text-align: center;
 }
 
-#myPopup #myPopup__close {
+.myPopup #myPopup__close {
     width: 21px;
     height: 21px;
     position: absolute;

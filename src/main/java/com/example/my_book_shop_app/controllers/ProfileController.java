@@ -51,6 +51,10 @@ public class ProfileController {
     public UserEntity currentUser() {
         return userRegister.getCurrentUser();
     }
+    @ModelAttribute("currentRole")
+    public String currentRole() {
+        return userRegister.getCurrentUser().getRole().getName();
+    }
 
     @ModelAttribute("transactionList")
     public List<BalanceTransactionEntity> transactionList() {

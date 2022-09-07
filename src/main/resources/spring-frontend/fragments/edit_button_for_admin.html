@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<span th:fragment="admin_edit_button(title, popup_id, endpoint, isTextarea)" style="display: inline-block">
+    <button th:if="${isAdmin}" th:class="${popup_id}" style="font-size: 8px">edit</button>
+    <div th:replace="~{fragments/element_change_popup_by_admin :: admin_popup(title = ${title}, popup_id = ${popup_id}, endpoint = ${endpoint}, isTextarea = ${isTextarea})}"></div>
+</span>
+</html>

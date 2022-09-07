@@ -51,6 +51,13 @@ public class UserEntity {
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private String password;
 
+    @ManyToOne
+    @JoinTable(
+            name = "user2roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Role role;
+
     public UserContactEntity getEmailContact() {
         return this.userContacts.stream().filter(contact -> contact.getType().equals(ContactType.EMAIL)).findFirst().orElse(null);
     }

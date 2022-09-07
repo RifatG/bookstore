@@ -112,6 +112,10 @@ public class BookService {
         return this.bookRepository.findBookBySlug(slug);
     }
 
+    public boolean isThereBookWithTitle(String title) {
+        return this.bookRepository.existsBookByTitle(title);
+    }
+
     public void updateBook(Book bookToUpdate) {
         this.bookRepository.save(bookToUpdate);
     }
