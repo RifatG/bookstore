@@ -352,9 +352,13 @@
                th:text="${tag.name} + ',&#32;'">Современные</a>,&#32;
         </div>
         <div class="ProductCard-cost"><span class="ProductCard-titleProp" th:text="#{book.cost}">Цена:</span>
-            <span class="ProductCard-priceOld" th:text="'₽' + ${book.price}">₽300</span>
-            <span class="ProductCard-price" th:if="${book.discount != 100}" th:text="'₽' + ${book.getDiscountPrice()}">₽180</span>
+            <span th:class="${book.discount == 0 ? 'ProductCard-price' : 'ProductCard-priceOld'}" th:text="'₽' + ${book.price}">₽300</span>
+            <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book old price', popup_id='book_old_price', endpoint = '/books/' + ${book.slug} + '/old_price', isTextarea = false)}"></span>
+            <span th:if="${isAdmin}">          </span>
+            <span class="ProductCard-price" th:if="${book.discount != 0}" th:text="'₽' + ${book.getDiscountPrice()}">₽180</span>
         </div>
+        <span class="ProductCard-cost" th:if="${isAdmin}" th:text="'Discount: ' + ${book.discount}"></span>
+        <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book discount', popup_id='book_discount', endpoint = '/books/' + ${book.slug} + '/discount', isTextarea = false)}"></span>
     </div>
     <div class="ProductCard-text">
         <p th:text="${book.description}">Таких, как я, называют Марами - отмеченными самой богиней смерти Мораной.
