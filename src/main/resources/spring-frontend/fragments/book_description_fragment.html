@@ -9,6 +9,7 @@
         <div class="ProductCard-author"><span class="ProductCard-titleProp"
                                               th:text="#{books.author} + ':'">Автор:</span>&#32;<a
                 href="#" th:text="${book.author}">Лия Арден</a>
+            <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book Author', popup_id='book_author', endpoint = '/books/' + ${book.slug} + '/author', isTextarea = false)}"></span>
         </div>
         <div class="ProductCard-rating"><span class="ProductCard-titleProp"
                                               th:text="#{books.rating} + ':'">Рейтинг:</span>
@@ -354,7 +355,6 @@
         <div class="ProductCard-cost"><span class="ProductCard-titleProp" th:text="#{book.cost}">Цена:</span>
             <span th:class="${book.discount == 0 ? 'ProductCard-price' : 'ProductCard-priceOld'}" th:text="'₽' + ${book.price}">₽300</span>
             <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book old price', popup_id='book_old_price', endpoint = '/books/' + ${book.slug} + '/old_price', isTextarea = false)}"></span>
-            <span th:if="${isAdmin}">          </span>
             <span class="ProductCard-price" th:if="${book.discount != 0}" th:text="'₽' + ${book.getDiscountPrice()}">₽180</span>
         </div>
         <span class="ProductCard-cost" th:if="${isAdmin}" th:text="'Discount: ' + ${book.discount}"></span>

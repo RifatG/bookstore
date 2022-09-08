@@ -1,22 +1,30 @@
 package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.ResultDto;
-import com.example.my_book_shop_app.data.request.AdminElementChangePayload;
+import com.example.my_book_shop_app.data.request.ForAdmin.AdminDeleteElementPayload;
+import com.example.my_book_shop_app.data.request.ForAdmin.AdminElementChangePayload;
+import com.example.my_book_shop_app.services.AuthorService;
 import com.example.my_book_shop_app.services.BookService;
+import com.example.my_book_shop_app.services.BooksRatingAndPopulatityService;
 import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
 
 @Controller
 @RequestMapping("/books")
 public class AdminBooksController {
 
     private final BookService bookService;
+    private final AuthorService authorService;
+    private final BooksRatingAndPopulatityService ratingService;
 
     @Autowired
-    public AdminBooksController(BookService bookService) {
+    public AdminBooksController(BookService bookService, AuthorService authorService, BooksRatingAndPopulatityService ratingService) {
         this.bookService = bookService;
+        this.authorService = authorService;
+        this.ratingService = ratingService;
     }
 
 
@@ -79,6 +87,30 @@ public class AdminBooksController {
         }
         bookToUpdate.setDiscount((byte) discount);
         bookService.updateBook(bookToUpdate);
+        return new ResultDto(true);
+    }
+
+    @PostMapping("/{slug}/author")
+    @ResponseBody
+    public ResultDto saveNewBookAuthor(@PathVariable("slug") String slug, @RequestBody AdminElementChangePayload payload){
+        Book bookToUpdate = bookService.getBookBySlug(slug);
+        String author = payload.getValue();
+
+        if (author == null || author.equals("")) {
+            return new ResultDto(false, "Author can't be empty");
+        }
+        if(authorService.existAuthorByName(author)) {
+            bookToUpdate.setAuthor(authorService.getAuthorByName(author));
+            bookService.updateBook(bookToUpdate);
+            return new ResultDto(true);
+        }
+        return new ResultDto(false, "There is no author with such name");
+    }
+
+    @PostMapping("/delete_review")
+    @ResponseBody
+    public ResultDto deleteBookReview(@RequestBody AdminDeleteElementPayload payload){
+        ratingService.deleteReviewById(payload.getElementId());
         return new ResultDto(true);
     }
 }

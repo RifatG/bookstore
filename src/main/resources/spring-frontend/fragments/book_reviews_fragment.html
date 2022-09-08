@@ -61,6 +61,8 @@
                                     </span>
                                 </span>
                             </span>
+                            <span th:replace="~{fragments/delete_button_for_admin :: admin_delete_button(element_id = ${review.id}, popup_id = 'book_review', endpoint = '/books/delete_review')}"></span>
+                            <span th:text="${review.id}"></span>
                         </strong><span class="Comment-date" th:text="${#temporals.format(review.time, 'dd.MM.yyyy hh:mm')}">17.04.2020 16:40</span>
                     </div>
                 </header>

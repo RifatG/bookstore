@@ -1,4 +1,4 @@
-package com.example.my_book_shop_app.data.request;
+package com.example.my_book_shop_app.data.request.ForAdmin;
 
 import lombok.Data;
 
