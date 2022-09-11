@@ -24,7 +24,6 @@ public class AuthorService {
         List<Author> authors = authorRepository.findAll();
         return authors.stream().collect(Collectors.groupingBy((Author a) -> a.getName().substring(0,1)));
     }
-
     public Author getAuthorById(int id) {
         return this.authorRepository.getAuthorById(id);
     }
@@ -35,5 +34,9 @@ public class AuthorService {
 
     public void updateAuthor(Author author) {
         this.authorRepository.save(author);
+    }
+
+    public Author getAuthorByName(String name) {
+        return this.authorRepository.getAuthorByName(name);
     }
 }

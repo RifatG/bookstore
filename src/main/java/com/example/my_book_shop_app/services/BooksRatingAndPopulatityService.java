@@ -79,4 +79,10 @@ public class BooksRatingAndPopulatityService {
         reviewEntity.setText(text);
         this.reviewRepository.save(reviewEntity);
     }
+
+    public void deleteReviewById(int id) {
+        BookReviewEntity review = reviewRepository.findBookReviewEntityById(id);
+        reviewLikeRepository.deleteAll(reviewLikeRepository.findAllByReviewEntity(review));
+        reviewRepository.delete(review);
+    }
 }

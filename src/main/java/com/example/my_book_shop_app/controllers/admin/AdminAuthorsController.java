@@ -1,7 +1,7 @@
 package com.example.my_book_shop_app.controllers.admin;
 
 import com.example.my_book_shop_app.data.ResultDto;
-import com.example.my_book_shop_app.data.request.AdminElementChangePayload;
+import com.example.my_book_shop_app.data.request.ForAdmin.AdminElementChangePayload;
 import com.example.my_book_shop_app.services.AuthorService;
 import com.example.my_book_shop_app.struct.author.Author;
 import org.springframework.beans.factory.annotation.Autowired;
