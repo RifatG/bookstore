@@ -1,18 +1,22 @@
 .myPopup {
-    width: 300px;
-    height: 220px;
-    padding: 18px 9px;
-    border-radius: 4px;
-    background: #fafafa;
     position: fixed;
-    top: 0;
+    display: none;
+    z-index: 2;
+    top: 20%;
     left: 0;
     right: 0;
     bottom: 0;
-    margin: auto;
-    display: none;
-    z-index: 2;
-    text-align: center;
+    margin: 0;
+}
+
+.myPopup .content{
+    width: 300px;
+    height: auto;
+    padding: 18px 9px;
+    border-radius: 4px;
+    background: #fafafa;
+    margin: 0;
+    text-align: left;
 }
 
 .myPopup #myPopup__close {
@@ -35,4 +39,21 @@
     top: 0;
     left: 0;
     display: none;
+}
+
+.myPopup input{
+    margin: 0;
+    margin-bottom: 10px;
+    padding:0;
+    left: 0;
+}
+.myPopup textarea{
+    margin: 0;
+    padding:0;
+    left: 0;
+}
+.myPopup h4{
+    margin: 0;
+    padding:0;
+    left: 0;
 }

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<span th:fragment="admin_create_object_button(object, popup_id, endpoint, fields)" style="display: inline-block">
+    <br>
+    <button th:if="${isAdmin}" th:class="${popup_id}" style="font-size: 8px" th:text="'create new ' + ${object}">create new object</button>
+    <div class="myPopup" th:id="'myPopup__' + ${popup_id}">
+        <div class="content">
+            <h3 th:text="'New ' + ${object}"></h3>
+            <div th:each="field : ${fields}" style="">
+                <h4 th:text="${field.field}"></h4>
+                <input th:if="${field.type == 'input'}" th:id="'myPopup__input_' + ${field.field}" th:placeholder="${field.field}"/>
+                <input th:if="${field.type == 'file'}" th:id="'myPopup__input_' + ${field.field}" type="file" accept="image/*" th:placeholder="${field.field}"/>
+                <textarea th:if="${field.type == 'textarea'}" th:id="'myPopup__input_' + ${field.field}" th:placeholder="${field.field}"></textarea>
+                <br>
+            </div>
+            <button id="myPopup__save"  th:attr="data-endpoint = ${endpoint}">SAVE</button>
+            <span id="myPopup__close" class="close">✖</span>
+        </div>
+    </div>
+    <div id="myOverlay"></div>
+</span>
+</html>

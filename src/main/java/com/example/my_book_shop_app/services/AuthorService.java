@@ -2,6 +2,7 @@ package com.example.my_book_shop_app.services;
 
 import com.example.my_book_shop_app.repositories.AuthorRepository;
 import com.example.my_book_shop_app.struct.author.Author;
+import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,5 +27,13 @@ public class AuthorService {
 
     public Author getAuthorById(int id) {
         return this.authorRepository.getAuthorById(id);
+    }
+
+    public boolean isThereAuthorWithName(String name) {
+        return this.authorRepository.existsAuthorByName(name);
+    }
+
+    public void updateAuthor(Author author) {
+        this.authorRepository.save(author);
     }
 }

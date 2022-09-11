@@ -1,4 +1,4 @@
-package com.example.my_book_shop_app.controllers;
+package com.example.my_book_shop_app.controllers.admin;
 
 import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.data.request.AdminElementChangePayload;
