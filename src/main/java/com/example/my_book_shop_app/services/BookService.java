@@ -3,6 +3,7 @@ package com.example.my_book_shop_app.services;
 import com.example.my_book_shop_app.exceptions.BookStoreApiWrongParameterException;
 import com.example.my_book_shop_app.repositories.Book2UserRepository;
 import com.example.my_book_shop_app.repositories.BookRepository;
+import com.example.my_book_shop_app.struct.author.Author;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.book.links.Book2UserEntity;
 import com.example.my_book_shop_app.struct.enums.Book2UserRelationType;
@@ -149,5 +150,18 @@ public class BookService {
 
     public List<Book> getBooksOfUser(Integer userId) {
         return this.bookRepository.findBooksByUserId(userId);
+    }
+
+    public Book createNewBook(String title, String slug, String description, String image, int price, int discount, Author author) {
+        Book book = new Book();
+        book.setTitle(title);
+        book.setDescription(description);
+        book.setSlug(slug);
+        book.setImage(image);
+        book.setPrice(price);
+        book.setDiscount((byte)discount);
+        book.setPubDate(new Date());
+        book.setAuthor(author);
+        return bookRepository.save(book);
     }
 }

@@ -33,6 +33,18 @@
                 <a class="Author-books" th:href="@{/books/author(authorId=${author.id})}" href="/books/author.html" >[[#{authors.allbooks}]]
                     <span class="Author-amount" th:text="${author.getBooksCount()}">(55)</span>
                 </a>
+                <span th:replace="~{fragments/create_new_object_by_admin ::
+                admin_create_object_button(
+                    object='Book',
+                    popup_id='create_new_book_for_author',
+                    endpoint='/authors/' + ${author.slug} + '/books',
+                    fields=${ {
+                        {field: 'title', type: 'input'},
+                        {field: 'description', type: 'textarea'},
+                        {field: 'image', type: 'file'},
+                        {field: 'price', type: 'input'},
+                        {field: 'discount', type: 'input'}
+                    } })}"></span>
             </footer>
         </main>
     </div>
