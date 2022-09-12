@@ -4,12 +4,9 @@ import com.example.my_book_shop_app.repositories.AuthorRepository;
 import com.example.my_book_shop_app.struct.author.Author;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -17,17 +14,14 @@ public class AuthorService {
 
     private final AuthorRepository authorRepository;
 
-    private final ResourceStorage storage;
-
     @Autowired
-    public AuthorService(AuthorRepository authorRepository, ResourceStorage storage) {
+    public AuthorService(AuthorRepository authorRepository) {
         this.authorRepository = authorRepository;
-        this.storage = storage;
     }
 
     public Map<String, List<Author>> getAuthorsMap() {
         List<Author> authors = authorRepository.findAll();
-        return authors.stream().collect(Collectors.groupingBy((Author a) -> a.getName().substring(0,1)));
+        return authors.stream().collect(Collectors.groupingBy((Author a) -> a.getName().substring(0,1).toUpperCase()));
     }
     public Author getAuthorById(int id) {
         return this.authorRepository.getAuthorById(id);
@@ -45,14 +39,16 @@ public class AuthorService {
         return this.authorRepository.getAuthorByName(name);
     }
 
-    public Author createNewAuthor(String authorName, String description, MultipartFile photoFile) throws IOException {
-        String slug = UUID.randomUUID().toString().substring(0, 10);
-        String savePath = storage.saveNewAuthorImage(photoFile, slug);
+    public Author createNewAuthor(String authorName, String description, String slug, String photo) {
         Author author = new Author();
         author.setName(authorName);
         author.setDescription(description);
         author.setSlug(slug);
-        author.setPhoto(savePath);
+        author.setPhoto(photo);
         return authorRepository.save(author);
+    }
+
+    public Author getAuthorBySlug(String slug) {
+        return authorRepository.getAuthorBySlug(slug);
     }
 }

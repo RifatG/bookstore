@@ -7,8 +7,8 @@
         <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book title', popup_id='book_title', endpoint = '/books/' + ${book.slug} + '/title', isTextarea = false)}"></span>
 
         <div class="ProductCard-author"><span class="ProductCard-titleProp"
-                                              th:text="#{books.author} + ':'">Автор:</span>&#32;<a
-                href="#" th:text="${book.author}">Лия Арден</a>
+                                              th:text="#{books.author} + ':'" >Автор:</span>&#32;<a
+                href="#" th:href="@{'/authors/'+ ${book.author.slug}}" th:text="${book.author}">Лия Арден</a>
             <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book Author', popup_id='book_author', endpoint = '/books/' + ${book.slug} + '/author', isTextarea = false)}"></span>
         </div>
         <div class="ProductCard-rating"><span class="ProductCard-titleProp"

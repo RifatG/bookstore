@@ -9,4 +9,6 @@ public interface AuthorRepository extends JpaRepository<Author, Integer> {
     boolean existsAuthorByName(String name);
 
     Author getAuthorByName(String name);
+
+    Author getAuthorBySlug(String slug);
 }

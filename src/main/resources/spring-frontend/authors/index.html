@@ -46,7 +46,7 @@
                         </h2>
                         <div class="Authors-letter">
                             <div class="Authors-item" th:each="author : ${authorsList.value}">
-                                <a th:href="@{/authors/slug(authorId=${author.id})}" th:text="${author.name}"></a>
+                                <a th:href="@{'/authors/'+ ${author.slug}}" th:text="${author.name}"></a>
                             </div>
                         </div>
                     </div>
