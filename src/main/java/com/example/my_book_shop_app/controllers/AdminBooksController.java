@@ -109,8 +109,17 @@ public class AdminBooksController {
 
     @PostMapping("/delete_review")
     @ResponseBody
+    public ResultDto updateBookGenres(@PathVariable("slug") String slug, @RequestBody AdminDeleteElementPayload payload){
+        ratingService.deleteReviewById(payload.getElementId());
+        return new ResultDto(true);
+    }
+
+    @PostMapping("/{slug}/update_genres")
+    @ResponseBody
     public ResultDto deleteBookReview(@RequestBody AdminDeleteElementPayload payload){
         ratingService.deleteReviewById(payload.getElementId());
         return new ResultDto(true);
     }
+
+
 }

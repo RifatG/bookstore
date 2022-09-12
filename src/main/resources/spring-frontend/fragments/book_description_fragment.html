@@ -350,7 +350,12 @@
         <div class="ProductCard-tags">
             <span class="ProductCard-titleProp" th:text="#{books.tags} + ':'">Тэги:</span>
             <a href="/tags/" th:each="tag : ${book.tagList}" th:href="@{/tags(tagId=${tag.id})}"
-               th:text="${tag.name} + ',&#32;'">Современные</a>,&#32;
+               th:text="${tag.name} + ',&#32;'">Современные</a>
+        </div>
+        <div class="ProductCard-tags ProductCard-genres">
+            <span class="ProductCard-titleProp" th:text="#{books.genres} + ':'">Genres:</span>
+            <a href="/tags/" th:each="genre : ${book.genreList}" th:href="@{/genres/slug(genreId=${genre.id})}"
+               th:text="${genre.name} + ',&#32;'">Современные</a>
         </div>
         <div class="ProductCard-cost"><span class="ProductCard-titleProp" th:text="#{book.cost}">Цена:</span>
             <span th:class="${book.discount == 0 ? 'ProductCard-price' : 'ProductCard-priceOld'}" th:text="'₽' + ${book.price}">₽300</span>
