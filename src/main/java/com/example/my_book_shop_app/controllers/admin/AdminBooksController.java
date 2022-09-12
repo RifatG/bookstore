@@ -99,7 +99,7 @@ public class AdminBooksController {
         if (author == null || author.equals("")) {
             return new ResultDto(false, "Author can't be empty");
         }
-        if(authorService.existAuthorByName(author)) {
+        if(authorService.isThereAuthorWithName(author)) {
             bookToUpdate.setAuthor(authorService.getAuthorByName(author));
             bookService.updateBook(bookToUpdate);
             return new ResultDto(true);
@@ -109,7 +109,7 @@ public class AdminBooksController {
 
     @PostMapping("/delete_review")
     @ResponseBody
-    public ResultDto updateBookGenres(@PathVariable("slug") String slug, @RequestBody AdminDeleteElementPayload payload){
+    public ResultDto updateBookGenres(@RequestBody AdminDeleteElementPayload payload){
         ratingService.deleteReviewById(payload.getElementId());
         return new ResultDto(true);
     }

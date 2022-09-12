@@ -32,7 +32,15 @@ public class AdminAuthorsController {
     }
 
     @PostMapping("/authors")
-    public ResultDto createAuthor(@RequestParam("photo") MultipartFile photo, @RequestParam("name") String name, @RequestParam("description") String description) {
+    public ResultDto createAuthor(@RequestParam("photo") MultipartFile photo, @RequestParam("name") String authorName, @RequestParam("description") String description) {
+        if (authorName == null || authorName.equals("") || authorName.length() > 100) return new ResultDto(false, "Author name must contain from 1 till 100 symbols");
+        if (authorService.isThereAuthorWithName(authorName)) return new ResultDto(false, "There is already an author with such name");
+        if (description == null || description.equals("")) return new ResultDto(false, "Author description must be not empty");
+        try {
+            authorService.createNewAuthor(authorName, description, photo);
+        } catch (Exception e) {
+            return new ResultDto(false, e.getMessage());
+        }
         return new ResultDto(true);
     }
 }

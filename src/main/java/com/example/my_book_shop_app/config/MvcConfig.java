@@ -13,9 +13,12 @@ public class MvcConfig implements WebMvcConfigurer {
     @Value("${upload.path.book-covers}")
     private String uploadPath;
 
+    @Value("${server.root.path}")
+    String rootPath;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        registry.addResourceHandler("/book_store_static_resources/book_covers/**").addResourceLocations("file:" + uploadPath + "/");
+        registry.addResourceHandler("/book_store_static_resources/book_covers/**").addResourceLocations("file:" + rootPath + uploadPath + "/");
     }
 
     @Bean
