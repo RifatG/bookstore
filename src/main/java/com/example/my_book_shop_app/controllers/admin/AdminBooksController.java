@@ -6,10 +6,14 @@ import com.example.my_book_shop_app.data.request.ForAdmin.AdminElementChangePayl
 import com.example.my_book_shop_app.services.AuthorService;
 import com.example.my_book_shop_app.services.BookService;
 import com.example.my_book_shop_app.services.BooksRatingAndPopulatityService;
+import com.example.my_book_shop_app.struct.author.Author;
 import com.example.my_book_shop_app.struct.book.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 
 @Controller
@@ -121,5 +125,23 @@ public class AdminBooksController {
         return new ResultDto(true);
     }
 
+    @PostMapping("/book/delete")
+    @ResponseBody
+    public ResultDto deleteBook(@RequestBody AdminDeleteElementPayload payload){
+        bookService.deleteBookById(payload.getElementId());
+        return new ResultDto(true);
+    }
 
+    @PostMapping("book")
+    @ResponseBody
+    public ResultDto createBook(@RequestParam("image") MultipartFile image,
+                                 @RequestParam("title") String title,
+                                 @RequestParam("description") String description,
+                                 @RequestParam("price") String priceString,
+                                 @RequestParam("discount") String discountString,
+                                 @RequestParam("author") String authorName) throws IOException {
+        Author author = authorService.getAuthorByName(authorName);
+        if (author == null) return new ResultDto(false, "There is no author with such name");
+        return this.bookService.createNewBookWithValidation(title, description, priceString, discountString, image, author);
+    }
 }

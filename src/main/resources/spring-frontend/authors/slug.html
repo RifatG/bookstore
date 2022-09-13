@@ -5,7 +5,7 @@
     <meta name="description" content="Описание страницы">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <link href="favicon.ico" rel="shortcut icon">
+    <link href="/favicon.ico" rel="shortcut icon">
     <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
@@ -26,6 +26,7 @@
         <main class="Middle-main">
             <ul class="breadcrumbs"
                 th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=${author})}"></ul>
+            <span th:replace="~{fragments/delete_button_for_admin :: admin_delete_button(element_id = ${author.id}, popup_id = 'author_for_delete', endpoint = '/authors/delete')}"></span>
             <div th:replace="~{fragments/author_article_fragment :: article(author=${author})}"></div>
             <div class="Section"
                  th:replace="~{fragments/book_slider_fragment :: bookSlider(title=#{authors.books})}"></div>

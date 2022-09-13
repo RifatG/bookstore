@@ -51,4 +51,8 @@ public class AuthorService {
     public Author getAuthorBySlug(String slug) {
         return authorRepository.getAuthorBySlug(slug);
     }
+
+    public void deleteAuthor(Author author) {
+        this.authorRepository.delete(author);
+    }
 }

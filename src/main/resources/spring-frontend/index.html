@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/assets/css/fonts.min.css?v=64223515">
     <link rel="stylesheet" href="/assets/css/basic.min.css?v=64223515">
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=64223515">
+    <link rel="stylesheet" href="/assets/css/AdminPopupStyle.css">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=64223515"></script>
     <script defer src="/assets/js/locale.js"></script>
@@ -23,6 +24,19 @@
 <div class="Middle">
     <div class="wrap">
         <main class="Middle-main">
+            <span th:replace="~{fragments/create_new_object_by_admin ::
+                admin_create_object_button(
+                    object='Book',
+                    popup_id='create_new_book_in_main',
+                    endpoint='/books/book',
+                    fields=${ {
+                        {field: 'title', type: 'input'},
+                        {field: 'description', type: 'textarea'},
+                        {field: 'image', type: 'file'},
+                        {field: 'price', type: 'input'},
+                        {field: 'discount', type: 'input'},
+                        {field: 'author', type: 'input'}
+                    } })}"></span>
             <div class="Section">
                 <div th:replace="~{fragments/book_slider_fragment :: bookSlider(title=#{topbar.recommended}, booksData=${recommendedBooks}, dataLoad='recommended')}"></div>
                 <div th:replace="~{fragments/book_slider_fragment :: bookSlider(title=#{topbar.news}, booksData=${recentBooks}, dataLoad='recent')}"></div>

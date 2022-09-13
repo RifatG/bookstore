@@ -29,6 +29,7 @@
             <ul class="breadcrumbs"
                 th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=${book.title})}"></ul>
             <div class="Product">
+                <span th:replace="~{fragments/delete_button_for_admin :: admin_delete_button(element_id = ${book.id}, popup_id = 'book_for_delete', endpoint = '/books/book/delete')}"></span>
                 <div class="ProductCard">
                     <div class="ProductCard-look">
                         <form id="imgForm" th:if="${isAdmin}" th:action="${'/books/' + book.slug + '/img/save'}" method="post" enctype="multipart/form-data">

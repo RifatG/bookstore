@@ -1,5 +1,6 @@
 package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.exceptions.BookStoreApiWrongParameterException;
 import com.example.my_book_shop_app.repositories.Book2UserRepository;
 import com.example.my_book_shop_app.repositories.BookRepository;
@@ -13,7 +14,9 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -25,13 +28,16 @@ public class BookService {
     private final BookRepository bookRepository;
     private final Book2UserRepository book2UserRepository;
 
+    private final ResourceStorage storage;
+
     private static final int CART_STATUS_ID = 2;
     private static final int PAID_STATUS_ID = 3;
 
     @Autowired
-    public BookService(BookRepository bookRepository, Book2UserRepository book2UserRepository) {
+    public BookService(BookRepository bookRepository, Book2UserRepository book2UserRepository, ResourceStorage storage) {
         this.bookRepository = bookRepository;
         this.book2UserRepository = book2UserRepository;
+        this.storage = storage;
     }
 
     public List<Book> getRecentBooksData() {
@@ -163,5 +169,42 @@ public class BookService {
         book.setPubDate(new Date());
         book.setAuthor(author);
         return bookRepository.save(book);
+    }
+
+    public void deleteBooks(List<Book> books) {
+        books.forEach(this.bookRepository::delete);
+    }
+    public void deleteBook(Book book) {
+        this.bookRepository.delete(book);
+    }
+    public void deleteBookById(int bookId) {
+        Book book = bookRepository.findBookById(bookId);
+        this.bookRepository.delete(book);
+    }
+
+    public ResultDto createNewBookWithValidation(String title, String description, String priceString, String discountString, MultipartFile image, Author author) throws IOException {
+        if (title == null || title.equals("")) {
+            return new ResultDto(false, "Description can't be empty");
+        }
+        if (description == null || description.equals("")) {
+            return new ResultDto(false, "Description can't be empty");
+        }
+        int price;
+        try {
+            price = Integer.parseInt(priceString);
+        } catch (NumberFormatException e) {
+            return new ResultDto(false, "Old price must be digit");
+        }
+        int discount;
+        try {
+            discount = Integer.parseInt(discountString);
+            if (discount < 0 || discount > 100) return new ResultDto(false, "Discount must be more than 0 and less than 100");
+        } catch (NumberFormatException e) {
+            return new ResultDto(false, "Discount must be digit");
+        }
+        String bookSlug = UUID.randomUUID().toString().substring(0, 10);
+        String savePath = storage.saveNewBookImage(image, bookSlug);
+        createNewBook(title, bookSlug, description, savePath, price, discount, author);
+        return new ResultDto(true);
     }
 }

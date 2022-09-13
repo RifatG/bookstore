@@ -93,14 +93,14 @@ public class Book {
     @JsonIgnore
     private List<TagsEntity> tagList;
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     private List<BookFile> bookFileList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<RatingEntity> ratingList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "book")
+    @OneToMany(mappedBy = "book", cascade = CascadeType.ALL)
     @JsonIgnore
     private List<BookReviewEntity> reviewList = new ArrayList<>();
 
