@@ -123,6 +123,10 @@ public class BookService {
         return this.bookRepository.existsBookByTitle(title);
     }
 
+    public Book getBookByTitle(String title) {
+        return this.bookRepository.findBookByTitle(title);
+    }
+
     public void updateBook(Book bookToUpdate) {
         this.bookRepository.save(bookToUpdate);
     }

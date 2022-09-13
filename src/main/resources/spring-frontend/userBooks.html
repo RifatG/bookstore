@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Тут название страницы написать</title>
+    <meta name="description" content="Описание страницы">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+    <link href="favicon.ico" rel="shortcut icon">
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
+    <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-ExtraBold.woff2" as="font" crossorigin="anonymous">
+    <link rel="stylesheet" href="/assets/css/fonts.min.css?v=88436650">
+    <link rel="stylesheet" href="/assets/css/basic.min.css?v=88436650">
+    <link rel="stylesheet" href="/assets/css/extra.min.css?v=88436650">
+    <link rel="stylesheet" href="/assets/css/AdminPopupStyle.css">
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <script defer src="/assets/js/scripts.min.js?v=88436650"></script>
+    <script defer src="/assets/js/locale.js"></script>
+</head>
+<body class="Site">
+<header class="Header"
+        th:replace="~{fragments/common_header_fragment :: head(status=${authenticated})}"></header>
+<div class="Middle">
+    <div class="wrap">
+        <main class="Middle-main">
+            <ul class="breadcrumbs"
+                th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=#{books.my-books})}"></ul>
+            <div class="Section">
+                <div class="Section-header">
+                    <h1 class="Section-title" th:text="#{books.users-books}">Мои книги
+                    </h1>
+                </div>
+                <span th:replace="~{fragments/add_button_for_admin :: admin_add_button(title='Book', popup_id='add_book_to_user', endpoint = '/users/' + ${userId} + '/books')}"></span>
+
+                <div class="Cards">
+                    <div class="Card" th:each="book : ${booksData}">
+                        <div class="Card-picture">
+                            <a href="#">
+                                <img th:src="${book.image}" alt="card.jpg"/>
+                            </a>
+                        </div>
+                        <div class="Card-content">
+                            <strong class="Card-title">
+                                <a href="#" th:text="${book.title}">Title</a>
+                            </strong>
+                            <div class="Card-description" th:text="${book.author}">
+                                Author
+                            </div>
+                            <div class="Card-cost">
+                                <span th:class="${book.discount == 0 ? 'Card-price' : 'Card-priceOld'}" th:text="'₽' + ${book.price}">₽300.00</span>
+                                <span class="Card-price" th:if="${book.discount != 0}" th:text="'₽' + ${book.getDiscountPrice()}">₽190.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+</div>
+<footer class="Footer" th:replace="~{fragments/common_footer_fragment :: footer}"></footer>
+<script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
+</body>
+</html>
