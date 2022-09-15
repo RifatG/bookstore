@@ -59,6 +59,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/my", "/profile", "/books/viewed").authenticated()
+                .antMatchers("/users", "/users/**").hasRole("ADMIN")
                 .antMatchers("/**").permitAll()
                 .and().formLogin()
                 .loginPage(SIGN_IN_URL).failureUrl(SIGN_IN_URL)

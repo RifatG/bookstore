@@ -108,12 +108,22 @@ public class BookService {
     public Book getBookBySlug(String slug) {
         return this.bookRepository.findBookBySlug(slug);
     }
+    public Book getBookById(int id) {
+        return this.bookRepository.findBookById(id);
+    }
 
     public boolean isThereBookWithTitle(String title) {
         return this.bookRepository.existsBookByTitle(title);
     }
+    public boolean isThereBookWithTitleIgnoreCase(String title) {
+        return this.bookRepository.existsBookByTitleIgnoreCase(title);
+    }
 
     public Book getBookByTitle(String title) {
+        return this.bookRepository.findBookByTitle(title);
+    }
+
+    public Book getBookByTitleIgnoreCase(String title) {
         return this.bookRepository.findBookByTitle(title);
     }
 

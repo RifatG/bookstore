@@ -36,13 +36,13 @@
                 <div class="Cards">
                     <div class="Card" th:each="book : ${booksData}">
                         <div class="Card-picture">
-                            <a href="#">
+                            <a href="#" th:href="@{'/books/book/' + ${book.slug}}">
                                 <img th:src="${book.image}" alt="card.jpg"/>
                             </a>
                         </div>
                         <div class="Card-content">
                             <strong class="Card-title">
-                                <a href="#" th:text="${book.title}">Title</a>
+                                <a href="#" th:href="@{'/books/book/' + ${book.slug}}" th:text="${book.title}">Title</a>
                             </strong>
                             <div class="Card-description" th:text="${book.author}">
                                 Author
@@ -52,6 +52,7 @@
                                 <span class="Card-price" th:if="${book.discount != 0}" th:text="'₽' + ${book.getDiscountPrice()}">₽190.00</span>
                             </div>
                         </div>
+                        <span th:replace="~{fragments/delete_button_for_admin :: admin_delete_button(element_id = ${book.id}, popup_id = 'book_for_delete_from_user', endpoint = '/users/' + ${userId} + '/books/delete')}"></span>
                     </div>
                 </div>
 

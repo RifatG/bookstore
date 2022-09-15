@@ -121,12 +121,22 @@ public class UserBooksService {
 
     public void removeBookFromCart(Integer userId, Integer bookId) {
         Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
-        if(book2User != null && book2User.getTypeId() == 2) this.book2UserRepository.delete(book2User);
+        if(book2User != null && book2User.getTypeId() == CART_STATUS_ID) this.book2UserRepository.delete(book2User);
     }
 
     public void removeBookFromKept(Integer userId, Integer bookId) {
         Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
-        if(book2User != null && book2User.getTypeId() == 1) this.book2UserRepository.delete(book2User);
+        if(book2User != null && book2User.getTypeId() == KEPT_STATUS_ID) this.book2UserRepository.delete(book2User);
+    }
+
+    public void removeBookFromPaid(Integer userId, Integer bookId) {
+        Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
+        if(book2User != null && book2User.getTypeId() == PAID_STATUS_ID) this.book2UserRepository.delete(book2User);
+    }
+
+    public void removeBookFromArchived(Integer userId, Integer bookId) {
+        Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
+        if(book2User != null && book2User.getTypeId() == ARCHIVED_STATUS_ID) this.book2UserRepository.delete(book2User);
     }
 
     public ViewedBook2UserEntity setBookAsViewed(Integer userId, Integer bookId) {

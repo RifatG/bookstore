@@ -1,6 +1,7 @@
 package com.example.my_book_shop_app.controllers.admin;
 
 import com.example.my_book_shop_app.data.ResultDto;
+import com.example.my_book_shop_app.data.request.ForAdmin.AdminDeleteElementPayload;
 import com.example.my_book_shop_app.data.request.ForAdmin.AdminElementChangePayload;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.BookService;
@@ -60,12 +61,23 @@ public class AdminUsersController {
 
     @PostMapping("/users/{userId}/books")
     @ResponseBody
-    public ResultDto addBookToUser(@PathVariable(name = "userId") int userId, AdminElementChangePayload payload){
+    public ResultDto addBookToUser(@PathVariable(name = "userId") int userId, @RequestBody AdminElementChangePayload payload){
         String title = payload.getValue();
-        if(bookService.isThereBookWithTitle(title)) {
-            Book book = bookService.getBookByTitle(title);
-            //todo add book to user after merge first part of diplom
+        if(bookService.isThereBookWithTitleIgnoreCase(title)) {
+            Book book = bookService.getBookByTitleIgnoreCase(title);
+            userBooksService.setBookAsPaid(userId, book.getId());
             return new ResultDto(true);
         } else return new ResultDto(false, "There is no book with such title");
     }
+
+    @PostMapping("/users/{userId}/books/delete")
+    @ResponseBody
+    public ResultDto deleteBookFromUser(@PathVariable(name = "userId") int userId, @RequestBody AdminDeleteElementPayload payload){
+        int bookId = payload.getElementId();
+        userBooksService.removeBookFromPaid(userId, bookId);
+        userBooksService.removeBookFromArchived(userId, bookId);
+        return new ResultDto(true);
+    }
+
+
 }
