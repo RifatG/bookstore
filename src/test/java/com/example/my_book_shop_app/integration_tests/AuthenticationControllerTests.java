@@ -1,10 +1,11 @@
 package com.example.my_book_shop_app.integration_tests;
 
-import com.example.my_book_shop_app.exceptions.UserAlreadyExistException;
+import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.repositories.JwtBlacklistRepository;
 import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.jwt.JWTUtil;
 import com.example.my_book_shop_app.struct.user.UserEntity;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,12 +40,14 @@ class AuthenticationControllerTests {
     private final static String TEST_EMAIL = "test@test.test";
     private final static String TEST_PASSWORD = "123123";
     private final static String TEST_PHONE_NUMBER = "78888888888";
+    private final ObjectMapper objectMapper;
 
     @Autowired
-    public AuthenticationControllerTests(MockMvc mockMvc, JWTUtil jwtUtil, JwtBlacklistRepository jwtBlacklistRepository) {
+    public AuthenticationControllerTests(MockMvc mockMvc, JWTUtil jwtUtil, JwtBlacklistRepository jwtBlacklistRepository, ObjectMapper objectMapper) {
         this.mockMvc = mockMvc;
         this.jwtUtil = jwtUtil;
         this.jwtBlacklistRepository = jwtBlacklistRepository;
+        this.objectMapper = objectMapper;
     }
 
     @Test
@@ -77,7 +80,7 @@ class AuthenticationControllerTests {
     void registrationNewUserTest() throws Exception {
         JSONObject registrationForm = new JSONObject();
         registrationForm.put("email", "new" + TEST_EMAIL);
-        registrationForm.put("name", TEST_USERNAME);
+        registrationForm.put("name", "new" + TEST_USERNAME);
         registrationForm.put("password", TEST_PASSWORD);
         registrationForm.put("phoneNumber", TEST_PHONE_NUMBER);
         mockMvc.perform(post("/registration")
@@ -85,7 +88,7 @@ class AuthenticationControllerTests {
                         .content(registrationForm.toString()))
                 .andDo(print())
                 .andExpect(result -> assertNull(result.getResolvedException()))
-                .andExpect(model().attribute("registrationOk", true))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.result").value(true))
                 .andExpect(status().isOk());
     }
 
@@ -100,9 +103,13 @@ class AuthenticationControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(registrationForm.toString()))
                 .andDo(print())
-                .andExpect(result -> assertTrue(result.getResolvedException() instanceof UserAlreadyExistException))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/signin"));
+                .andExpect(result -> {
+                    String body = result.getResponse().getContentAsString();
+                    ResultDto resultDto = objectMapper.readValue(body, ResultDto.class);
+                    assertFalse(resultDto.isResult());
+                    assertEquals(resultDto.getError(), "User with email " + TEST_EMAIL + " is already signed up");
+                })
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -110,7 +117,7 @@ class AuthenticationControllerTests {
         JSONObject credentials = new JSONObject();
         credentials.put("contact", TEST_EMAIL);
         credentials.put("code", TEST_PASSWORD);
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/login-by-email")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(credentials.toString()))
                 .andExpect(status().isOk())
@@ -125,7 +132,7 @@ class AuthenticationControllerTests {
         JSONObject credentials = new JSONObject();
         credentials.put("contact", "fake@email.com");
         credentials.put("code", TEST_PASSWORD);
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/login-by-email")
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(credentials.toString()))
                 .andExpect(status().isOk())
@@ -140,7 +147,7 @@ class AuthenticationControllerTests {
         JSONObject credentials = new JSONObject();
         credentials.put("contact", TEST_EMAIL);
         credentials.put("code", "fake_password");
-        mockMvc.perform(post("/login")
+        mockMvc.perform(post("/login-by-email")
                        .contentType(MediaType.APPLICATION_JSON)
                        .content(credentials.toString()))
                 .andExpect(status().isOk())

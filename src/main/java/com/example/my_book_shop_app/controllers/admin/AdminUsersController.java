@@ -1,10 +1,10 @@
 package com.example.my_book_shop_app.controllers.admin;
 
 import com.example.my_book_shop_app.data.ResultDto;
-import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.data.request.ForAdmin.AdminElementChangePayload;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.BookService;
+import com.example.my_book_shop_app.services.UserBooksService;
 import com.example.my_book_shop_app.services.UserService;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.user.UserEntity;
@@ -21,23 +21,16 @@ public class AdminUsersController {
     private final BookstoreUserRegister userRegister;
     private final UserService userService;
     private final BookService bookService;
+    private final UserBooksService userBooksService;
 
     @Autowired
-    public AdminUsersController(BookstoreUserRegister userRegister, UserService userService, BookService bookService) {
+    public AdminUsersController(BookstoreUserRegister userRegister, UserService userService, BookService bookService, UserBooksService userBooksService) {
         this.userRegister = userRegister;
         this.userService = userService;
         this.bookService = bookService;
+        this.userBooksService = userBooksService;
     }
 
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("currentUser")
-    public UserEntity currentUser() {
-        return userRegister.getCurrentUser();
-    }
     @ModelAttribute("currentRole")
     public String currentRole() {
         return userRegister.getCurrentUser().getRole().getName();
@@ -45,7 +38,7 @@ public class AdminUsersController {
 
     @ModelAttribute("booksData")
     public List<Book> popularBooksAttribute() {
-        return bookService.getBooksOfUser(currentUser().getId());
+        return userBooksService.getBooksOfUser(userRegister.getCurrentUser().getId());
     }
 
     @ModelAttribute("userList")
@@ -60,7 +53,7 @@ public class AdminUsersController {
 
     @GetMapping("/users/{userId}")
     public String handelUserBooks(@PathVariable(name = "userId") int userId, Model model){
-        model.addAttribute("booksData", bookService.getBooksOfUser(userId));
+        model.addAttribute("booksData", userBooksService.getBooksOfUser(userId));
         model.addAttribute("userId", userId);
         return "userBooks";
     }

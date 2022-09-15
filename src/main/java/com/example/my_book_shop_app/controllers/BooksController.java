@@ -2,24 +2,16 @@ package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.RatingDto;
 import com.example.my_book_shop_app.data.ResultDto;
-import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.data.request.BookReviewRequest;
 import com.example.my_book_shop_app.data.request.ChangeBookStatusRequest;
-import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
-import com.example.my_book_shop_app.services.BooksRatingAndPopulatityService;
-import com.example.my_book_shop_app.services.CookieHandler;
-import com.example.my_book_shop_app.services.ResourceStorage;
-import com.example.my_book_shop_app.services.BookService;
+import com.example.my_book_shop_app.services.*;
 import com.example.my_book_shop_app.struct.book.Book;
-import com.example.my_book_shop_app.struct.user.UserEntity;
 import com.google.common.net.HttpHeaders;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -39,37 +31,31 @@ public class BooksController {
     private final ResourceStorage storage;
     private final CookieHandler cookieHandler;
     private final BookstoreUserRegister userRegister;
+    private final UserBooksService userBooksService;
 
     private static final String REDIRECT_TO_BOOKS = "redirect:/books/book/";
 
     @Autowired
-    public BooksController(BookService bookService, ResourceStorage storage, CookieHandler cookieHandler, BooksRatingAndPopulatityService booksRatingAndPopulatityService, BookstoreUserRegister userRegister) {
+    public BooksController(BookService bookService, ResourceStorage storage, CookieHandler cookieHandler, BooksRatingAndPopulatityService booksRatingAndPopulatityService, BookstoreUserRegister userRegister, UserBooksService userBooksService) {
         this.storage = storage;
         this.bookService = bookService;
         this.cookieHandler = cookieHandler;
         this.booksRatingAndPopulatityService = booksRatingAndPopulatityService;
         this.userRegister = userRegister;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("currentUser")
-    public UserEntity currentUser() {
-        return userRegister.getCurrentUser();
-    }
-    
-    @ModelAttribute("authenticated")
-    public String isAuthenticated() {
-        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return (user instanceof DefaultOAuth2User || user instanceof BookstoreUserDetails) ? "authorized" : "unauthorized";
+        this.userBooksService = userBooksService;
     }
 
     @GetMapping("/book/{slug}")
     public String bookPage(@PathVariable("slug") String slug, Model model) {
         Book book = this.bookService.getBookBySlug(slug);
+        if (userRegister.isAuthenticated()) {
+            int userId = userRegister.getCurrentUser().getId();
+            int bookId = book.getId();
+            this.userBooksService.setBookAsViewed(userId, bookId);
+            model.addAttribute("paid", userBooksService.isBookPaidOrArchived(userId, bookId));
+        } else {
+            model.addAttribute("paid", false);
+        }
         model.addAttribute("book", book);
         RatingDto rating = new RatingDto(book.getRatingList());
         model.addAttribute("rating", rating);
@@ -108,17 +94,34 @@ public class BooksController {
     public String handleChangeBookStatus(@PathVariable("slug") String slug, @CookieValue(name = "cartContents", required = false) String cartContents,
                                          @CookieValue(name = "postponedContents", required = false) String postponedContents,
                                          HttpServletResponse response, Model model, @RequestBody ChangeBookStatusRequest request) {
+        boolean isAuth = userRegister.isAuthenticated();
+        int userId = isAuth ? userRegister.getCurrentUser().getId() : 0;
+        int bookId = bookService.getBookBySlug(slug).getId();
         switch (request.getStatus()) {
             case "CART" : {
-                cookieHandler.updateSlugInCookie(cartContents, "cartContents", response, slug);
-                cookieHandler.removeSlugFromCookie(postponedContents, "postponedContents", response, slug);
+                if (isAuth) {
+                    userBooksService.setBookAsCart(userId, bookId);
+                } else {
+                    cookieHandler.updateSlugInCookie(cartContents, "cartContents", response, slug);
+                    cookieHandler.removeSlugFromCookie(postponedContents, "postponedContents", response, slug);
+                }
                 model.addAttribute("isCartEmpty", false);
                 break;
             }
             case "KEPT" : {
-                cookieHandler.updateSlugInCookie(postponedContents, "postponedContents", response, slug);
-                cookieHandler.removeSlugFromCookie(cartContents, "cartContents", response, slug);
+                if (isAuth) {
+                    userBooksService.setBookAsKept(userId, bookId);
+                } else {
+                    cookieHandler.updateSlugInCookie(postponedContents, "postponedContents", response, slug);
+                    cookieHandler.removeSlugFromCookie(cartContents, "cartContents", response, slug);
+                }
                 model.addAttribute("isPostponedEmpty", false);
+                break;
+            }
+            case "ARCHIVED" : {
+                if (isAuth) {
+                    userBooksService.setBookAsArchived(userId, bookId);
+                }
                 break;
             }
             default: return REDIRECT_TO_BOOKS + slug;

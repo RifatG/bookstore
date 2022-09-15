@@ -2,12 +2,9 @@ package com.example.my_book_shop_app.services;
 
 import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.exceptions.BookStoreApiWrongParameterException;
-import com.example.my_book_shop_app.repositories.Book2UserRepository;
 import com.example.my_book_shop_app.repositories.BookRepository;
 import com.example.my_book_shop_app.struct.author.Author;
 import com.example.my_book_shop_app.struct.book.Book;
-import com.example.my_book_shop_app.struct.book.links.Book2UserEntity;
-import com.example.my_book_shop_app.struct.enums.Book2UserRelationType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,24 +16,17 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class BookService {
 
     private final BookRepository bookRepository;
-    private final Book2UserRepository book2UserRepository;
-
     private final ResourceStorage storage;
 
-    private static final int CART_STATUS_ID = 2;
-    private static final int PAID_STATUS_ID = 3;
-
     @Autowired
-    public BookService(BookRepository bookRepository, Book2UserRepository book2UserRepository, ResourceStorage storage) {
+    public BookService(BookRepository bookRepository, ResourceStorage storage) {
         this.bookRepository = bookRepository;
-        this.book2UserRepository = book2UserRepository;
         this.storage = storage;
     }
 
@@ -135,31 +125,9 @@ public class BookService {
         return this.bookRepository.findBooksBySlugIn(cookieSlugs);
     }
 
-    public Book2UserEntity setBookAsPaid(Integer userId, Integer bookId) {
-        if (!book2UserRepository.existsBook2UserEntityByUserIdAndBookId(userId, bookId)) {
-            Book2UserEntity book2User = new Book2UserEntity();
-            book2User.setBookId(bookId);
-            book2User.setUserId(userId);
-            book2User.setTime(LocalDateTime.now());
-            book2User.setTypeId(PAID_STATUS_ID);
-            return this.book2UserRepository.save(book2User);
-        } else {
-            Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
-            switch (book2User.getTypeId()) {
-                case CART_STATUS_ID: {
-                    book2User.setTypeId(Book2UserRelationType.PAID.getTypeId());
-                    return this.book2UserRepository.save(book2User);
-                }
-                case PAID_STATUS_ID: {
-                    return null;
-                }
-                default: return null;
-            }
-        }
-    }
-
-    public List<Book> getBooksOfUser(Integer userId) {
-        return this.bookRepository.findBooksByUserId(userId);
+    public Page<Book> getPageOfViewedBooks(Integer userId, Integer offset, Integer limit) {
+        Pageable nextPage = PageRequest.of(offset, limit);
+        return this.bookRepository.findViewedBooks(userId, nextPage);
     }
 
     public Book createNewBook(String title, String slug, String description, String image, int price, int discount, Author author) {

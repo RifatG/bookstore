@@ -11,23 +11,24 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.util.List;
 
 @Controller
-public class MyBooksPageController {
+public class MyArchivedBooksController {
 
     private final BookstoreUserRegister userRegister;
     private final UserBooksService userBooksService;
 
     @Autowired
-    public MyBooksPageController(BookstoreUserRegister userRegister, UserBooksService userBooksService) {
+    public MyArchivedBooksController(BookstoreUserRegister userRegister, UserBooksService userBooksService) {
         this.userRegister = userRegister;
         this.userBooksService = userBooksService;
     }
+
     @ModelAttribute("booksData")
     public List<Book> popularBooksAttribute() {
-        return userBooksService.getBooksOfUser(userRegister.getCurrentUser().getId());
+        return userBooksService.getArchivedBooksOfUser(userRegister.getCurrentUser().getId());
     }
 
-    @GetMapping("/my")
-    public String handleMy() {
-        return "my";
+    @GetMapping("/myarchive")
+    public String handleMyArchive() {
+        return "myarchive";
     }
 }

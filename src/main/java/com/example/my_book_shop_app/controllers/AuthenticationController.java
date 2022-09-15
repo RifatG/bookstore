@@ -2,26 +2,26 @@ package com.example.my_book_shop_app.controllers;
 
 import com.example.my_book_shop_app.data.ContactConfirmationPayload;
 import com.example.my_book_shop_app.data.ContactConfirmationResponse;
-import com.example.my_book_shop_app.data.SearchWordDto;
+import com.example.my_book_shop_app.data.ResultDto;
 import com.example.my_book_shop_app.exceptions.ConfirmationCodeException;
 import com.example.my_book_shop_app.exceptions.UserAlreadyExistException;
-import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.security.RegistrationForm;
 import com.example.my_book_shop_app.services.ConfirmationCodeService;
+import com.example.my_book_shop_app.services.DbService;
 import com.example.my_book_shop_app.struct.external_api.ConfirmationCode;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @Controller
@@ -29,28 +29,14 @@ public class AuthenticationController {
 
     private final BookstoreUserRegister userRegister;
     private final ConfirmationCodeService confirmationCodeService;
+    private final DbService dbService;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 
     @Autowired
-    public AuthenticationController(BookstoreUserRegister userRegister, ConfirmationCodeService confirmationCodeService) {
+    public AuthenticationController(BookstoreUserRegister userRegister, ConfirmationCodeService confirmationCodeService, DbService dbService) {
         this.userRegister = userRegister;
         this.confirmationCodeService = confirmationCodeService;
-    }
-
-    @ModelAttribute("searchWordDto")
-    public SearchWordDto searchWordDto() {
-        return new SearchWordDto();
-    }
-
-    @ModelAttribute("currentUser")
-    public UserEntity currentUser() {
-        return userRegister.getCurrentUser();
-    }
-    
-    @ModelAttribute("authenticated")
-    public String isAuthenticated() {
-        Object user = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return (user instanceof DefaultOAuth2User || user instanceof BookstoreUserDetails) ? "authorized" : "unauthorized";
+        this.dbService = dbService;
     }
 
     @GetMapping("/signin")
@@ -97,11 +83,16 @@ public class AuthenticationController {
     }
 
     @PostMapping("/registration")
-    public String handleUserRegistration(RegistrationForm registrationForm, Model model) throws UserAlreadyExistException {
+    @ResponseBody
+    public ResultDto handleUserRegistration(@RequestBody RegistrationForm registrationForm, RedirectAttributes attributes) {
         registrationForm.setPhoneNumber(registrationForm.getPhoneNumber().replaceAll("\\D+", ""));
-        userRegister.registerNewUser(registrationForm);
-        model.addAttribute("registrationOk", true);
-        return "signin";
+        try {
+            userRegister.registerNewUser(registrationForm);
+            attributes.addFlashAttribute("registrationOk", true);
+        } catch (UserAlreadyExistException e) {
+            return new ResultDto(false, e.getMessage());
+        }
+        return new ResultDto(true);
     }
 
     @PostMapping("/approveContact")
@@ -119,11 +110,13 @@ public class AuthenticationController {
 
     @PostMapping("/login-by-email")
     @ResponseBody
-    public ContactConfirmationResponse handleLogin(@RequestBody ContactConfirmationPayload payload, HttpServletResponse httpServletResponse) {
+    public ContactConfirmationResponse handleLogin(@RequestBody ContactConfirmationPayload payload, HttpServletResponse httpServletResponse, HttpServletRequest request) {
         try{
             ContactConfirmationResponse loginResponse = userRegister.jwtLogin(payload);
             Cookie cookie = new Cookie("token", loginResponse.getToken());
             httpServletResponse.addCookie(cookie);
+            UserEntity user = userRegister.getUserByContact(payload.getContact());
+            dbService.moveBooksFromCookieToDb(user, request.getCookies(), httpServletResponse);
             return loginResponse;
         } catch (UsernameNotFoundException usernameNotFoundException) {
             logger.error("User not found with email {}", payload.getContact());

@@ -13,7 +13,7 @@ import java.util.StringJoiner;
 @Service
 public class CookieHandler {
 
-    private static final String COOKIE_BOOKS_PATH = "/books";
+    private static final String COOKIE_BOOKS_PATH = "/";
 
     @BookStatusCookieChangedLogger
     public void updateSlugInCookie(String cookieValue, String cookieName, HttpServletResponse response, String slug) {
@@ -44,7 +44,9 @@ public class CookieHandler {
     public String[] getSlugsFromCookie(String cookieValue) {
         cookieValue = cookieValue.startsWith("/") ? cookieValue.substring(1) : cookieValue;
         cookieValue = cookieValue.endsWith("/") ? cookieValue.substring(0, cookieValue.length()-1) : cookieValue;
-        return cookieValue.split("/");
+        String[] slugs = cookieValue.split("/");
+        if(slugs.length == 1 && slugs[0].equals("")) return new String[0];
+        return slugs;
     }
 
     public String getJwtTokenFromCookie(HttpServletRequest request) {
