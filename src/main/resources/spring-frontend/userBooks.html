@@ -28,7 +28,7 @@
                 th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=#{books.my-books})}"></ul>
             <div class="Section">
                 <div class="Section-header">
-                    <h1 class="Section-title" th:text="#{books.users-books}">Мои книги
+                    <h1 class="Section-title" th:text="#{books.users-books} + ' ' + ${userName}">Мои книги
                     </h1>
                 </div>
                 <span th:replace="~{fragments/add_button_for_admin :: admin_add_button(title='Book', popup_id='add_book_to_user', endpoint = '/users/' + ${userId} + '/books')}"></span>

@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class AdminUsersController {
 
     @ModelAttribute("userList")
     public List<UserEntity> userList() {
-        return userService.getAllUsers();
+        return userService.getPageOfUsers(0, 20);
     }
 
     @GetMapping("/users")
@@ -52,10 +53,18 @@ public class AdminUsersController {
         return "users";
     }
 
+    @GetMapping(value = "/users", params = {"offset", "limit"})
+    public String handelUsersPage(@RequestParam("offset") Integer offset,
+                                  @RequestParam("limit") Integer limit, RedirectAttributes attributes){
+        attributes.addAttribute(userService.getPageOfUsers(offset, limit));
+        return "redirect:/users";
+    }
+
     @GetMapping("/users/{userId}")
     public String handelUserBooks(@PathVariable(name = "userId") int userId, Model model){
         model.addAttribute("booksData", userBooksService.getBooksOfUser(userId));
         model.addAttribute("userId", userId);
+        model.addAttribute("userName", userService.getUserById(userId).getName());
         return "userBooks";
     }
 

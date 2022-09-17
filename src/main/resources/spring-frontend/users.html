@@ -15,38 +15,30 @@
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=33498857"/>
     <link rel="stylesheet" href="/assets/css/AdminPopupStyle.css">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <script src="/assets/js/scripts.min.js?v=33498857"></script>
-    <script src="/assets/js/locale.js"></script>
+    <script defer src="/assets/js/scripts.min.js?v=88436650"></script>
+    <script defer src="/assets/js/locale.js"></script>
 </head>
 <body class="Site">
 <header class="Header" th:replace="~{fragments/common_header_fragment :: head(status=${authenticated})}"></header>
 <div class="Middle Middle_search">
     <div class="wrap">
         <main class="Middle-main">
-            <h1 class="Middle-title" th:text="#{searchbar.button}">Поиск
-            </h1>
-            <div class="Section">
-                <div class="search">
-                    <form class="form form_search" action="#" method="post" data-searchlimit="5">
-                        <input class="search-input" id="querypage" name="querypage" type="text"
-                               th:placeholder="#{searchbar.placeholder}" th:value="${searchWordDto.example}" value="Техника"/>
-                        <button class="search-button" type="submit" name="searchpage" id="searchpage" th:text="#{searchbar.button}">Поиск
-                        </button>
-                    </form>
-                </div>
-            </div>
+
             <div class="Section Section_close">
                 <header class="Section-header">
                     <h2 class="Section-title Middle-searchHeader" th:text="#{topbar.users}">Users
                     </h2>
                 </header>
-                <div class="Cards Cards_refresh">
-                    <div class="Tags-title" >
-                        <div class="Tag" th:each="user : ${userList}">
-                            <a th:href="@{'/users/' + ${user.id}}" th:text="${user.name}"></a>
+                    <div class="Tags Tags_embed" th:each="user : ${userList}">
+                        <div class="Tag" >
+                            <a th:href="@{'/users/' + ${user.id}}" th:text="${user.name} + ' (' + ${user.getEmailContact().getContact()} + ')'"></a>
                         </div>
                     </div>
-                </div>
+            </div>
+            <div class="Cards-footer Cards-footer_center">
+                <a class="btn btn_primary" href="#"
+                   th:attr="data-refreshshow = users, data-refreshid = ${id}"
+                   th:text="#{footer.more}" data-refreshshow="recent" data-refreshoffset="0" data-refreshlimit="20">Показать еще</a>
             </div>
         </main>
     </div>
