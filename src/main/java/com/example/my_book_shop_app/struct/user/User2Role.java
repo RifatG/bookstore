@@ -1,7 +1,10 @@
 package com.example.my_book_shop_app.struct.user;
 
+import lombok.Data;
+
 import javax.persistence.*;
 
+@Data
 @Entity
 @Table(name = "user2roles")
 public class User2Role {
