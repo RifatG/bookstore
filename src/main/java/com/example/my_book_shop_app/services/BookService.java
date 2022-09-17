@@ -31,7 +31,7 @@ public class BookService {
     }
 
     public List<Book> getRecentBooksData() {
-        Instant date = Instant.now().minus(Duration.ofDays(2 * 365));
+        Instant date = Instant.now().minus(Duration.ofDays(730));
         return bookRepository.findAllByPubDateGreaterThan(Date.from(date));
     }
 

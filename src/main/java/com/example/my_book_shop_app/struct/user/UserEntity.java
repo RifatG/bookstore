@@ -5,14 +5,12 @@ import com.example.my_book_shop_app.struct.book.review.BookReviewEntity;
 import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
 import com.example.my_book_shop_app.struct.enums.ContactType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -64,5 +62,93 @@ public class UserEntity {
 
     public UserContactEntity getPhoneContact() {
         return this.userContacts.stream().filter(contact -> contact.getType().equals(ContactType.PHONE)).findFirst().orElse(null);
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public LocalDateTime getRegTime() {
+        return regTime;
+    }
+
+    public void setRegTime(LocalDateTime regTime) {
+        this.regTime = regTime;
+    }
+
+    public Double getBalance() {
+        return balance;
+    }
+
+    public void setBalance(Double balance) {
+        this.balance = balance;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<BookReviewEntity> getReviewList() {
+        return reviewList;
+    }
+
+    public void setReviewList(List<BookReviewEntity> reviewList) {
+        this.reviewList = reviewList;
+    }
+
+    public List<BookReviewLikeEntity> getReviewLikeList() {
+        return reviewLikeList;
+    }
+
+    public void setReviewLikeList(List<BookReviewLikeEntity> reviewLikeList) {
+        this.reviewLikeList = reviewLikeList;
+    }
+
+    public List<RatingEntity> getRatingList() {
+        return ratingList;
+    }
+
+    public void setRatingList(List<RatingEntity> ratingList) {
+        this.ratingList = ratingList;
+    }
+
+    public List<UserContactEntity> getUserContacts() {
+        return userContacts;
+    }
+
+    public void setUserContacts(List<UserContactEntity> userContacts) {
+        this.userContacts = userContacts;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

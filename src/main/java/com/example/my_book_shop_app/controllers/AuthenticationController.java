@@ -8,6 +8,7 @@ import com.example.my_book_shop_app.exceptions.UserAlreadyExistException;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.security.RegistrationForm;
 import com.example.my_book_shop_app.services.ConfirmationCodeService;
+import com.example.my_book_shop_app.services.CookieHandler;
 import com.example.my_book_shop_app.services.DbService;
 import com.example.my_book_shop_app.struct.external_api.ConfirmationCode;
 import com.example.my_book_shop_app.struct.user.UserEntity;
@@ -31,12 +32,14 @@ public class AuthenticationController {
     private final ConfirmationCodeService confirmationCodeService;
     private final DbService dbService;
     private final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+    private final CookieHandler cookieHandler;
 
     @Autowired
-    public AuthenticationController(BookstoreUserRegister userRegister, ConfirmationCodeService confirmationCodeService, DbService dbService) {
+    public AuthenticationController(BookstoreUserRegister userRegister, ConfirmationCodeService confirmationCodeService, DbService dbService, CookieHandler cookieHandler) {
         this.userRegister = userRegister;
         this.confirmationCodeService = confirmationCodeService;
         this.dbService = dbService;
+        this.cookieHandler = cookieHandler;
     }
 
     @GetMapping("/signin")
@@ -113,7 +116,7 @@ public class AuthenticationController {
     public ContactConfirmationResponse handleLogin(@RequestBody ContactConfirmationPayload payload, HttpServletResponse httpServletResponse, HttpServletRequest request) {
         try{
             ContactConfirmationResponse loginResponse = userRegister.jwtLogin(payload);
-            Cookie cookie = new Cookie("token", loginResponse.getToken());
+            Cookie cookie = cookieHandler.createHttpOnlySecureCookie("token", loginResponse.getToken());
             httpServletResponse.addCookie(cookie);
             UserEntity user = userRegister.getUserByContact(payload.getContact());
             dbService.moveBooksFromCookieToDb(user, request.getCookies(), httpServletResponse);
@@ -134,7 +137,7 @@ public class AuthenticationController {
             if (Boolean.TRUE.equals(confirmationCodeService.verifyConfirmationCode(payload.getCode()))) {
             try{
                 ContactConfirmationResponse loginResponse = userRegister.jwtLoginByPhoneNumber(payload);
-                Cookie cookie = new Cookie("token", loginResponse.getToken());
+                Cookie cookie = cookieHandler.createHttpOnlySecureCookie("token", loginResponse.getToken());
                 httpServletResponse.addCookie(cookie);
                 return loginResponse;
             } catch (UsernameNotFoundException usernameNotFoundException) {

@@ -82,6 +82,8 @@ public class ExceptionHandlerController {
         Cookie cookie = new Cookie("token", null);
         cookie.setPath("/");
         cookie.setMaxAge(0);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
         response.addCookie(cookie);
         SecurityContextHolder.clearContext();
         logger.info("Cookie has been cleaned. Security context has been cleaned.");

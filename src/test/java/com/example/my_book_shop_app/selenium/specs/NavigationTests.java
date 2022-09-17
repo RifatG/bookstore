@@ -6,12 +6,14 @@ import com.example.my_book_shop_app.selenium.pages.authors.AuthorPage;
 import com.example.my_book_shop_app.selenium.pages.genres.GenrePage;
 import com.example.my_book_shop_app.selenium.pages.genres.GenresEnum;
 import com.example.my_book_shop_app.selenium.pages.MainPage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@Disabled
 @SpringBootTest
 class NavigationTests extends BaseConfiguration {
 
