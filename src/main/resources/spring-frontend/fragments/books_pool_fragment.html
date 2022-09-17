@@ -3,10 +3,10 @@
 <div class="Cards Cards_refresh" th:fragment="pool(category)">
 
     <div class="Card" th:each="book : ${booksData}">
-        <div class="Card-picture"><a href="#"><img th:src="${book.image}" alt="card.jpg"/></a>
+        <div class="Card-picture"><a href="#" th:href="@{'/books/book/' + ${book.slug}}"><img th:src="${book.image}" th:href="@{'/books/book/' + ${book.slug}}" alt="card.jpg"/></a>
         </div>
         <div class="Card-content">
-            <strong class="Card-title"><a href="#" th:text="${book.title}">Title</a>
+            <strong class="Card-title"><a href="#" th:href="@{'/books/book/' + ${book.slug}}" th:text="${book.title}">Title</a>
             </strong>
             <div class="Card-description" th:text="${book.author}"> Author
             </div>

@@ -53,7 +53,7 @@
                         <div class="Contacts-form">
                             <h2 th:text="#{contacts.write}">Напишите нам:
                             </h2>
-                            <form class="form" action="#" method="post">
+                            <div class="form" >
                                 <div class="form-group">
                                     <input class="form-input" id="name" name="name" type="text"
                                            th:placeholder="#{contacts.entername}" data-validate="require"/>
@@ -72,10 +72,10 @@
                                 </div>
                                 <div class="form-group">
                                     <button class="btn btn_primary form-btn" type="submit" name="sendMessage"
-                                            id="sendMessage" th:text="#{buttons.send}">Отправить
+                                            id="sendMessage" th:text="#{buttons.send}" disabled="disabled">Отправить
                                     </button>
                                 </div>
-                            </form>
+                            </div>
                         </div>
                     </div>
                 </div>

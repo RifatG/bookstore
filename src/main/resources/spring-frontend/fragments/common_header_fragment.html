@@ -57,6 +57,9 @@
                     <li class="menu-item" th:class="${popular}"><a class="menu-link"
                                                                    th:href="@{/books/popular}" th:text="#{topbar.popular}">Популярное</a>
                     </li>
+                    <li class="menu-item" th:if="${authenticated == 'authorized'}" th:class="${viewed}"><a class="menu-link"
+                                                                   th:href="@{/books/viewed}" th:text="#{topbar.viewed}">Viewed</a>
+                    </li>
                     <li class="menu-item" th:class="${authors}"><a class="menu-link"
                                                                    th:href="@{/authors}" th:text="#{topbar.authors}">Авторы</a>
                     </li>

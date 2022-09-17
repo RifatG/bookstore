@@ -8,8 +8,11 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Integer> {
+
+    Optional<Book> findById(Integer id);
 
     List<Book> findAllByIsBestseller(byte is);
 
@@ -71,4 +74,12 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
 
     @Query("select b from Book b join Book2UserEntity b2u on b.id = b2u.bookId where b2u.typeId = 4 and b2u.userId = :userId")
     List<Book> findBooksInArchiveByUserId(Integer userId);
+
+    @Query("select b from Book b join ViewedBook2UserEntity vb2u on b.id = vb2u.bookId where vb2u.userId = :userId order by vb2u.time desc")
+    Page<Book> findViewedBooks(Integer userId, Pageable nextPage);
+
+    @Query("select b from Book b join RatingEntity r on b = r.book group by b.id order by avg(r.ratingCount) desc")
+    Page<Book> getPageOfHighRatingBooks(Pageable nextPage);
+
+
 }
