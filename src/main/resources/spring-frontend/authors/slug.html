@@ -5,7 +5,7 @@
     <meta name="description" content="Описание страницы">
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
-    <link href="favicon.ico" rel="shortcut icon">
+    <link href="/favicon.ico" rel="shortcut icon">
     <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-SemiBold.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Light.woff2" as="font" crossorigin="anonymous">
     <link rel="preload" href="/assets/fonts/Montserrat/Montserrat-Medium.woff2" as="font" crossorigin="anonymous">
@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/assets/css/fonts.min.css?v=93601584">
     <link rel="stylesheet" href="/assets/css/basic.min.css?v=93601584">
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=93601584">
+    <link rel="stylesheet" href="/assets/css/AdminPopupStyle.css">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=93601584"></script>
     <script defer src="/assets/js/locale.js"></script>
@@ -25,6 +26,7 @@
         <main class="Middle-main">
             <ul class="breadcrumbs"
                 th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=${author})}"></ul>
+            <span th:replace="~{fragments/delete_button_for_admin :: admin_delete_button(element_id = ${author.id}, popup_id = 'author_for_delete', endpoint = '/authors/delete')}"></span>
             <div th:replace="~{fragments/author_article_fragment :: article(author=${author})}"></div>
             <div class="Section"
                  th:replace="~{fragments/book_slider_fragment :: bookSlider(title=#{authors.books})}"></div>
@@ -32,11 +34,24 @@
                 <a class="Author-books" th:href="@{/books/author(authorId=${author.id})}" href="/books/author.html" >[[#{authors.allbooks}]]
                     <span class="Author-amount" th:text="${author.getBooksCount()}">(55)</span>
                 </a>
+                <span th:replace="~{fragments/create_new_object_by_admin ::
+                admin_create_object_button(
+                    object='Book',
+                    popup_id='create_new_book_for_author',
+                    endpoint='/authors/' + ${author.slug} + '/books',
+                    fields=${ {
+                        {field: 'title', type: 'input'},
+                        {field: 'description', type: 'textarea'},
+                        {field: 'image', type: 'file'},
+                        {field: 'price', type: 'input'},
+                        {field: 'discount', type: 'input'}
+                    } })}"></span>
             </footer>
         </main>
     </div>
 </div>
 <footer class="Footer" th:replace="~{fragments/common_footer_fragment :: footer}"></footer>
 <script src="/assets/plg/jQuery/jquery-3.5.1.min.js"></script>
+<script src="/assets/js/uploadNewBookImageScript.js"></script>
 </body>
 </html>

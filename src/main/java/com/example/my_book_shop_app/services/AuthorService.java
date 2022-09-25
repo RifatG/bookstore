@@ -21,10 +21,38 @@ public class AuthorService {
 
     public Map<String, List<Author>> getAuthorsMap() {
         List<Author> authors = authorRepository.findAll();
-        return authors.stream().collect(Collectors.groupingBy((Author a) -> a.getName().substring(0,1)));
+        return authors.stream().collect(Collectors.groupingBy((Author a) -> a.getName().substring(0,1).toUpperCase()));
     }
-
     public Author getAuthorById(int id) {
         return this.authorRepository.getAuthorById(id);
+    }
+
+    public boolean isThereAuthorWithName(String name) {
+        return this.authorRepository.existsAuthorByName(name);
+    }
+
+    public void updateAuthor(Author author) {
+        this.authorRepository.save(author);
+    }
+
+    public Author getAuthorByName(String name) {
+        return this.authorRepository.getAuthorByName(name);
+    }
+
+    public Author createNewAuthor(String authorName, String description, String slug, String photo) {
+        Author author = new Author();
+        author.setName(authorName);
+        author.setDescription(description);
+        author.setSlug(slug);
+        author.setPhoto(photo);
+        return authorRepository.save(author);
+    }
+
+    public Author getAuthorBySlug(String slug) {
+        return authorRepository.getAuthorBySlug(slug);
+    }
+
+    public void deleteAuthor(Author author) {
+        this.authorRepository.delete(author);
     }
 }

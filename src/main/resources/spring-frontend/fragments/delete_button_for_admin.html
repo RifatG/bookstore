@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<span th:fragment="admin_delete_button(element_id, popup_id, endpoint)" style="display: inline-block">
+    <button th:if="${isAdmin}" th:class="${popup_id}" style="font-size: 8px">delete</button>
+    <div class="myPopup" th:id="'myPopup__' + ${popup_id}">
+        <div class="content">
+            <h3 th:text="'Are you sure you want to delete this element?'"></h3>
+            <button id="myPopup__save"  th:attr="data-endpoint = ${endpoint}, data-element_id = ${element_id}">YES</button>
+            <span id="myPopup__close" class="close">✖</span>
+        </div>
+    </div>
+    <div id="myOverlay"></div>
+</span>
+</html>

@@ -63,6 +63,9 @@
                     <li class="menu-item" th:class="${authors}"><a class="menu-link"
                                                                    th:href="@{/authors}" th:text="#{topbar.authors}">Авторы</a>
                     </li>
+                    <li class="menu-item" th:class="${users}" th:if="${isAdmin}"><a class="menu-link"
+                                                                   th:href="@{/users}" th:text="#{topbar.users}">Users</a>
+                    </li>
                 </ul>
             </nav>
         </div>

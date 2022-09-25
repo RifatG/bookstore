@@ -21,7 +21,13 @@ import java.util.logging.Logger;
 public class ResourceStorage {
 
     @Value("${upload.path.book-covers}")
-    String uploadPath;
+    String bookImageUploadPath;
+
+    @Value("${upload.path.author-covers}")
+    String authorImageUploadPath;
+
+    @Value("${server.root.path}")
+    String rootPath;
 
     @Value("${download.path.book-files}")
     String downloadPath;
@@ -34,17 +40,26 @@ public class ResourceStorage {
     }
 
     public String saveNewBookImage(MultipartFile file, String slug) throws IOException {
+        return saveImage(file, slug, bookImageUploadPath);
+    }
+
+    public String saveNewAuthorImage(MultipartFile file, String slug) throws IOException {
+        return saveImage(file, slug, authorImageUploadPath);
+    }
+
+    private String saveImage(MultipartFile file, String slug, String uploadPath) throws IOException {
+        String fullUploadPath = rootPath + uploadPath;
         String resourceURI = null;
 
         if(!file.isEmpty()) {
-            if(!new File(uploadPath).exists()) {
-                Files.createDirectories(Paths.get(uploadPath));
-                Logger.getLogger(this.getClass().getSimpleName()).info("Created image folder in " + uploadPath);
+            if(!new File(fullUploadPath).exists()) {
+                Files.createDirectories(Paths.get(fullUploadPath));
+                Logger.getLogger(this.getClass().getSimpleName()).info("Created image folder in " + fullUploadPath);
             }
 
             String fileName = slug + "." + FilenameUtils.getExtension(file.getOriginalFilename());
-            Path path = Paths.get(uploadPath , fileName);
-            resourceURI = "/book_store_static_resources/book_covers/" + fileName;
+            Path path = Paths.get(fullUploadPath , fileName);
+            resourceURI = Paths.get(uploadPath, fileName).toString();
             file.transferTo(path);
             Logger.getLogger(this.getClass().getSimpleName()).info(fileName + " uploaded OK!");
         }

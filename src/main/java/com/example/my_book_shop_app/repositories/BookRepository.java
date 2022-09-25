@@ -75,11 +75,19 @@ public interface BookRepository extends JpaRepository<Book, Integer> {
     @Query("select b from Book b join Book2UserEntity b2u on b.id = b2u.bookId where b2u.typeId = 4 and b2u.userId = :userId")
     List<Book> findBooksInArchiveByUserId(Integer userId);
 
+    boolean existsBookByTitleIgnoreCase(String title);
+
+    boolean existsBookByTitle(String title);
+
+    Book findBookById(int id);
+
+    Book findBookByTitle(String title);
+
+    Book findBookByTitleIgnoreCase(String title);
+
     @Query("select b from Book b join ViewedBook2UserEntity vb2u on b.id = vb2u.bookId where vb2u.userId = :userId order by vb2u.time desc")
     Page<Book> findViewedBooks(Integer userId, Pageable nextPage);
 
     @Query("select b from Book b join RatingEntity r on b = r.book group by b.id order by avg(r.ratingCount) desc")
     Page<Book> getPageOfHighRatingBooks(Pageable nextPage);
-
-
 }

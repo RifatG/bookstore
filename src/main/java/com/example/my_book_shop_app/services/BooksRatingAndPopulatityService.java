@@ -83,7 +83,6 @@ public class BooksRatingAndPopulatityService {
             reviewLikeRepository.delete(existLike);
         }
     }
-
     public void addBookReviewBySlug(String slug, UserEntity user, String text) {
         BookReviewEntity reviewEntity = new BookReviewEntity();
         reviewEntity.setBook(bookRepository.findBookBySlug(slug));
@@ -91,6 +90,11 @@ public class BooksRatingAndPopulatityService {
         reviewEntity.setTime(LocalDateTime.now());
         reviewEntity.setText(text);
         this.reviewRepository.save(reviewEntity);
+    }
+    public void deleteReviewById(int id) {
+        BookReviewEntity review = reviewRepository.findBookReviewEntityById(id);
+        reviewLikeRepository.deleteAll(reviewLikeRepository.findAllByReviewEntity(review));
+        reviewRepository.delete(review);
     }
 
     public RatingDto getUserRating(int userId) {

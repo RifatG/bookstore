@@ -2,11 +2,14 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <div class="ProductCard-desc" th:fragment="bookDesc">
     <div class="ProductCard-header">
-        <h1 class="ProductCard-title" th:text="${book.title}">Мара и морок
+        <h1 class="ProductCard-title" th:text="${book.title}" style="display: inline-block">Мара и морок
         </h1>
+        <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book title', popup_id='book_title', endpoint = '/books/' + ${book.slug} + '/title', isTextarea = false)}"></span>
+
         <div class="ProductCard-author"><span class="ProductCard-titleProp"
-                                              th:text="#{books.author} + ':'">Автор:</span>&#32;<a
-                href="#" th:text="${book.author}">Лия Арден</a>
+                                              th:text="#{books.author} + ':'" >Автор:</span>&#32;<a
+                href="#" th:href="@{'/authors/'+ ${book.author.slug}}" th:text="${book.author}">Лия Арден</a>
+            <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book Author', popup_id='book_author', endpoint = '/books/' + ${book.slug} + '/author', isTextarea = false)}"></span>
         </div>
         <div class="ProductCard-rating"><span class="ProductCard-titleProp"
                                               th:text="#{books.rating} + ':'">Рейтинг:</span>
@@ -347,12 +350,20 @@
         <div class="ProductCard-tags">
             <span class="ProductCard-titleProp" th:text="#{books.tags} + ':'">Тэги:</span>
             <a href="/tags/" th:each="tag : ${book.tagList}" th:href="@{/tags(tagId=${tag.id})}"
-               th:text="${tag.name} + ',&#32;'">Современные</a>,&#32;
+               th:text="${tag.name} + ',&#32;'">Современные</a>
+        </div>
+        <div class="ProductCard-tags ProductCard-genres">
+            <span class="ProductCard-titleProp" th:text="#{books.genres} + ':'">Genres:</span>
+            <a href="/tags/" th:each="genre : ${book.genreList}" th:href="@{/genres/slug(genreId=${genre.id})}"
+               th:text="${genre.name} + ',&#32;'">Современные</a>
         </div>
         <div class="ProductCard-cost"><span class="ProductCard-titleProp" th:text="#{book.cost}">Цена:</span>
-            <span class="ProductCard-priceOld" th:text="'₽' + ${book.price}">₽300</span>
-            <span class="ProductCard-price" th:if="${book.discount != 100}" th:text="'₽' + ${book.getDiscountPrice()}">₽180</span>
+            <span th:class="${book.discount == 0 ? 'ProductCard-price' : 'ProductCard-priceOld'}" th:text="'₽' + ${book.price}">₽300</span>
+            <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book old price', popup_id='book_old_price', endpoint = '/books/' + ${book.slug} + '/old_price', isTextarea = false)}"></span>
+            <span class="ProductCard-price" th:if="${book.discount != 0}" th:text="'₽' + ${book.getDiscountPrice()}">₽180</span>
         </div>
+        <span class="ProductCard-cost" th:if="${isAdmin}" th:text="'Discount: ' + ${book.discount}"></span>
+        <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book discount', popup_id='book_discount', endpoint = '/books/' + ${book.slug} + '/discount', isTextarea = false)}"></span>
     </div>
     <div class="ProductCard-text">
         <p th:text="${book.description}">Таких, как я, называют Марами - отмеченными самой богиней смерти Мораной.
@@ -364,7 +375,10 @@
             вернуть меня к жизни. Дать второй шанс на месть и свободу, привязав меня к тому, против
             кого я никогда не пойду. Таких, как он, называют Морок, и их боятся абсолютно все.
         </p>
+        <span th:replace="~{fragments/edit_button_for_admin :: admin_edit_button(title='Book description', popup_id='book_description', endpoint = '/books/' + ${book.slug} + '/description', isTextarea = true)}"></span>
+
     </div>
     <div th:replace="~{fragments/book_slug_buttons_fragment :: panel}"></div>
+
 </div>
 </html>

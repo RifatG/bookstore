@@ -1,32 +1,37 @@
 package com.example.my_book_shop_app.controllers;
 
+import com.example.my_book_shop_app.security.BookstoreUserRegister;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import com.example.my_book_shop_app.data.SearchWordDto;
 import com.example.my_book_shop_app.security.BookstoreUserDetails;
-import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.services.CookieHandler;
 import com.example.my_book_shop_app.services.UserBooksService;
 import com.example.my_book_shop_app.struct.user.UserEntity;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
-import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 @ControllerAdvice
 public class CommonControllerAdvice {
 
+    @Lazy
+    @Autowired
+    private BookstoreUserRegister userRegister;
+
+    @ModelAttribute("isAdmin")
+    public boolean currentRole() {
+        if (userRegister.getCurrentUser() != null)
+            return userRegister.getCurrentUser().getRole().getName().equals("ADMIN");
+        return false;
+    }
 
     private static final String CART_CONTENTS_COOKIE = "cartContents";
     private static final String POSTPONED_CONTENTS_COOKIE = "postponedContents";
-
     private final CookieHandler cookieHandler;
     private final UserBooksService userBooksService;
-
-    @Autowired
-    @Lazy
-    private BookstoreUserRegister userRegister;
 
     @Autowired
     public CommonControllerAdvice(CookieHandler cookieHandler, UserBooksService userBooksService) {

@@ -22,6 +22,7 @@ public class UserBooksService {
     private final GenreRepository genreRepository;
     private final AuthorRepository authorRepository;
     private final RecommendedBookRepository recommendedBookRepository;
+    private final Random rand;
 
     private static final int KEPT_STATUS_ID = 1;
     private static final int CART_STATUS_ID = 2;
@@ -36,6 +37,7 @@ public class UserBooksService {
         this.genreRepository = genreRepository;
         this.authorRepository = authorRepository;
         this.recommendedBookRepository = recommendedBookRepository;
+        this.rand = new Random();
     }
 
     private Book2UserEntity createBook2User(Integer userId, Integer bookId, int statusId) {
@@ -121,12 +123,22 @@ public class UserBooksService {
 
     public void removeBookFromCart(Integer userId, Integer bookId) {
         Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
-        if(book2User != null && book2User.getTypeId() == 2) this.book2UserRepository.delete(book2User);
+        if(book2User != null && book2User.getTypeId() == CART_STATUS_ID) this.book2UserRepository.delete(book2User);
     }
 
     public void removeBookFromKept(Integer userId, Integer bookId) {
         Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
-        if(book2User != null && book2User.getTypeId() == 1) this.book2UserRepository.delete(book2User);
+        if(book2User != null && book2User.getTypeId() == KEPT_STATUS_ID) this.book2UserRepository.delete(book2User);
+    }
+
+    public void removeBookFromPaid(Integer userId, Integer bookId) {
+        Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
+        if(book2User != null && book2User.getTypeId() == PAID_STATUS_ID) this.book2UserRepository.delete(book2User);
+    }
+
+    public void removeBookFromArchived(Integer userId, Integer bookId) {
+        Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
+        if(book2User != null && book2User.getTypeId() == ARCHIVED_STATUS_ID) this.book2UserRepository.delete(book2User);
     }
 
     public ViewedBook2UserEntity setBookAsViewed(Integer userId, Integer bookId) {
@@ -142,7 +154,6 @@ public class UserBooksService {
     }
 
     private void addLikeBooksToRecommended(Integer userId, Integer bookId, boolean byViewed) {
-        Random rand = new Random();
         bookRepository.findById(bookId).ifPresent(book -> {
             if (book.getGenreList() != null && !book.getGenreList().isEmpty()){
                 int genreId = book.getGenreList().get(0).getId();

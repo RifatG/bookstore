@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="/assets/css/basic.min.css?v=87821122">
     <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=87821122">
-    <link rel="stylesheet" href="/assets/css/DownloadBookWindowStyle.css">
+    <link rel="stylesheet" href="/assets/css/AdminPopupStyle.css">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=87821122"></script>
     <script defer src="/assets/js/locale.js"></script>
@@ -29,14 +29,18 @@
             <ul class="breadcrumbs"
                 th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=${book.title})}"></ul>
             <div class="Product">
+                <span th:replace="~{fragments/delete_button_for_admin :: admin_delete_button(element_id = ${book.id}, popup_id = 'book_for_delete', endpoint = '/books/book/delete')}"></span>
                 <div class="ProductCard">
                     <div class="ProductCard-look">
-                        <form id="imgForm" th:action="${'/books/' + book.slug + '/img/save'}" method="post" enctype="multipart/form-data">
+                        <form id="imgForm" th:if="${isAdmin}" th:action="${'/books/' + book.slug + '/img/save'}" method="post" enctype="multipart/form-data">
                             <div class="ProductCard-photo" >
                                 <img th:src="${book.image}" alt="card.jpg" id="uploadButton"/>
                             </div>
                             <input type="file" name="file" id="dialog" style="display: none" accept="image/*">
                         </form>
+                        <div th:if="${!isAdmin}" class="ProductCard-photo" >
+                            <img th:src="${book.image}" alt="card.jpg"/>
+                        </div>
                     </div>
                     <div class="ProductCard-desc" th:replace="~{fragments/book_description_fragment :: bookDesc}"></div>
                 </div>

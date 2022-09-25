@@ -31,7 +31,7 @@
         <main class="Middle-main">
             <h2 class="Middle-title" th:text="#{profile.my-profile}">Мой профиль
             </h2>
-
+            <h3 th:text="'Role: ' + ${currentRole}"></h3>
             <h3 th:text="#{profile.your-rating}"></h3>
             <div class="Rating Rating_noStyleLink">
                     <span class="Rating-stars">
@@ -88,7 +88,6 @@
                     <span class="Rating-title" th:text="'(' + ${currentRating.getTotalCount()} + ')'">(567)</span>
                     </span>
             </div>
-
             <div class="Tabs Tabs_default">
                 <div class="Tabs-links">
                     <a class="Tabs-link Tabs-link_ACTIVE" href="#basic"  th:text="#{profile.basic-information}">Основные сведения</a>
@@ -124,7 +123,7 @@
                                             </label>
                                             <input class="form-input_phone" id="phone" name="phone" type="text"
                                                    value="+70000000000" data-mask="+7 (999) 999-99-99"
-                                                   data-validate="require" th:value="${currentUser.getPhoneContact().contact}"/>
+                                                   data-validate="require" th:value="${currentUser.getPhoneContact() != null ? currentUser.getPhoneContact().contact : ''}"/>
                                             <div class="Profile-btn Profile-btn_confirm">
                                                 <button class="btn btn_primary profile-btn_phone_confirm" type="button">Подтвердить
                                                 </button>

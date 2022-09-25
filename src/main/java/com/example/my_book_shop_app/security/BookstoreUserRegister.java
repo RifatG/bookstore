@@ -3,10 +3,12 @@ package com.example.my_book_shop_app.security;
 import com.example.my_book_shop_app.data.ContactConfirmationPayload;
 import com.example.my_book_shop_app.data.ContactConfirmationResponse;
 import com.example.my_book_shop_app.exceptions.UserAlreadyExistException;
+import com.example.my_book_shop_app.repositories.User2RoleRepository;
 import com.example.my_book_shop_app.repositories.UserContactRepository;
 import com.example.my_book_shop_app.repositories.UserRepository;
 import com.example.my_book_shop_app.security.jwt.JWTUtil;
 import com.example.my_book_shop_app.struct.enums.ContactType;
+import com.example.my_book_shop_app.struct.user.User2Role;
 import com.example.my_book_shop_app.struct.user.UserContactEntity;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +29,7 @@ public class BookstoreUserRegister {
     private final UserRepository userRepository;
     private final UserContactRepository userContactRepository;
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
+    private final User2RoleRepository user2RoleRepository;
     private final JWTUtil jwtUtil;
 
     @Autowired
@@ -35,10 +38,11 @@ public class BookstoreUserRegister {
     private AuthenticationManager authenticationManager;
 
     @Autowired
-    public BookstoreUserRegister(UserRepository userRepository, UserContactRepository userContactRepository, BookstoreUserDetailsService bookstoreUserDetailsService, JWTUtil jwtUtil) {
+    public BookstoreUserRegister(UserRepository userRepository, UserContactRepository userContactRepository, BookstoreUserDetailsService bookstoreUserDetailsService, User2RoleRepository user2RoleRepository, JWTUtil jwtUtil) {
         this.userRepository = userRepository;
         this.userContactRepository = userContactRepository;
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
+        this.user2RoleRepository = user2RoleRepository;
         this.jwtUtil = jwtUtil;
     }
 
@@ -62,6 +66,10 @@ public class BookstoreUserRegister {
             userRepository.save(user);
             createUserContactsForUser(ContactType.EMAIL, user.getId(), email);
             createUserContactsForUser(ContactType.PHONE, user.getId(), phoneNumber);
+            User2Role user2Role = new User2Role();
+            user2Role.setRoleId(2);
+            user2Role.setUserId(user.getId());
+            user2RoleRepository.save(user2Role);
         } else throw new UserAlreadyExistException("User with email " + email + " is already signed up");
     }
 

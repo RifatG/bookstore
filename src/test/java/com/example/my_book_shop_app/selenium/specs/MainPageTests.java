@@ -2,11 +2,13 @@ package com.example.my_book_shop_app.selenium.specs;
 
 import com.example.my_book_shop_app.selenium.configuration.BaseConfiguration;
 import com.example.my_book_shop_app.selenium.pages.MainPage;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 @SpringBootTest
 class MainPageTests extends BaseConfiguration {
 

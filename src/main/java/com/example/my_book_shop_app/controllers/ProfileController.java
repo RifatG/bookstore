@@ -41,6 +41,10 @@ public class ProfileController {
         this.transactionService = transactionService;
         this.ratingService = ratingService;
     }
+    @ModelAttribute("currentRole")
+    public String currentRole() {
+        return userRegister.getCurrentUser().getRole().getName();
+    }
 
     @ModelAttribute("transactionList")
     public List<BalanceTransactionEntity> transactionList() {

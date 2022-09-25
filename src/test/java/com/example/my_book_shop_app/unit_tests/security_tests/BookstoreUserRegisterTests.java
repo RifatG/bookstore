@@ -3,11 +3,13 @@ package com.example.my_book_shop_app.unit_tests.security_tests;
 import com.example.my_book_shop_app.data.ContactConfirmationPayload;
 import com.example.my_book_shop_app.data.ContactConfirmationResponse;
 import com.example.my_book_shop_app.exceptions.UserAlreadyExistException;
+import com.example.my_book_shop_app.repositories.User2RoleRepository;
 import com.example.my_book_shop_app.repositories.UserContactRepository;
 import com.example.my_book_shop_app.repositories.UserRepository;
 import com.example.my_book_shop_app.security.BookstoreUserDetails;
 import com.example.my_book_shop_app.security.BookstoreUserRegister;
 import com.example.my_book_shop_app.security.RegistrationForm;
+import com.example.my_book_shop_app.struct.user.User2Role;
 import com.example.my_book_shop_app.struct.user.UserContactEntity;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.junit.jupiter.api.AfterEach;
@@ -47,6 +49,9 @@ class BookstoreUserRegisterTests {
     private UserContactRepository userContactRepositoryMock;
 
     @MockBean
+    private User2RoleRepository user2RoleRepository;
+
+    @MockBean
     private AuthenticationManager authenticationManagerMock;
 
     @MockBean
@@ -82,6 +87,8 @@ class BookstoreUserRegisterTests {
                 .save(Mockito.any(UserEntity.class));
         Mockito.verify(userContactRepositoryMock, Mockito.times(2))
                 .save(Mockito.any(UserContactEntity.class));
+        Mockito.verify(user2RoleRepository, Mockito.times(1))
+                .save(Mockito.any(User2Role.class));
     }
 
     @Test
@@ -101,6 +108,8 @@ class BookstoreUserRegisterTests {
                 .save(Mockito.any(UserEntity.class));
         Mockito.verify(userContactRepositoryMock, Mockito.times(2))
                 .save(Mockito.any(UserContactEntity.class));
+        Mockito.verify(user2RoleRepository, Mockito.times(1))
+                .save(Mockito.any(User2Role.class));
     }
 
     @Test

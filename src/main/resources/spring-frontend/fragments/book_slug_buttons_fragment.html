@@ -38,7 +38,7 @@
         </div>
     </div>
 
-    <div id="myPopup">
+    <div id="myPopup" class="myPopup">
         <p th:text="#{book.download-links}"></p>
         <div th:each="bookFile : ${book.getBookFileList()}">
             <a th:href="${'/books/download/' + bookFile.hash}" th:text="${bookFile.getBookFileExtensionString()}"></a>

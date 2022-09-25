@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<span th:fragment="admin_edit_button(title, popup_id, endpoint, isTextarea)" style="display: inline-block">
+    <button th:if="${isAdmin}" th:class="${popup_id}" style="font-size: 8px">edit</button>
+    <div class="myPopup" th:id="'myPopup__' + ${popup_id}">
+        <div class="content">
+            <h3 th:text="'New ' + ${title}"></h3>
+            <input th:if="${!isTextarea}" id="myPopup__input" />
+            <textarea th:if="${isTextarea}" id="myPopup__input" ></textarea>
+            <button id="myPopup__save"  th:attr="data-endpoint = ${endpoint}">SAVE</button>
+            <span id="myPopup__close" class="close">✖</span>
+        </div>
+    </div>
+    <div id="myOverlay"></div>
+</span>
+</html>

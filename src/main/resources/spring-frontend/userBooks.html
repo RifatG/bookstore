@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/assets/css/fonts.min.css?v=88436650">
     <link rel="stylesheet" href="/assets/css/basic.min.css?v=88436650">
     <link rel="stylesheet" href="/assets/css/extra.min.css?v=88436650">
+    <link rel="stylesheet" href="/assets/css/AdminPopupStyle.css">
     <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <script defer src="/assets/js/scripts.min.js?v=88436650"></script>
     <script defer src="/assets/js/locale.js"></script>
@@ -27,28 +28,34 @@
                 th:replace="~{fragments/breadcrumb_fragment :: breadcrumps(category=#{books.my-books})}"></ul>
             <div class="Section">
                 <div class="Section-header">
-                    <h1 class="Section-title" th:text="#{books.my-books}">Мои книги
+                    <h1 class="Section-title" th:text="#{books.users-books} + ' ' + ${userName}">Мои книги
                     </h1>
-                    <div class="Section-header-links"><span class="Section-header-link Section-header-link_ACTIVE" th:text="#{books.unread}">Непрочитанные</span><a
-                            class="Section-header-link" th:href="@{/myarchive}" href="/myarchive.html" th:text="#{books.archive}">Архив</a>
-                    </div>
                 </div>
+                <span th:replace="~{fragments/add_button_for_admin :: admin_add_button(title='Book', popup_id='add_book_to_user', endpoint = '/users/' + ${userId} + '/books')}"></span>
+
                 <div class="Cards">
                     <div class="Card" th:each="book : ${booksData}">
-                        <div class="Card-picture"><a href="#" th:href="@{'/books/book/' + ${book.slug}}"><img th:src="${book.image}" alt="card.jpg"/></a>
+                        <div class="Card-picture">
+                            <a href="#" th:href="@{'/books/book/' + ${book.slug}}">
+                                <img th:src="${book.image}" alt="card.jpg"/>
+                            </a>
                         </div>
                         <div class="Card-content">
-                            <strong class="Card-title"><a href="#" th:href="@{'/books/book/' + ${book.slug}}" th:text="${book.title}">Title</a>
+                            <strong class="Card-title">
+                                <a href="#" th:href="@{'/books/book/' + ${book.slug}}" th:text="${book.title}">Title</a>
                             </strong>
-                            <div class="Card-description" th:text="${book.author}"> Author
+                            <div class="Card-description" th:text="${book.author}">
+                                Author
                             </div>
                             <div class="Card-cost">
                                 <span th:class="${book.discount == 0 ? 'Card-price' : 'Card-priceOld'}" th:text="'₽' + ${book.price}">₽300.00</span>
                                 <span class="Card-price" th:if="${book.discount != 0}" th:text="'₽' + ${book.getDiscountPrice()}">₽190.00</span>
                             </div>
                         </div>
+                        <span th:replace="~{fragments/delete_button_for_admin :: admin_delete_button(element_id = ${book.id}, popup_id = 'book_for_delete_from_user', endpoint = '/users/' + ${userId} + '/books/delete')}"></span>
                     </div>
                 </div>
+
             </div>
         </main>
     </div>

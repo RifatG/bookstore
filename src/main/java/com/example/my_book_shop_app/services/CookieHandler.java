@@ -18,13 +18,13 @@ public class CookieHandler {
     @BookStatusCookieChangedLogger
     public void updateSlugInCookie(String cookieValue, String cookieName, HttpServletResponse response, String slug) {
         if(cookieValue == null || cookieValue.equals("")) {
-            Cookie cookie = new Cookie(cookieName, slug);
+            Cookie cookie = createHttpOnlySecureCookie(cookieName, slug);
             cookie.setPath(COOKIE_BOOKS_PATH);
             response.addCookie(cookie);
         } else if(!cookieValue.contains(slug)){
             StringJoiner stringJoiner = new StringJoiner("/");
             stringJoiner.add(cookieValue).add(slug);
-            Cookie cookie = new Cookie(cookieName, stringJoiner.toString());
+            Cookie cookie = createHttpOnlySecureCookie(cookieName, stringJoiner.toString());
             cookie.setPath(COOKIE_BOOKS_PATH);
             response.addCookie(cookie);
         }
@@ -35,7 +35,7 @@ public class CookieHandler {
         if(cookieValue != null && !cookieValue.equals("")) {
             ArrayList<String> cookieBooks = new ArrayList<>(Arrays.asList(cookieValue.split("/")));
             cookieBooks.remove(slug);
-            Cookie cookie = new Cookie(cookieName, String.join("/", cookieBooks));
+            Cookie cookie = createHttpOnlySecureCookie(cookieName, String.join("/", cookieBooks));
             cookie.setPath(COOKIE_BOOKS_PATH);
             response.addCookie(cookie);
         }
@@ -62,8 +62,15 @@ public class CookieHandler {
     }
 
     public void removeAllSlugs(String cookieName, HttpServletResponse response) {
-        Cookie cookie = new Cookie(cookieName, "");
+        Cookie cookie = createHttpOnlySecureCookie(cookieName, "");
         cookie.setPath(COOKIE_BOOKS_PATH);
         response.addCookie(cookie);
+    }
+
+    public Cookie createHttpOnlySecureCookie(String name, String value) {
+        Cookie cookie = new Cookie(name, value);
+        cookie.setSecure(true);
+        cookie.setHttpOnly(true);
+        return cookie;
     }
 }
