@@ -7,21 +7,23 @@ import com.example.my_book_shop_app.struct.book.links.Book2UserEntity;
 import com.example.my_book_shop_app.struct.book.viewed.ViewedBook2UserEntity;
 import com.example.my_book_shop_app.struct.enums.Book2UserRelationType;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
 
 @Service
 public class UserBooksService {
-
     private final BookRepository bookRepository;
     private final Book2UserRepository book2UserRepository;
     private final ViewedBook2UserRepository viewedBook2UserRepository;
     private final GenreRepository genreRepository;
     private final AuthorRepository authorRepository;
     private final RecommendedBookRepository recommendedBookRepository;
+    private final CartCacheService cartCacheService;
     private final Random rand;
 
     private static final int KEPT_STATUS_ID = 1;
@@ -30,13 +32,20 @@ public class UserBooksService {
     private static final int ARCHIVED_STATUS_ID = 4;
 
     @Autowired
-    public UserBooksService(BookRepository bookRepository, Book2UserRepository book2UserRepository, ViewedBook2UserRepository viewedBook2UserRepository, GenreRepository genreRepository, AuthorRepository authorRepository, RecommendedBookRepository recommendedBookRepository) {
+    private RedisTemplate<String, Long> longRedisTemplate;
+
+    @Autowired
+    private RedisTemplate<String, List<Book>> bookListRedisTemplate;
+
+    @Autowired
+    public UserBooksService(BookRepository bookRepository, Book2UserRepository book2UserRepository, ViewedBook2UserRepository viewedBook2UserRepository, GenreRepository genreRepository, AuthorRepository authorRepository, RecommendedBookRepository recommendedBookRepository, CartCacheService cartCacheService) {
         this.bookRepository = bookRepository;
         this.book2UserRepository = book2UserRepository;
         this.viewedBook2UserRepository = viewedBook2UserRepository;
         this.genreRepository = genreRepository;
         this.authorRepository = authorRepository;
         this.recommendedBookRepository = recommendedBookRepository;
+        this.cartCacheService = cartCacheService;
         this.rand = new Random();
     }
 
@@ -84,6 +93,8 @@ public class UserBooksService {
     }
 
     public Book2UserEntity setBookAsCart(Integer userId, Integer bookId) {
+        evictCartCountCache(userId);
+        this.cartCacheService.evictCartCache(userId);
         if (!book2UserRepository.existsBook2UserEntityByUserIdAndBookId(userId, bookId)) {
             addLikeBooksToRecommended(userId, bookId, false);
             return createBook2User(userId, bookId, CART_STATUS_ID);
@@ -114,7 +125,7 @@ public class UserBooksService {
     }
 
     public List<Book> getBooksInCartOfUser(Integer userId) {
-        return this.bookRepository.findBooksInCartByUserId(userId);
+        return this.cartCacheService.getBooksInCartOfUser(userId);
     }
 
     public List<Book> getBooksInKeptOfUser(Integer userId) {
@@ -122,6 +133,8 @@ public class UserBooksService {
     }
 
     public void removeBookFromCart(Integer userId, Integer bookId) {
+        evictCartCountCache(userId);
+        cartCacheService.evictCartCache(userId);
         Book2UserEntity book2User = this.book2UserRepository.findBook2UserEntityByUserIdAndBookId(userId, bookId);
         if(book2User != null && book2User.getTypeId() == CART_STATUS_ID) this.book2UserRepository.delete(book2User);
     }
@@ -203,7 +216,22 @@ public class UserBooksService {
     }
 
     public long getCartCount(int userId) {
-        return this.book2UserRepository.getCountByUserIdAndTypeId(userId, CART_STATUS_ID);
+        String cacheKey = getRedisCacheKey(userId,  CART_STATUS_ID);
+        Long count = longRedisTemplate.opsForValue().get(cacheKey);
+        if (count != null) return count;
+
+        count = book2UserRepository.getCountByUserIdAndTypeId(userId, CART_STATUS_ID);
+        longRedisTemplate.opsForValue().set(cacheKey, count, Duration.ofMinutes(5));
+        return count;
+    }
+
+    // Инвалидация кэша при изменении корзины
+    private void evictCartCountCache(int userId) {
+        longRedisTemplate.delete(getRedisCacheKey(userId,  CART_STATUS_ID));
+    }
+
+    private String getRedisCacheKey(int userId, int statusId) {
+        return "user:" + userId + ":status" + statusId;
     }
 
     public long getMyBooksCount(int userId) {
