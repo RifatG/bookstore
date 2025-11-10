@@ -12,6 +12,7 @@ import com.example.my_book_shop_app.struct.user.User2Role;
 import com.example.my_book_shop_app.struct.user.UserContactEntity;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -32,8 +33,11 @@ public class BookstoreUserRegister {
     private final User2RoleRepository user2RoleRepository;
     private final JWTUtil jwtUtil;
 
+    @Lazy
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Lazy
     @Autowired
     private AuthenticationManager authenticationManager;
 

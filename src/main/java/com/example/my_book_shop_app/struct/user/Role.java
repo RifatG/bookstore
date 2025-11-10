@@ -1,6 +1,6 @@
 package com.example.my_book_shop_app.struct.user;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity

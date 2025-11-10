@@ -1,6 +1,6 @@
 package com.example.my_book_shop_app.struct.book;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "recommended_books")

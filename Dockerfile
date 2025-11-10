@@ -1,5 +1,5 @@
 # Используем официальный образ Java
-FROM openjdk:17-jdk-slim
+FROM openjdk:26-ea-jdk-slim
 
 # Рабочая директория в контейнере
 WORKDIR /app

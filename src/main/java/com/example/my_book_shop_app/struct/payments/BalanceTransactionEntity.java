@@ -2,7 +2,7 @@ package com.example.my_book_shop_app.struct.payments;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Data

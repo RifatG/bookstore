@@ -3,21 +3,20 @@ package com.example.my_book_shop_app.security;
 import com.example.my_book_shop_app.security.jwt.JWTRequestFilter;
 import com.example.my_book_shop_app.services.CookieHandler;
 import com.example.my_book_shop_app.services.JwtBlacklistService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig {
 
     private static final String SIGN_IN_URL = "/signin";
     private final BookstoreUserDetailsService bookstoreUserDetailsService;
@@ -26,8 +25,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final JwtBlacklistService jwtBlacklistService;
     private final OauthAuthenticationSuccessHandler customAuthenticationSuccessHandler;
 
-    @Autowired
-    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService, JWTRequestFilter filter, CookieHandler cookieHandler, JwtBlacklistService jwtBlacklistService, OauthAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
+    public SecurityConfig(BookstoreUserDetailsService bookstoreUserDetailsService,
+                          JWTRequestFilter filter,
+                          CookieHandler cookieHandler,
+                          JwtBlacklistService jwtBlacklistService,
+                          OauthAuthenticationSuccessHandler customAuthenticationSuccessHandler) {
         this.bookstoreUserDetailsService = bookstoreUserDetailsService;
         this.filter = filter;
         this.cookieHandler = cookieHandler;
@@ -36,41 +38,37 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    PasswordEncoder getPasswordEncoder() {
-        return new BCryptPasswordEncoder();
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
     @Bean
-    @Override
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
-    }
-
-    @Override
-    protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth
-                .userDetailsService(bookstoreUserDetailsService)
-                .passwordEncoder(getPasswordEncoder());
-    }
-
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
+    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf().disable()
-                .authorizeRequests()
-                .antMatchers("/my", "/profile", "/books/viewed").authenticated()
-                .antMatchers("/users", "/users/**").hasRole("ADMIN")
-                .antMatchers("/**").permitAll()
-                .and().formLogin()
-                .loginPage(SIGN_IN_URL).failureUrl(SIGN_IN_URL)
-                .and().logout().logoutUrl("/logout")
-                .addLogoutHandler(((request, response, authentication) -> {
-                    String token = cookieHandler.getJwtTokenFromCookie(request);
-                    if(token != null) jwtBlacklistService.addToBlacklist(token);
-                }))
-                .logoutSuccessUrl(SIGN_IN_URL).deleteCookies("token")
-                .and().oauth2Login().successHandler(customAuthenticationSuccessHandler)
-                .and().oauth2Client();
-        http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+                .csrf(csrf -> csrf.disable())
+                .authorizeHttpRequests(authz -> authz
+                        .requestMatchers("/my", "/profile", "/books/viewed").authenticated()
+                        .requestMatchers("/users", "/users/**").hasRole("ADMIN")
+                        .anyRequest().permitAll()
+                )
+                .formLogin(form -> form
+                        .loginPage(SIGN_IN_URL)
+                        .failureUrl(SIGN_IN_URL)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .addLogoutHandler((request, response, authentication) -> {
+                            String token = cookieHandler.getJwtTokenFromCookie(request);
+                            if(token != null) jwtBlacklistService.addToBlacklist(token);
+                        })
+                        .logoutSuccessUrl(SIGN_IN_URL)
+                        .deleteCookies("token")
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .successHandler(customAuthenticationSuccessHandler)
+                )
+                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 }

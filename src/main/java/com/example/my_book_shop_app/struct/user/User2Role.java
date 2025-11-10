@@ -2,7 +2,7 @@ package com.example.my_book_shop_app.struct.user;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Data
 @Entity

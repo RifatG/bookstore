@@ -6,8 +6,6 @@ import com.example.my_book_shop_app.services.BookService;
 import com.example.my_book_shop_app.services.ResourceStorage;
 import com.example.my_book_shop_app.struct.author.Author;
 import com.example.my_book_shop_app.struct.book.Book;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-@Api("authors data")
 public class AuthorsController {
 
     private final AuthorService authorService;
@@ -44,7 +41,6 @@ public class AuthorsController {
         return "/authors/index";
     }
 
-    @ApiOperation("method to get map of authors")
     @GetMapping("/api/authors")
     @ResponseBody
     public Map<String, List<Author>> authors() {

@@ -1,6 +1,6 @@
 package com.example.my_book_shop_app.struct.book.review;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity

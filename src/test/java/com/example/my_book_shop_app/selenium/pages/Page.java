@@ -23,13 +23,13 @@ public class Page {
     }
 
     public Page setUpSearchTokenToSearchInput(String token) {
-        WebElement searchInput = driver.findElementById("query");
+        WebElement searchInput = driver.findElement(By.id("query"));
         searchInput.sendKeys(token);
         return this;
     }
 
     public Page clickSearchButton() {
-        WebElement searchButton = driver.findElementById("search");
+        WebElement searchButton = driver.findElement(By.id("search"));
         searchButton.submit();
         return new SearchPage(driver);
     }
@@ -40,31 +40,31 @@ public class Page {
     }
 
     public GenresPage goToGenres() {
-        WebElement genres = driver.findElementById("navigate").findElement(By.xpath("//li[2]"));
+        WebElement genres = driver.findElement(By.id("navigate")).findElement(By.xpath("//li[2]"));
         genres.click();
         return new GenresPage(driver);
     }
 
     public NewsPage goToNews() {
-        WebElement genres = driver.findElementById("navigate").findElement(By.xpath("//li[3]"));
+        WebElement genres = driver.findElement(By.id("navigate")).findElement(By.xpath("//li[3]"));
         genres.click();
         return new NewsPage(driver);
     }
 
     public PopularPage goToPopular() {
-        WebElement genres = driver.findElementById("navigate").findElement(By.xpath("//li[4]"));
+        WebElement genres = driver.findElement(By.id("navigate")).findElement(By.xpath("//li[4]"));
         genres.click();
         return new PopularPage(driver);
     }
 
     public AuthorsPage goToAuthors() {
-        WebElement genres = driver.findElementById("navigate").findElement(By.xpath("//li[5]"));
+        WebElement genres = driver.findElement(By.id("navigate")).findElement(By.xpath("//li[5]"));
         genres.click();
         return new AuthorsPage(driver);
     }
 
     public MainPage goToMain() {
-        WebElement genres = driver.findElementById("navigate").findElement(By.xpath("//li[1]"));
+        WebElement genres = driver.findElement(By.id("navigate")).findElement(By.xpath("//li[1]"));
         genres.click();
         return new MainPage(driver);
     }

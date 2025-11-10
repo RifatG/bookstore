@@ -2,7 +2,7 @@ package com.example.my_book_shop_app.struct.book.file;
 
 import com.example.my_book_shop_app.struct.book.Book;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "books_file")

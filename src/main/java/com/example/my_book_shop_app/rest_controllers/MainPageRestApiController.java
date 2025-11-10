@@ -2,14 +2,12 @@ package com.example.my_book_shop_app.rest_controllers;
 
 import com.example.my_book_shop_app.data.BooksPageDto;
 import com.example.my_book_shop_app.services.BookService;
-import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
 @RequestMapping("/api")
-@Api("Main page data API")
 public class MainPageRestApiController {
 
     private final BookService bookService;

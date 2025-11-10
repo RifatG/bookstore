@@ -3,7 +3,7 @@ package com.example.my_book_shop_app.struct.genre;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity

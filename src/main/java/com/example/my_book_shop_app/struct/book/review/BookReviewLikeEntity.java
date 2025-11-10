@@ -2,7 +2,7 @@ package com.example.my_book_shop_app.struct.book.review;
 
 import com.example.my_book_shop_app.struct.user.UserEntity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity

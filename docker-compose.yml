@@ -32,6 +32,18 @@ services:
     networks:
       - bookstore-network
 
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: bookstore-swagger
+    ports:
+      - "8081:8080"
+    environment:
+      URLS: "[{ url: 'http://app:8085/v3/api-docs', name: 'BookShopAPI' }]"
+    depends_on:
+      - app
+    networks:
+      - bookstore-network
+
   app:
     build:
       context: .

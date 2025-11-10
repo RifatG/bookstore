@@ -6,7 +6,7 @@ import com.example.my_book_shop_app.struct.book.review.BookReviewLikeEntity;
 import com.example.my_book_shop_app.struct.enums.ContactType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

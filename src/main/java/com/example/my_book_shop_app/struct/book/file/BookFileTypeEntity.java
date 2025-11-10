@@ -1,6 +1,6 @@
 package com.example.my_book_shop_app.struct.book.file;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "book_file_type")

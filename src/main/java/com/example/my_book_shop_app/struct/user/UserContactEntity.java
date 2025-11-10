@@ -2,7 +2,7 @@ package com.example.my_book_shop_app.struct.user;
 
 import com.example.my_book_shop_app.struct.enums.ContactType;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity

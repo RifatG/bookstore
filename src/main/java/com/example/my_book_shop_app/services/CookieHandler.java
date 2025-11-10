@@ -1,11 +1,11 @@
 package com.example.my_book_shop_app.services;
 
 import com.example.my_book_shop_app.aop.annotations.BookStatusCookieChangedLogger;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.StringJoiner;
