@@ -64,12 +64,57 @@ services:
         - bookstore-network
 
 
+
+  # ========== RAG СИСТЕМА С UI ЧАТОМ (Готовое решение) ==========
+
+  # 1. Ollama (модели)
+  ollama:
+    image: ollama/ollama:latest
+    container_name: bookstore-ollama
+    ports: ["11434:11434"]
+    volumes: [ollama_data:/root/.ollama]
+    command: serve
+    deploy: { resources: { limits: { memory: 12G } } }
+    networks: [bookstore-network]
+    restart: unless-stopped
+
+  # 2. Open WebUI (чат-интерфейс с RAG)
+  rag-ui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: bookstore-rag-ui
+    ports: [ "3000:8080" ]
+    environment:
+      - OLLAMA_BASE_URL=http://ollama:11434
+
+      # КЛЮЧЕВОЕ: включаем регистрацию и задаем пароль
+      - ENABLE_SIGNUP=true
+      - WEBUI_AUTH=true
+      - WEBUI_SECRET_KEY=bookstore-secret-123
+
+      # Опционально: создаем первого пользователя
+      - INITIAL_USER_EMAIL=admin@bookstore.local
+      - INITIAL_USER_PASSWORD=bookstore123
+      - INITIAL_USER_NAME=Admin
+
+      # Модель по умолчанию
+      - DEFAULT_MODELS='["llama3.2:3b"]'
+
+      # Для разработки - меньше ограничений
+      - CORS_ALLOW_ORIGINS='["http://localhost:3000", "http://127.0.0.1:3000"]'
+
+    volumes:
+      - openwebui_data:/app/backend/data
+      - .:/workspace:ro
+    depends_on: [ ollama ]
+    networks: [ bookstore-network ]
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:
+  ollama_data:
+  openwebui_data:
 
 networks:
   bookstore-network:
     driver: bridge
-      
-

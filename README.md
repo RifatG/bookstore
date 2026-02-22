@@ -43,4 +43,13 @@ Or instead of 4-5 points do this:
 
 Developed by Rifat Galliamov
 
+docker compose up -d ollama
+# Ждем ~10 секунд пока Ollama запустится
+docker exec ollama-rag ollama pull qwen:7b
+docker exec ollama-rag ollama pull nomic-embed-text
+# Затем запускаем остальные сервисы
+docker compose up -d
+
+docker exec rag-api find / -type f -name "*.py" -o -name "*.java" -o -name "*.kt" -o -name "*.md" -o -name "*.txt" | head -20
+
 
