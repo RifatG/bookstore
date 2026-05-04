@@ -98,3 +98,5 @@ insert into authors (name, slug, description, photo) values ('Dev', 'Siemianowic
 insert into authors (name, slug, description, photo) values ('Claude', 'Sturdgess', 'Maecenas tincidunt lacus at velit. Vivamus vel nulla eget eros elementum pellentesque.', 'http://dummyimage.com/250x300.png/cc0000/ffffff');
 insert into authors (name, slug, description, photo) values ('Janos', 'Stalman', 'Sed vel enim sit amet nunc viverra dapibus.', 'http://dummyimage.com/250x300.png/cc0000/ffffff');
 insert into authors (name, slug, description, photo) values ('Hervey', 'Bryson', 'Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Proin risus.', 'http://dummyimage.com/250x300.png/5fa2dd/ffffff');
+
+

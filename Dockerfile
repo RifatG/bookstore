@@ -1,14 +1,28 @@
-# Используем официальный образ Java
-FROM openjdk:26-ea-jdk-slim
+# Этап сборки (если нужна, но у тебя уже готовый jar)
+# FROM maven:3.8-openjdk-17 AS build
+# COPY . .
+# RUN mvn clean package
 
-# Рабочая директория в контейнере
+# Финальный образ
+FROM eclipse-temurin:21-jre
+
+# Создаем непривилегированного пользователя
+RUN addgroup --system --gid 1001 appuser && \
+    adduser --system --uid 1001 --gid 1001 appuser
+
 WORKDIR /app
 
-# Копируем JAR приложения
-COPY target/MyBookShopApp-0.0.1-SNAPSHOT.jar app.jar
+# Копируем JAR (лучше использовать конкретное имя или wildcard)
+COPY target/*.jar app.jar
+
+# Настройки JVM для контейнера
+ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -XX:+UseG1GC"
 
 # Открываем порт
 EXPOSE 8085
 
-# Запускаем приложение
-ENTRYPOINT ["java", "-jar", "app.jar"]
+# Переключаемся на непривилегированного пользователя
+USER appuser
+
+# Запускаем с оптимизированными параметрами
+ENTRYPOINT ["sh", "-c", "java ${JAVA_OPTS} -jar app.jar"]

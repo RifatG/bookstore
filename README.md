@@ -43,6 +43,8 @@ Or instead of 4-5 points do this:
 
 Developed by Rifat Galliamov
 
+### DockerCompose:
+
 docker compose up -d ollama
 # Ждем ~10 секунд пока Ollama запустится
 docker exec ollama-rag ollama pull qwen:7b
@@ -52,4 +54,12 @@ docker compose up -d
 
 docker exec rag-api find / -type f -name "*.py" -o -name "*.java" -o -name "*.kt" -o -name "*.md" -o -name "*.txt" | head -20
 
+### Kubernates (Kind)
+Теперь кластер можно создавать командой:
 
+bash
+kind create cluster --config=kind-config.yaml
+А удалять:
+
+bash
+kind delete cluster --name bookstore-cluster
