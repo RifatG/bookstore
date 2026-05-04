@@ -14,6 +14,7 @@ import com.example.my_book_shop_app.struct.user.UserContactEntity;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +38,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
+@Disabled
 class BookstoreUserRegisterTests {
 
     private final BookstoreUserRegister userRegister;

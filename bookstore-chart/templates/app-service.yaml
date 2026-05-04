@@ -3,10 +3,13 @@ kind: Service
 metadata:
   name: bookstore-app
   namespace: {{ .Values.global.namespace }}
+  labels:
+    app: bookstore-app
 spec:
   selector:
     app: bookstore-app
   ports:
-    - port: {{ .Values.app.port }}
+    - name: http
+      port: {{ .Values.app.port }}
       targetPort: {{ .Values.app.port }}
   type: ClusterIP

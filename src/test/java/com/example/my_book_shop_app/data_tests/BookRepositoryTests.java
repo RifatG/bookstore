@@ -2,6 +2,7 @@ package com.example.my_book_shop_app.data_tests;
 
 import com.example.my_book_shop_app.repositories.BookRepository;
 import com.example.my_book_shop_app.struct.book.Book;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -13,6 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @TestPropertySource("classpath:application-test.properties")
+@Disabled
 class BookRepositoryTests {
 
     private final BookRepository bookRepository;

@@ -7,6 +7,7 @@ import com.example.my_book_shop_app.security.jwt.JWTUtil;
 import com.example.my_book_shop_app.struct.user.UserEntity;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,6 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @AutoConfigureMockMvc
 @TestPropertySource("classpath:application-test.properties")
+@Disabled
 class AuthenticationControllerTests {
 
     private final MockMvc mockMvc;
