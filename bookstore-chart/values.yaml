@@ -10,8 +10,10 @@ redis:
 
 # Application settings
 app:
-  image: bookstore-app:latest
-  pullPolicy: IfNotPresent
+  image:
+    repository: rifatg13/bookstore-app   # твой Docker ID
+    tag: latest
+    pullPolicy: Always
   port: 8085
   replicas: 1
   resources:
@@ -39,3 +41,17 @@ serviceMonitor:
   enabled: true
   path: /actuator/prometheus
   interval: 30s
+
+# Включает/выключает установку мониторинга
+monitoring:
+  enabled: true
+
+# Настройки для kube-prometheus-stack (передаются внутрь зависимого чарта)
+kube-prometheus-stack:
+  grafana:
+    adminPassword: admin123
+    service:
+      type: LoadBalancer
+  prometheus:
+    prometheusSpec:
+      serviceMonitorSelectorNilUsesHelmValues: false

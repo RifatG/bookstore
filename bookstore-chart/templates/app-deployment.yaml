@@ -15,10 +15,10 @@ spec:
     spec:
       containers:
         - name: app
-          image: bookstore-app:latest
-          imagePullPolicy: IfNotPresent
+          image: {{ .Values.app.image.repository }}:{{ .Values.app.image.tag }}
+          imagePullPolicy: {{ .Values.app.image.pullPolicy }}
           ports:
-            - containerPort: 8085
+            - containerPort: {{ .Values.app.port }}
           env:
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://host.docker.internal:5432/postgres
