@@ -1,0 +1,41 @@
+# Global settings
+global:
+  namespace: bookstore
+
+# Redis settings
+redis:
+  image: redis:7-alpine
+  storageSize: 1Gi
+  port: 6379
+
+# Application settings
+app:
+  image: bookstore-app:latest
+  pullPolicy: IfNotPresent
+  port: 8085
+  replicas: 1
+  resources:
+    limits:
+      memory: 1Gi
+      cpu: 500m
+    requests:
+      memory: 512Mi
+      cpu: 250m
+  env:
+    SPRING_DATASOURCE_URL: jdbc:postgresql://host.docker.internal:5432/postgres
+    SPRING_DATASOURCE_USERNAME: postgres
+    SPRING_DATASOURCE_PASSWORD: "853496"
+    SPRING_REDIS_HOST: redis
+    SPRING_REDIS_PORT: "6379"
+
+# Ingress settings
+ingress:
+  enabled: true
+  host: bookstore.local
+  ingressClassName: nginx
+
+# ServiceMonitor (for Prometheus)
+serviceMonitor:
+  enabled: true
+  path: /actuator/prometheus
+  interval: 30s
