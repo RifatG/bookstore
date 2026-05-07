@@ -10,3 +10,11 @@ dependencies:
     version: "56.0.0"
     repository: "https://prometheus-community.github.io/helm-charts"
     condition: monitoring.enabled
+  - name: ingress-nginx
+    version: "4.9.0"
+    repository: "https://kubernetes.github.io/ingress-nginx"
+    condition: ingress-nginx.enabled
+  - name: loki-stack
+    version: "2.9.11"
+    repository: "https://grafana.github.io/helm-charts"
+    condition: loki.enabled
