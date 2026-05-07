@@ -101,3 +101,320 @@
 | **Redis внутри K8s** | Тренировка с StatefulSet и PersistentVolume. В продакшене можно заменить на Managed Redis |
 | **Kafka внутри K8s** | Показывает работу с StatefulSet. В облаке можно взять Managed Kafka |
 | **analytics-service отдельно** | Демонстрирует микросервисную архитектуру и асинхронное взаимодействие |
+
+
+---
+
+## Технологический стек
+
+### Backend
+
+| Технология | Назначение |
+|------------|------------|
+| Java 17 / Kotlin | Основной язык |
+| Spring Boot 3, MVC, Security, Data JPA | Фреймворк |
+| PostgreSQL / Redis / Kafka | БД, кэш, очереди |
+| Hibernate / Liquibase | ORM, миграции |
+| gRPC / REST API | Межсервисное взаимодействие |
+
+### Контейнеризация и оркестрация
+
+| Технология | Назначение |
+|------------|------------|
+| Docker / Docker Compose | Контейнеризация |
+| Kubernetes (kind) | Локальный кластер |
+| Helm | Управление чартами |
+| Ingress (nginx) | Вход в кластер |
+| PersistentVolume (PVC) | Хранение данных |
+
+### Observability
+
+| Технология | Назначение |
+|------------|------------|
+| Prometheus + Grafana | Метрики |
+| Grafana Loki | Логи |
+| Alertmanager | Алерты |
+| ServiceMonitor | Сбор метрик приложений |
+
+### Frontend
+
+| Технология | Назначение |
+|------------|------------|
+| Thymeleaf | Шаблонизатор |
+| TypeScript / AngularJS | Интерфейс |
+
+### DevOps
+
+| Технология | Назначение |
+|------------|------------|
+| Git / GitLab CI/CD | Пайплайны |
+| Maven | Сборка |
+| Linux | ОС |
+
+---
+
+## Требования
+
+- **Docker Desktop** (для kind и образов)
+- **kind** (локальный кластер Kubernetes)
+- **kubectl**
+- **Helm** (3.x)
+- **Java 17+**, **Maven**
+- **PostgreSQL 14** (для локального запуска)
+
+---
+
+## Локальный запуск (без Kubernetes)
+
+### Требуется отдельно поднять PostgreSQL
+
+```bash
+# Через Docker Compose (рекомендуется)
+docker compose up -d postgres
+
+# Или через brew (macOS)
+brew services start postgresql@14
+
+# Или через apt (Linux)
+sudo systemctl start postgresql
+```
+
+### Запуск приложения
+
+```bash
+# Собрать
+mvn clean package
+
+# Запустить (PostgreSQL должен быть доступен)
+java -jar target/MyBookShopApp-0.0.1-SNAPSHOT.jar --server.port=8085
+```
+
+## Запуск в Kubernetes (kind)
+
+### Предварительные требования
+
+1. **PostgreSQL доступен из кластера**  
+   Для kind на macOS/Windows используйте `host.docker.internal`.  
+   Для Linux используйте IP-адрес хоста (узнать командой `hostname -I`).
+
+2. **Docker образ приложения загружен в реестр** (например, Docker Hub):
+
+```bash
+docker build -t rifatg13/bookstore-app:latest .
+docker push rifatg13/bookstore-app:latest
+```
+3. **Установлены инструменты: docker, kind, kubectl, helm.**
+
+### Пошаговая инструкция
+
+1. **Создать кластер kind**
+
+В корне проекта уже есть файл kind-config.yaml.
+
+Выполните:
+
+```bash
+kind create cluster --config=kind-config.yaml
+```
+
+2. **Установить Helm-чарт (включает всё: приложение, Redis, Kafka, мониторинг, Ingress)**
+
+```bash
+cd bookstore-chart
+helm dependency build
+helm install bookstore . --namespace bookstore --create-namespace
+```
+
+3. **Проверить, что все поды запустились**
+
+```bash
+kubectl get pods -n bookstore
+```
+Все поды должны быть в статусе Running.
+
+4. **Открыть доступ к приложению (port-forward, надёжный способ)**
+
+```bash
+kubectl port-forward -n bookstore svc/bookstore-app 8085:8085
+```
+
+5. **Открыть приложение в браузере**
+
+```text
+http://localhost:8085
+```
+
+### Удаление кластера
+
+```bash
+kind delete cluster --name bookstore-cluster
+```
+
+## Структура Helm-чарта
+
+```text
+bookstore-chart/
+├── Chart.yaml                 # метаданные и зависимости
+├── values.yaml                # конфигурация
+├── templates/
+│   ├── app-deployment.yaml    # основное приложение
+│   ├── app-service.yaml
+│   ├── app-ingress.yaml
+│   ├── app-servicemonitor.yaml
+│   ├── redis-pvc.yaml
+│   ├── redis-deployment.yaml
+│   ├── redis-service.yaml
+│   ├── analytics-deployment.yaml   # сервис аналитики
+│   └── analytics-service.yaml
+└── charts/                    # зависимости (kube-prometheus-stack, ingress-nginx, kafka)
+```
+
+## Мониторинг и логи
+
+### Grafana
+
+```bash
+kubectl port-forward -n bookstore svc/bookstore-grafana 3000:80
+```
+Логин: admin
+Пароль: (получить командой ниже)
+```bash
+kubectl get secret -n bookstore bookstore-grafana -o jsonpath="{.data.admin-password}" | base64 --decode
+```
+
+Импорт дашбордов:  
+
+4701 — Spring Boot Statistics  
+315 — Kubernetes Cluster Monitoring  
+
+### Prometheus
+
+```bash
+kubectl port-forward -n bookstore svc/bookstore-kube-prometheus-prometheus 9090:9090
+```
+
+Запросы:
+
+```text
+application_started_time_seconds
+rate(http_server_requests_seconds_count[1m])
+```
+
+### Loki (логи)
+
+В Grafana → Explore → источник Loki.  
+Запрос:
+
+logql
+{namespace="bookstore", app="bookstore-app"}
+
+
+## Важные команды
+
+### Kind
+
+```bash
+kind create cluster --config=kind-config.yaml
+kind delete cluster --name bookstore-cluster
+kind load docker-image bookstore-app:latest --name bookstore-cluster
+kind get clusters
+```
+
+### Kubectl
+
+```bash
+kubectl get nodes
+kubectl get pods -n bookstore
+kubectl get svc -n bookstore
+kubectl get ingress -n bookstore
+kubectl get pvc -n bookstore
+kubectl logs -n bookstore -l app=bookstore-app -f
+kubectl describe pod -n bookstore <pod-name>
+kubectl rollout restart deployment -n bookstore bookstore-app
+kubectl port-forward -n bookstore svc/bookstore-app 8085:8085
+```
+
+### Helm
+
+```bash
+helm install bookstore ./bookstore-chart --namespace bookstore --create-namespace
+helm upgrade bookstore ./bookstore-chart --namespace bookstore
+helm uninstall bookstore --namespace bookstore
+helm list -n bookstore
+helm dependency build
+```
+
+## Команды для отладки
+
+### Проверка логов приложения
+
+```bash
+kubectl logs -n bookstore -l app=bookstore-app --tail=50 -f
+```
+
+### Проверка, что ServiceMonitor работает
+
+```bash
+kubectl get servicemonitor -n bookstore
+kubectl port-forward -n bookstore svc/bookstore-kube-prometheus-prometheus 9090:9090
+```
+Открыть http://localhost:9090/targets
+
+### Проверка Kafka (если добавлена)
+
+```bash
+kubectl exec -it -n bookstore kafka-0 -- kafka-topics.sh --list --bootstrap-server localhost:9092
+kubectl exec -it -n bookstore kafka-0 -- kafka-console-consumer.sh --topic book-views --bootstrap-server localhost:9092 --from-beginning
+```
+
+### Проверка Redis изнутри кластера
+
+```bash
+kubectl run -it --rm redis-test --image=redis:7-alpine --restart=Never -n bookstore -- redis-cli -h redis ping
+```
+
+### Войти в под
+
+```bash
+kubectl exec -it -n bookstore <pod-name> -- /bin/sh
+```
+
+## Разработка и доработка
+
+### Добавление нового функционала
+
+1. Изменить код в src/
+2. Пересобрать образ:
+
+```bash
+docker build -t rifatg13/bookstore-app:latest .
+docker push rifatg13/bookstore-app:latest
+```
+3. Обновить чарт:
+
+```bash
+helm upgrade bookstore ./bookstore-chart -n bookstore
+```
+
+### Добавление нового микросервиса
+
+1. Создать новый модуль в проекте
+2. Написать Dockerfile
+3. Добавить манифесты в templates/
+4. При необходимости добавить зависимости в Chart.yaml
+
+### Запуск CI/CD (GitLab)
+
+GitLab CI пайплайн еще не настроен (см. .gitlab-ci.yml). 
+
+При пуше в main:
+1. Собирается образ
+2. Публикуется в Docker Hub
+3. Деплоится в кластер через Helm
+
+## Автор
+
+Разработано Рифатом Галлямовым
+
+Telegram: @rifatg13
+Email: rifatg13@gmail.com
