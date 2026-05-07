@@ -1,65 +1,94 @@
+# BookStore (MyBookShopApp)
 
-# MyBookShopApp
+Книжный интернет-магазин с микросервисной архитектурой, развёрнутый в Kubernetes. Проект для изучения и демонстрации современных подходов: микросервисы, асинхронное взаимодействие (Kafka), observability (Prometheus, Grafana, Loki), развёртывание в K8s через Helm, RAG-поиск с LLM (Qwen).
 
-This is a test internet store of books. 
+---
 
-## Tech Stack
+## Оглавление
 
-**Frontend**
+1. [Архитектура проекта](#архитектура-проекта)
+2. [Технологический стек](#технологический-стек)
+3. [Требования](#требования)
+4. [Локальный запуск (без Kubernetes)](#локальный-запуск-без-kubernetes)
+5. [Запуск в Kubernetes (kind)](#запуск-в-kubernetes-kind)
+6. [Структура Helm-чарта](#структура-helm-чарта)
+7. [Мониторинг и логи](#мониторинг-и-логи)
+8. [Важные команды](#важные-команды)
+9. [Команды для отладки](#команды-для-отладки)
+10. [Разработка и доработка](#разработка-и-доработка)
+11. [Автор](#автор)
 
-HTML, CSS, JavaScript, jQuery, Thymeleaf
+---
 
-**Backend:**
+## Архитектура проекта
 
-MyBookShopApp is developed on Java programming language using the follow stack of technology:
-* Maven -  Dependency management and automatic project builder
-* Spring Framework (Spring MVC, Spring Security, Spring Boot, Spring Data, Java Persistanse API, Hibernate ORM)
-* JWT - json web token of access
-* oAuth2
-* sms and mail distributing
-* jUnit test framework
-* Database PostgreSQL
-* Springfox API documentation generator
+### Сервисы и компоненты
 
+| Сервис | Где живёт | Назначение |
+|--------|-----------|------------|
+| **PostgreSQL** | Снаружи K8s (на хост-машине или в облаке) | Основная БД приложения (книги, пользователи, заказы) |
+| **Redis** | Внутри K8s (StatefulSet + PVC) | Кэш, сессии пользователей |
+| **main-app** | Внутри K8s (Deployment) | Spring Boot приложение: REST API, бизнес-логика |
+| **Kafka** | Внутри K8s (StatefulSet) | Асинхронные события (просмотры книг) |
+| **analytics** | Внутри K8s (Deployment) | Consumer: читает из Kafka, считает популярность книг |
+| **Prometheus + Grafana** | Внутри K8s (Helm dependency) | Сбор метрик, дашборды |
+| **Grafana Loki** | Внутри K8s (опционально) | Сбор логов |
+| **Ingress (nginx)** | Внутри K8s (Helm dependency) | Вход в кластер извне |
 
-## Deployment
+### Схема взаимодействия
 
-To deploy this project:
-
-1. Clone this project to your local computer
-2. Install PostgreSql Server
-3. Specify PostgreSql login and password in the application.properties in the project
-4. Open project in IDEA and download all dependencies
-5. Run src/main/java/com/example/my_book_shop_app/MyBookShopAppApplication.java
-6. Open localhost:8085 address in the browser
-
-Or instead of 4-5 points do this:
-1. Execute 'mvn install' command on the terminal in the project directory
-2. Run MyBookShopApp-0.0.1-SNAPSHOT.jar in the 'target' directory using command: 'java -jar MyBookShopApp-0.0.1-SNAPSHOT.jar --server-port=8085'
-
-
-
-## Authors
-
-Developed by Rifat Galliamov
-
-### DockerCompose:
-
-docker compose up -d ollama
-# Ждем ~10 секунд пока Ollama запустится
-docker exec ollama-rag ollama pull qwen:7b
-docker exec ollama-rag ollama pull nomic-embed-text
-# Затем запускаем остальные сервисы
-docker compose up -d
-
-docker exec rag-api find / -type f -name "*.py" -o -name "*.java" -o -name "*.kt" -o -name "*.md" -o -name "*.txt" | head -20
-
-### Kubernates (Kind)
-Теперь кластер можно создавать командой:
-
-bash
-kind create cluster --config=kind-config.yaml
-А удалять:
-
-bash
-kind delete cluster --name bookstore-cluster
+                                                  ┌─────────────────┐
+                                                  │    Браузер      │
+                                                  └────────┬────────┘
+                                                           │
+                                                ┌──────────▼──────────┐
+                                                │   Ingress (nginx)   │
+                                                │   bookstore.local   │
+                                                └──────────┬──────────┘
+                                                           │
+                                                           ▼
+                        ┌──────────────────────────────────────────────────────────────────────┐
+                        │                           Kubernetes Cluster                         │
+                        │                                                                      │
+                        │   ┌─────────────────────────────────────────────────────────────┐    │
+                        │   │                      main-app (Spring Boot)                 │    │
+                        │   │ ┌─────────────────────────────────────────────────────┐     │    │
+                        │   │ │ • REST API (книги, заказы, пользователи)            │     │    │
+                        │   │ │ • Producer: отправляет события в Kafka              │     │    │
+                        │   │ │ • Подключается к PostgreSQL (снаружи кластера)      │     │    │
+                        │   │ │ • Подключается к Redis (внутри кластера)            │     │    │
+                        │   │ └─────────────────────────────────────────────────────┘     │    │
+                        │   └─────────────────────────────────────────────────────────────┘    │
+                        │ │ │ │
+                        │ │ (запросы) │ (подключение) │
+                        │ ▼ ▼ │
+                        │ ┌────────────┐ ┌────────────┐ │
+                        │ │ Redis │ │ Kafka │ │
+                        │ │ (PVC + K8s)│ │(StatefulSet)│ │
+                        │ └────────────┘ └─────┬──────┘ │
+                        │ │ │
+                        │ │ (события) │
+                        │ ▼ │
+                        │ ┌─────────────────────────────────────────────────────────────┐ │
+                        │ │ analytics-service (Spring Boot) │ │
+                        │ │ • Consumer: читает события из Kafka │ │
+                        │ │ • Считает популярность книг (оконные агрегации) │ │
+                        │ │ • RocksDB для stateful-обработки (Kafka Streams) │ │
+                        │ └─────────────────────────────────────────────────────────────┘ │
+                        │ │
+                        │ ┌─────────────────────────────────────────────────────────────┐ │
+                        │ │ Observability Stack │ │
+                        │ │ • Prometheus (сбор метрик) │ │
+                        │ │ • Grafana (дашборды) │ │
+                        │ │ • Loki (логи) │ │
+                        │ │ • Alertmanager (алерты) │ │
+                        │ └─────────────────────────────────────────────────────────────┘ │
+                        │ │
+                        └──────────────────────────────────────────────────────────────────────┘
+                        │
+                        │ (подключение)
+                        ▼
+                        ┌─────────────────┐
+                        │ PostgreSQL │
+                        │ (снаружи K8s) │
+                        └─────────────────┘
