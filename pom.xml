@@ -81,6 +81,12 @@
 			<artifactId>liquibase-core</artifactId>
 		</dependency>
 
+		<!-- KAFKA -->
+		<dependency>
+			<groupId>org.springframework.kafka</groupId>
+			<artifactId>spring-kafka</artifactId>
+		</dependency>
+
 		<!-- DOCUMENTATION -->
 		<dependency>
 			<groupId>org.springdoc</groupId>

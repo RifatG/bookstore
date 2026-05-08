@@ -30,6 +30,26 @@ app:
     SPRING_REDIS_HOST: redis
     SPRING_REDIS_PORT: "6379"
 
+# Kafka settings
+kafka:
+  enabled: true
+  replicaCount: 1
+  persistence:
+    enabled: true
+    size: 5Gi
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+  zookeeper:
+    enabled: true
+    persistence:
+      enabled: true
+      size: 3Gi
+
 # Ingress settings
 ingress:
   enabled: true

@@ -16,6 +16,7 @@ public class UserContactEntity {
     @Column(name = "user_id", columnDefinition = "INT NOT NULL")
     private int userId;
 
+    @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "VARCHAR(255) NOT NULL")
     private ContactType type;
 
