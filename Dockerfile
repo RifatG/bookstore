@@ -14,6 +14,7 @@ WORKDIR /app
 
 # Копируем JAR (лучше использовать конкретное имя или wildcard)
 COPY target/*.jar app.jar
+COPY src/main/resources/spring-frontend /app/spring-frontend
 
 # Настройки JVM для контейнера
 ENV JAVA_OPTS="-XX:+UseContainerSupport -XX:MaxRAMPercentage=75 -XX:+UseG1GC"
