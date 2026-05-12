@@ -217,12 +217,25 @@ docker push rifatg13/bookstore-app:latest
 kind create cluster --config=kind-config.yaml
 ```
 
-2. **Установить Helm-чарт (включает всё: приложение, Redis, Kafka, мониторинг, Ingress)**
+2. **Установить Helm-чарт (включает всё: приложение, Redis, мониторинг, Ingress)**
 
 ```bash
 cd bookstore-chart
 helm dependency build
 helm install bookstore . --namespace bookstore --create-namespace
+```
+**Отдельно установить Kafka через Strimzi(Kubernetes Operator)**
+
+```bash
+helm uninstall kafka -n bookstore
+# Установка оператора
+kubectl apply -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
+# Создание кластера (1 брокер, без ZooKeeper, KRaft режим)
+kubectl apply -f kafka-cluster.yaml -n kafka
+# Создание пользователя
+kubectl apply -f kafka-user.yaml -n kafka
+# Получаем пароль пользователя
+kubectl get secret bookstore-user -n kafka -o jsonpath='{.data.password}' | base64 -d
 ```
 
 3. **Проверить, что все поды запустились**
@@ -248,6 +261,8 @@ http://localhost:8085
 
 ```bash
 kind delete cluster --name bookstore-cluster
+kind get clusters
+docker system prune -a
 ```
 
 ## Структура Helm-чарта
@@ -387,13 +402,24 @@ kubectl exec -it -n bookstore <pod-name> -- /bin/sh
 2. Пересобрать образ:
 
 ```bash
+mvn clean package
 docker build -t rifatg13/bookstore-app:latest .
 docker push rifatg13/bookstore-app:latest
+kubectl rollout restart deployment -n bookstore bookstore-app
 ```
 3. Обновить чарт:
 
 ```bash
 helm upgrade bookstore ./bookstore-chart -n bookstore
+```
+
+Остановка докер контейнеров
+```bash
+# Приостановить все ноды кластера
+docker pause bookstore-cluster-control-plane bookstore-cluster-worker bookstore-cluster-worker2
+
+# Возобновить работу кластера
+docker unpause bookstore-cluster-control-plane bookstore-cluster-worker bookstore-cluster-worker2
 ```
 
 ### Добавление нового микросервиса

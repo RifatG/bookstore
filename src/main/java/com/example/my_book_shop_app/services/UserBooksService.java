@@ -1,16 +1,19 @@
 package com.example.my_book_shop_app.services;
 
+import com.example.my_book_shop_app.event.BookViewEvent;
 import com.example.my_book_shop_app.repositories.*;
 import com.example.my_book_shop_app.struct.book.Book;
 import com.example.my_book_shop_app.struct.book.RecommendedBook;
 import com.example.my_book_shop_app.struct.book.links.Book2UserEntity;
 import com.example.my_book_shop_app.struct.book.viewed.ViewedBook2UserEntity;
 import com.example.my_book_shop_app.struct.enums.Book2UserRelationType;
+import lombok.val;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
@@ -25,6 +28,7 @@ public class UserBooksService {
     private final RecommendedBookRepository recommendedBookRepository;
     private final CartCacheService cartCacheService;
     private final Random rand;
+    private final BookViewEventProducer bookViewEventProducer;
 
     private static final int KEPT_STATUS_ID = 1;
     private static final int CART_STATUS_ID = 2;
@@ -37,8 +41,9 @@ public class UserBooksService {
     @Autowired
     private RedisTemplate<String, List<Book>> bookListRedisTemplate;
 
+
     @Autowired
-    public UserBooksService(BookRepository bookRepository, Book2UserRepository book2UserRepository, ViewedBook2UserRepository viewedBook2UserRepository, GenreRepository genreRepository, AuthorRepository authorRepository, RecommendedBookRepository recommendedBookRepository, CartCacheService cartCacheService) {
+    public UserBooksService(BookRepository bookRepository, Book2UserRepository book2UserRepository, ViewedBook2UserRepository viewedBook2UserRepository, GenreRepository genreRepository, AuthorRepository authorRepository, RecommendedBookRepository recommendedBookRepository, CartCacheService cartCacheService, BookViewEventProducer bookViewEventProducer) {
         this.bookRepository = bookRepository;
         this.book2UserRepository = book2UserRepository;
         this.viewedBook2UserRepository = viewedBook2UserRepository;
@@ -47,6 +52,7 @@ public class UserBooksService {
         this.recommendedBookRepository = recommendedBookRepository;
         this.cartCacheService = cartCacheService;
         this.rand = new Random();
+        this.bookViewEventProducer = bookViewEventProducer;
     }
 
     private Book2UserEntity createBook2User(Integer userId, Integer bookId, int statusId) {
@@ -154,16 +160,29 @@ public class UserBooksService {
         if(book2User != null && book2User.getTypeId() == ARCHIVED_STATUS_ID) this.book2UserRepository.delete(book2User);
     }
 
-    public ViewedBook2UserEntity setBookAsViewed(Integer userId, Integer bookId) {
+    public ViewedBook2UserEntity setBookAsViewed(Integer userId, Book book) {
+        int bookId = book.getId();
+        ViewedBook2UserEntity result;
         if (!viewedBook2UserRepository.existsViewedBook2UserEntityByUserIdAndBookId(userId, bookId)) {
             addLikeBooksToRecommended(userId, bookId, true);
-            return createViewedBook2User(userId, bookId);
+            result = createViewedBook2User(userId, bookId);
         } else {
             ViewedBook2UserEntity viewedBook2User = viewedBook2UserRepository.findViewedBook2UserEntityByUserIdAndBookId(userId, bookId);
             viewedBook2User.setTime(LocalDateTime.now());
             viewedBook2UserRepository.save(viewedBook2User);
-            return viewedBook2User;
+            result = viewedBook2User;
         }
+
+        BookViewEvent event = new BookViewEvent(
+            userId,
+            bookId,
+            book.getSlug(),
+            book.getTitle(),
+            Instant.now()
+        );
+        bookViewEventProducer.send(event);
+
+        return result;
     }
 
     private void addLikeBooksToRecommended(Integer userId, Integer bookId, boolean byViewed) {

@@ -51,7 +51,7 @@ public class BooksController {
         if (userRegister.isAuthenticated()) {
             int userId = userRegister.getCurrentUser().getId();
             int bookId = book.getId();
-            this.userBooksService.setBookAsViewed(userId, bookId);
+            this.userBooksService.setBookAsViewed(userId, book);
             model.addAttribute("paid", userBooksService.isBookPaidOrArchived(userId, bookId));
         } else {
             model.addAttribute("paid", false);

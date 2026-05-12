@@ -1,0 +1,26 @@
+apiVersion: kafka.strimzi.io/v1
+kind: KafkaUser
+metadata:
+  name: bookstore-user
+  labels:
+    strimzi.io/cluster: bookstore-kafka
+spec:
+  authentication:
+    type: scram-sha-512
+  authorization:
+    type: simple
+    acls:
+      - resource:
+          type: topic
+          name: "*"
+          patternType: literal
+        operations:
+          - All   #  (теперь строка)
+        host: "*"
+      - resource:
+          type: group
+          name: "*"
+          patternType: literal
+        operations:
+          - All   #
+        host: "*"
