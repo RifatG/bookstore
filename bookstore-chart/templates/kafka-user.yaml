@@ -1,9 +1,11 @@
+{{- if .Values.kafka.user.enabled }}
 apiVersion: kafka.strimzi.io/v1
 kind: KafkaUser
 metadata:
   name: bookstore-user
+  namespace: {{ .Release.Namespace }}
   labels:
-    strimzi.io/cluster: bookstore-kafka
+    strimzi.io/cluster: {{ .Values.kafka.clusterName }}
 spec:
   authentication:
     type: scram-sha-512
@@ -15,12 +17,13 @@ spec:
           name: "*"
           patternType: literal
         operations:
-          - All   #  (теперь строка)
+          - All
         host: "*"
       - resource:
           type: group
           name: "*"
           patternType: literal
         operations:
-          - All   #
+          - All
         host: "*"
+{{- end }}

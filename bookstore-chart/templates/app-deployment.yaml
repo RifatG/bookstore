@@ -20,6 +20,8 @@ spec:
           ports:
             - containerPort: {{ .Values.app.port }}
           env:
+            - name: SPRING_CONFIG_NAME
+              value: "application-k8s"
             - name: SPRING_DATASOURCE_URL
               value: jdbc:postgresql://host.docker.internal:5432/postgres
             - name: SPRING_DATASOURCE_USERNAME
@@ -30,6 +32,17 @@ spec:
               value: redis
             - name: SPRING_REDIS_PORT
               value: "6379"
+            - name: SPRING_KAFKA_BOOTSTRAP_SERVERS
+              value: "bookstore-kafka-kafka-bootstrap:9092"
+            - name: SPRING_KAFKA_PROPERTIES_SECURITY_PROTOCOL
+              value: "SASL_PLAINTEXT"
+            - name: SPRING_KAFKA_PROPERTIES_SASL_MECHANISM
+              value: "SCRAM-SHA-512"
+            - name: SPRING_KAFKA_PROPERTIES_SASL_JAAS_CONFIG
+              valueFrom:
+                secretKeyRef:
+                  name: bookstore-user
+                  key: sasl.jaas.config
           resources:
             requests:
               memory: "512Mi"

@@ -32,23 +32,9 @@ app:
 
 # Kafka settings
 kafka:
-  enabled: true
-  replicaCount: 1
-  persistence:
+  clusterName: bookstore-kafka
+  user:
     enabled: true
-    size: 5Gi
-  resources:
-    requests:
-      memory: "512Mi"
-      cpu: "250m"
-    limits:
-      memory: "1Gi"
-      cpu: "500m"
-  zookeeper:
-    enabled: true
-    persistence:
-      enabled: true
-      size: 3Gi
 
 # Ingress settings
 ingress:

@@ -229,13 +229,21 @@ helm install bookstore . --namespace bookstore --create-namespace
 ```bash
 helm uninstall kafka -n bookstore
 # Установка оператора
-kubectl apply -f 'https://strimzi.io/install/latest?namespace=kafka' -n kafka
+kubectl apply -f 'https://strimzi.io/install/latest?namespace=bookstore' -n bookstore
 # Создание кластера (1 брокер, без ZooKeeper, KRaft режим)
-kubectl apply -f kafka-cluster.yaml -n kafka
-# Создание пользователя
-kubectl apply -f kafka-user.yaml -n kafka
+kubectl apply -f kafka-cluster.yaml -n bookstore
+# Создание пользователя (уже через helm-чарт)
 # Получаем пароль пользователя
-kubectl get secret bookstore-user -n kafka -o jsonpath='{.data.password}' | base64 -d
+kubectl get secret bookstore-user -n bookstore -o jsonpath='{.data.password}' | base64 -d
+# Проверка (создаем временный консьюмер и смотрим сообщения) нужно поменять пароль
+kubectl exec -it -n bookstore $(kubectl get pods -n bookstore -l strimzi.io/name=bookstore-kafka-kafka -o name | head -1 | cut -d/ -f2) -- bash -c "
+cat > /tmp/client.properties <<EOF
+security.protocol=SASL_PLAINTEXT
+sasl.mechanism=SCRAM-SHA-512
+sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required username=\"bookstore-user\" password=\"WvpyfX4nqCQHQl6D9n9SdetEQbZokfXR\";
+EOF
+/opt/kafka/bin/kafka-console-consumer.sh --bootstrap-server bookstore-kafka-kafka-bootstrap:9092 --topic book-views --from-beginning --consumer.config /tmp/client.properties
+"
 ```
 
 3. **Проверить, что все поды запустились**
@@ -347,6 +355,7 @@ kubectl logs -n bookstore -l app=bookstore-app -f
 kubectl describe pod -n bookstore <pod-name>
 kubectl rollout restart deployment -n bookstore bookstore-app
 kubectl port-forward -n bookstore svc/bookstore-app 8085:8085
+kubectl create namespace bookstore
 ```
 
 ### Helm
