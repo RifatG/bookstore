@@ -30,6 +30,29 @@ app:
     SPRING_REDIS_HOST: redis
     SPRING_REDIS_PORT: "6379"
 
+# Analytics service settings
+analytics:
+  enabled: true
+  image:
+    repository: rifatg13/analytics-service
+    tag: latest
+    pullPolicy: IfNotPresent
+  datasource:
+    url: jdbc:postgresql://host.docker.internal:5432/postgres
+    username: postgres
+    password: "853496"
+  kafka:
+    bootstrapServers: "bookstore-kafka-kafka-bootstrap:9092"
+    securityProtocol: "SASL_PLAINTEXT"
+    saslMechanism: "SCRAM-SHA-512"
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "1Gi"
+      cpu: "500m"
+
 # Kafka settings
 kafka:
   clusterName: bookstore-kafka
