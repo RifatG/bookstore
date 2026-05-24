@@ -21,6 +21,8 @@ public class BookViewStats {
         return views;
     }
 
+    public Long getBookId = this.bookId;
+
     public void setBookId(Long bookId) {
         this.bookId = bookId;
     }
